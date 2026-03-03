@@ -10,7 +10,7 @@ namespace JuegoPreguntasYRespuestas.Data
 {
     public class ConexionBD
     {
-        private string connectionString = "Server = localhost; Database = juegoDB; User ID = root; Password = PON TU PASS AQUÍ;";
+        private string connectionString = "Server = localhost; Database = juegoDB; User ID = root; Password = IPacc16022026!;";
 
         public MySqlConnection ObtenerConexion()
         {
