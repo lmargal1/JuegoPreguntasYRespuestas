@@ -6,6 +6,7 @@ using System.Windows.Forms;
 
 namespace JuegoPreguntasYRespuestas
 {
+    //conexion abel
     internal static class Program
     {
         /// <summary>
