@@ -23,6 +23,6 @@ Tecnologías utilizadas:
 - Git & GitHub
 
 Configuración inicial:
-1. Crear la base de datos en MySQL.
-2. Configurar la cadena de conexión en el archivo ConexionBD.cs.
+1. Ejecutar el archivo juegoDB.sql en MySQL Server.
+2. Configurar la contraseña ConexionBD.cs (poner su contraseña).
 3. Ejecutar el proyecto en Visual Studio.
