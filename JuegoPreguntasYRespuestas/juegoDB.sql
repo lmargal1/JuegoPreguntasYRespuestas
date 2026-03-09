@@ -62,13 +62,10 @@ INSERT INTO Preguntas(textoPregunta, tipo, idCategoria) VALUES
 ('¿Cuál ha sido la pit stop más rápida en una carrera de Fórmula 1?', 'texto', 1),
 ('¿Cuántas Champions League ha ganado el Real Madrid?', 'texto', 1),
 ('¿En qué club se hizo famoso Cristiano Ronaldo antes de jugar por el Real Madrid?', 'texto', 1),
+
 ('¿Cuál tenista tiene más Grand Slams?', 'texto', 1),
 ('¿Cuál es el circuito más antiguo de Fórmula 1?', 'texto', 1),
 ('¿Quién de estos jugadores es Erling Haaland?', 'texto', 1),
 ('¿Cuál de estos pilotos pertenece actualmente a la escudería Visa Cash App Racing Bulls?', 'texto', 1),
 ('¿Cuál de estos pilotos ha estado en más escuderías durante su trayectoria en Fórmula 1?', 'texto', 1);
-
-
-
-
 
