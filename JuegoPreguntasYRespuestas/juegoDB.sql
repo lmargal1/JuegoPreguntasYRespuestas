@@ -69,3 +69,20 @@ INSERT INTO Preguntas(textoPregunta, tipo, idCategoria) VALUES
 ('¿Cuál de estos pilotos pertenece actualmente a la escudería Visa Cash App Racing Bulls?', 'texto', 1),
 ('¿Cuál de estos pilotos ha estado en más escuderías durante su trayectoria en Fórmula 1?', 'texto', 1);
 
+
+//Música -> idCategoria == 2
+INSERT INTO Preguntas(textoPregunta, tipo, idCategoria) VALUES
+('¿Cuántas veces se dice la palabra "baby" en la canción con el mismo nombre, de Justin Bieber?', 'texto', 2),
+('¿De qué país es originario el cantante Alex Soto?', 'texto', 2),
+('¿Cuál es el título de la canción de Bad Bunny que menciona la frase "Debí tirar más fotos"?', 'texto', 2),
+('¿Cuál compositor nació en Bonn, Alemania?', 'texto', 2),
+('¿Cuál era el nombre real de Freddie Mercury?', 'texto', 2),
+
+('¿Cuál de estas personas no es integrante de BTS?', 'texto', 2),
+('¿Cuál de estas es la portada del álbum "Esencia" de Humbe?', 'texto', 2),
+('¿Cuál de estas personas es el baterista de San Venus?', 'texto', 2),
+('¿Cuál de estas personas es el cantante Juice WRLD?', 'texto', 2),
+('¿Cuál es el cantante más famoso de todos los tiempos?', 'texto', 2);
+
+
+
