@@ -53,6 +53,12 @@ INSERT INTO Categorias(nombreCategoria) VALUES
 ('Deportes'), ('Música'), ('Animales'), ('Curiosidades'), ('Películas');
 
 
+/*
+SET SQL_SAFE_UPDATES = 0;
+DELETE FROM preguntas;
+SET SQL_SAFE_UPDATES = 1;
+*/
+
 //PREGUNTAS
 //Inserta datos en tabla Preguntas
 //Deportes -> idCategoria == 1
@@ -63,11 +69,11 @@ INSERT INTO Preguntas(textoPregunta, tipo, idCategoria) VALUES
 ('¿Cuántas Champions League ha ganado el Real Madrid?', 'texto', 1),
 ('¿En qué club se hizo famoso Cristiano Ronaldo antes de jugar por el Real Madrid?', 'texto', 1),
 
-('¿Cuál tenista tiene más Grand Slams?', 'texto', 1),
-('¿Cuál es el circuito más antiguo de Fórmula 1?', 'texto', 1),
-('¿Quién de estos jugadores es Erling Haaland?', 'texto', 1),
-('¿Cuál de estos pilotos pertenece actualmente a la escudería Visa Cash App Racing Bulls?', 'texto', 1),
-('¿Cuál de estos pilotos ha estado en más escuderías durante su trayectoria en Fórmula 1?', 'texto', 1);
+('¿Cuál tenista tiene más Grand Slams?', 'imagen', 1),
+('¿Cuál es el circuito más antiguo de Fórmula 1?', 'imagen', 1),
+('¿Quién de estos jugadores es Erling Haaland?', 'imagen', 1),
+('¿Cuál de estos pilotos pertenece actualmente a la escudería Visa Cash App Racing Bulls?', 'imagen', 1),
+('¿Cuál de estos pilotos ha estado en más escuderías durante su trayectoria en Fórmula 1?', 'imagen', 1);
 
 
 //Música -> idCategoria == 2
@@ -78,11 +84,26 @@ INSERT INTO Preguntas(textoPregunta, tipo, idCategoria) VALUES
 ('¿Cuál compositor nació en Bonn, Alemania?', 'texto', 2),
 ('¿Cuál era el nombre real de Freddie Mercury?', 'texto', 2),
 
-('¿Cuál de estas personas no es integrante de BTS?', 'texto', 2),
-('¿Cuál de estas es la portada del álbum "Esencia" de Humbe?', 'texto', 2),
-('¿Cuál de estas personas es el baterista de San Venus?', 'texto', 2),
-('¿Cuál de estas personas es el cantante Juice WRLD?', 'texto', 2),
-('¿Cuál es el cantante más famoso de todos los tiempos?', 'texto', 2);
+('¿Cuál de estas personas no es integrante de BTS?', 'imagen', 2),
+('¿Cuál de estas es la portada del álbum "Esencia" de Humbe?', 'imagen', 2),
+('¿Cuál de estas personas es el baterista de San Venus?', 'imagen', 2),
+('¿Cuál de estas personas es el cantante Juice WRLD?', 'imagen', 2),
+('¿Cuál es el cantante más famoso de todos los tiempos?', 'imagen', 2);
+
+
+//Animales -> idCategoria == 3
+INSERT INTO Preguntas(textoPregunta, tipo, idCategoria) VALUES
+('¿Cómo se llama un grupo de búhos?', 'texto', 3),
+('¿Cuál es el animal terrestre más rápido del mundo?', 'texto', 3),
+('¿Cuál de estas especies se llaman entre sí por "nombres" únicos que consisten en silbidos específicos?', 'texto', 3),
+('¿Cuál es el animal más grande que ha existido?', 'texto', 3),
+('¿Cuál es el mamífero más inteligente?', 'texto', 3),
+
+('¿Cuál de estos animales es un marsupial?', 'imagen', 3),
+('¿Cuál de estos animales pertenece a la familia de los felinos?', 'imagen', 3),
+('¿Cuál de estos animales es un mamífero marino?', 'imagen', 3),
+('¿Cuál de estos es un dragón de comodo?', 'imagen', 3),
+('¿Cuál de estos es un corvato?', 'imagen', 3);
 
 
 
