@@ -119,3 +119,18 @@ INSERT INTO Preguntas(textoPregunta, tipo, idCategoria) VALUES
 ('¿Cuál de estos logos tiene ese (o esos) color(es) debido al daltonismo de su creador?', 'imagen', 4),
 ('¿Cuál es el emoji más utilizado en el mundo?', 'imagen', 4),
 ('¿En cuál de estos planetas llueven diamantes?', 'imagen', 4);
+
+
+//Películas -> idCategoria == 5
+INSERT INTO Preguntas(textoPregunta, tipo, idCategoria) VALUES
+('¿Quién es el protagonista de la película "Volver al futuro"?', 'texto', 5),
+('¿Cómo se llama el arma característica de los Jedi en Star Wars?', 'texto', 5),
+('¿En qué episodio de Star Wars nace el personaje Darth Vader?', 'texto', 5),
+('¿Quién escribió la novela en la que se basa "La máquina del tiempo"?', 'texto', 5),
+('¿En qué fecha Marty McFly y Doc Brown llegaron al futuro?', 'texto', 5),
+
+('¿Cuál es la película más costosa de la historia?', 'imagen', 5),
+('¿La esposa de cuál actor ha aparecido en más de 20 películas junto a su esposo?', 'imagen', 5),
+('¿Cuál de estos actores ha participado en más películas?', 'imagen', 5),
+('¿Cuál de estos personajes no ha sido doblado al español por el actor mexicano Omar Chaparro?', 'imagen', 5),
+('¿Cuál fue la primera película en ganar el Oscar a Mejor Película Animada?', 'imagen', 5);
