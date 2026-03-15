@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace JuegoPreguntasYRespuestas
 {
-    internal class Categoria
+    public class Categoria
     {
         public int IdCategoria{ get; set; }
         public string NombreCategoria{ get; set; }
