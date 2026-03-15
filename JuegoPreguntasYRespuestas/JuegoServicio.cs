@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace JuegoPreguntasYRespuestas
 {
@@ -10,6 +11,40 @@ namespace JuegoPreguntasYRespuestas
     {
         private static string tipoTexto = "texto";
         private static string tipoImagen = "imagen";
+        private static List<Pregunta> preguntasJuego = new List<Pregunta>();
+        public static int preguntaActual { get; set; }
+        public static int correctas { get; set; }
+        public static int incorrectas { get; set; }
+        public static int totalPreguntas { get; set; }
+
+        public static void iniciaJuego(List<Pregunta> preguntas)
+        {
+            preguntasJuego = desordenarPreguntas(preguntas);
+            preguntaActual = 0;
+            correctas = 0;
+            incorrectas = 0;
+            totalPreguntas = preguntasJuego.Count;
+        }
+
+        public static Pregunta obtenerPreguntaActual()
+        {
+            return preguntasJuego[preguntaActual];
+        }
+
+        public static bool siguientePregunta()
+        {
+            preguntaActual++;
+            return preguntaActual < preguntasJuego.Count;
+        }
+
+        public static void registraRespuesta(bool esCorrecta)
+        {
+            if (esCorrecta == true)
+                correctas++;
+            else
+                incorrectas++;
+        }
+
         public static List<Pregunta> desordenarPreguntas(List<Pregunta> preguntas)
         {
             if (preguntas == null)
