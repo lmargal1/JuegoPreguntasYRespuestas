@@ -102,8 +102,20 @@ INSERT INTO Preguntas(textoPregunta, tipo, idCategoria) VALUES
 ('¿Cuál de estos animales es un marsupial?', 'imagen', 3),
 ('¿Cuál de estos animales pertenece a la familia de los felinos?', 'imagen', 3),
 ('¿Cuál de estos animales es un mamífero marino?', 'imagen', 3),
-('¿Cuál de estos es un dragón de comodo?', 'imagen', 3),
+('¿Cuál de estos es un dragón de komodo?', 'imagen', 3),
 ('¿Cuál de estos es un corvato?', 'imagen', 3);
 
 
+//Curiosidades -> idCategoria == 4
+INSERT INTO Preguntas(textoPregunta, tipo, idCategoria) VALUES
+('¿Qué significan las siglas del restaurante TOKS?', 'texto', 4),
+('¿Cuál es el único continente sin hormigas?', 'texto', 4),
+('¿Cuál es el alimento más robado del mundo?', 'texto', 4),
+('¿Cuál es el animal nacional de Escocia?', 'texto', 4),
+('¿Cuál es la única letra que no aparece en el nombre de ningún estado de Estados Unidos?', 'texto', 4),
 
+('¿Cuál de estos es el primer producto vendido en internet?', 'imagen', 4),
+('¿Cuál de estos productos se vendía como medicina en la década de 1830?', 'imagen', 4),
+('¿Cuál de estos logos tiene ese (o esos) color(es) debido al daltonismo de su creador?', 'imagen', 4),
+('¿Cuál es el emoji más utilizado en el mundo?', 'imagen', 4),
+('¿En cuál de estos planetas llueven diamantes?', 'imagen', 4);
