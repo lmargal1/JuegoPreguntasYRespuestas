@@ -123,11 +123,11 @@ INSERT INTO Preguntas(textoPregunta, tipo, idCategoria) VALUES
 -- OPCIONES (DATOS DE PRUEBA PARA DISEÑO DE INTERFAZ)
 -- Preguntas 1 a 5 (Deportes - Texto)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
-(1, 'Opción A', NULL, true), (1, 'Opción B', NULL, false), (1, 'Opción C', NULL, false), (1, 'Opción D', NULL, false),
-(2, 'Opción A', NULL, true), (2, 'Opción B', NULL, false), (2, 'Opción C', NULL, false), (2, 'Opción D', NULL, false),
-(3, 'Opción A', NULL, true), (3, 'Opción B', NULL, false), (3, 'Opción C', NULL, false), (3, 'Opción D', NULL, false),
-(4, 'Opción A', NULL, true), (4, 'Opción B', NULL, false), (4, 'Opción C', NULL, false), (4, 'Opción D', NULL, false),
-(5, 'Opción A', NULL, true), (5, 'Opción B', NULL, false), (5, 'Opción C', NULL, false), (5, 'Opción D', NULL, false);
+(1, '3', NULL, true), (1, '2', NULL, false), (1, '4', NULL, false), (1, '5', NULL, false),
+(2, '18', NULL, false), (2, '20', NULL, false), (2, '22', NULL, true), (2, '24', NULL, false),
+(3, '2.5 segundos', NULL, false), (3, '1.8 segundos', NULL, true), (3, '1.6 segundos', NULL, false), (3, '3.1 segundos', NULL, false),
+(4, '17', NULL, true), (4, '16', NULL, false), (4, '15', NULL, false), (4, '14', NULL, false),
+(5, 'Bayern Munich', NULL, false), (5, 'Manchester United', NULL, true), (5, 'Juventus', NULL, false), (5, 'Manchester City', NULL, false);
 
 -- Preguntas 6 a 10 (Deportes - Imagen)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
@@ -139,11 +139,11 @@ INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
 
 -- Preguntas 11 a 15 (Música - Texto)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
-(11, 'Opción A', NULL, true), (11, 'Opción B', NULL, false), (11, 'Opción C', NULL, false), (11, 'Opción D', NULL, false),
-(12, 'Opción A', NULL, true), (12, 'Opción B', NULL, false), (12, 'Opción C', NULL, false), (12, 'Opción D', NULL, false),
-(13, 'Opción A', NULL, true), (13, 'Opción B', NULL, false), (13, 'Opción C', NULL, false), (13, 'Opción D', NULL, false),
-(14, 'Opción A', NULL, true), (14, 'Opción B', NULL, false), (14, 'Opción C', NULL, false), (14, 'Opción D', NULL, false),
-(15, 'Opción A', NULL, true), (15, 'Opción B', NULL, false), (15, 'Opción C', NULL, false), (15, 'Opción D', NULL, false);
+(11, '56', NULL, true), (11, '32', NULL, false), (11, '40', NULL, false), (11, '48', NULL, false),
+(12, 'México', NULL, true), (12, 'Argentina', NULL, false), (12, 'España', NULL, false), (12, 'Colombia', NULL, false),
+(13, 'DTMF', NULL, false), (13, 'DtMf', NULL, false), (13, 'DTmF', NULL, false), (13, 'DtMF', NULL, true),
+(14, 'Mozart', NULL, false), (14, 'Beethoven', NULL, true), (14, 'Bach', NULL, false), (14, 'Chopin', NULL, false),
+(15, 'Frederick Mercury', NULL, false (15, 'Michael Bulsara', NULL, false), (15, 'Farrokh Bulsara', NULL, true), (15, 'Arthur Mercury', NULL, false);
 
 -- Preguntas 16 a 20 (Música - Imagen)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
@@ -155,11 +155,11 @@ INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
 
 -- Preguntas 21 a 25 (Animales - Texto)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
-(21, 'Opción A', NULL, true), (21, 'Opción B', NULL, false), (21, 'Opción C', NULL, false), (21, 'Opción D', NULL, false),
-(22, 'Opción A', NULL, true), (22, 'Opción B', NULL, false), (22, 'Opción C', NULL, false), (22, 'Opción D', NULL, false),
-(23, 'Opción A', NULL, true), (23, 'Opción B', NULL, false), (23, 'Opción C', NULL, false), (23, 'Opción D', NULL, false),
-(24, 'Opción A', NULL, true), (24, 'Opción B', NULL, false), (24, 'Opción C', NULL, false), (24, 'Opción D', NULL, false),
-(25, 'Opción A', NULL, true), (25, 'Opción B', NULL, false), (25, 'Opción C', NULL, false), (25, 'Opción D', NULL, false);
+(21, 'Parvada', NULL, false), (21, 'Bandada', NULL, false), (21, 'Colonia', NULL, false), (21, 'Parlamento', NULL, true),
+(22, 'León', NULL, false), (22, 'Guepardo', NULL, true), (22, 'Antílope', NULL, false), (22, 'Avestruz', NULL, false),
+(23, 'Delfines', NULL, true), (23, 'Ballenas', NULL, false), (23, 'Lobos', NULL, false), (23, 'Canarios', NULL, false),
+(24, 'Elefante africano', NULL, false), (24, 'Patagotitan', NULL, false), (24, 'Ballena Azul', NULL, true), (24, 'Mamut', NULL, false),
+(25, 'Chimpancé', NULL, false (25, 'Hombre', NULL, true), (25, 'Delfín', NULL, false), (25, 'Elefante', NULL, false);
 
 -- Preguntas 26 a 30 (Animales - Imagen)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
@@ -171,11 +171,11 @@ INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
 
 -- Preguntas 31 a 35 (Curiosidades - Texto)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
-(31, 'Opción A', NULL, true), (31, 'Opción B', NULL, false), (31, 'Opción C', NULL, false), (31, 'Opción D', NULL, false),
-(32, 'Opción A', NULL, true), (32, 'Opción B', NULL, false), (32, 'Opción C', NULL, false), (32, 'Opción D', NULL, false),
-(33, 'Opción A', NULL, true), (33, 'Opción B', NULL, false), (33, 'Opción C', NULL, false), (33, 'Opción D', NULL, false),
-(34, 'Opción A', NULL, true), (34, 'Opción B', NULL, false), (34, 'Opción C', NULL, false), (34, 'Opción D', NULL, false),
-(35, 'Opción A', NULL, true), (35, 'Opción B', NULL, false), (35, 'Opción C', NULL, false), (35, 'Opción D', NULL, false);
+(31, 'Skot (apellido del fundador al revés', NULL, false), (31, 'Today Okay Service', NULL, true), (31, 'The Original Kitchen Service', NULL, false), (31, 'No significa nada', NULL, false),
+(32, 'África', NULL, false), (32, 'Oceanía', NULL, false), (32, 'Asia', NULL, false), (32, 'Antártida', NULL, true),
+(33, 'Queso', NULL, true), (33, 'Pan', NULL, false), (33, 'Chocolate', NULL, false), (33, 'Café', NULL, false),
+(34, 'Dragón', NULL, false), (34, 'Águila', NULL, false), (34, 'Unicornio', NULL, true), (34, 'Caballo', NULL, false),
+(35, 'J', NULL, false), (35, 'K', NULL, false), (35, 'Z', NULL, false), (35, 'Q', NULL, true);
 
 -- Preguntas 36 a 40 (Curiosidades - Imagen)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
@@ -187,11 +187,11 @@ INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
 
 -- Preguntas 41 a 45 (Películas - Texto)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
-(41, 'Opción A', NULL, true), (41, 'Opción B', NULL, false), (41, 'Opción C', NULL, false), (41, 'Opción D', NULL, false),
-(42, 'Opción A', NULL, true), (42, 'Opción B', NULL, false), (42, 'Opción C', NULL, false), (42, 'Opción D', NULL, false),
-(43, 'Opción A', NULL, true), (43, 'Opción B', NULL, false), (43, 'Opción C', NULL, false), (43, 'Opción D', NULL, false),
-(44, 'Opción A', NULL, true), (44, 'Opción B', NULL, false), (44, 'Opción C', NULL, false), (44, 'Opción D', NULL, false),
-(45, 'Opción A', NULL, true), (45, 'Opción B', NULL, false), (45, 'Opción C', NULL, false), (45, 'Opción D', NULL, false);
+(41, 'Marty McFly', NULL, true), (41, 'Doc Brown', NULL, false), (41, 'Biff Tannen', NULL, false), (41, 'Martin McFly', NULL, false),
+(42, 'Sable obscuro', NULL, false), (42, 'Sable de luz', NULL, true), (42, 'Espada Jedi', NULL, false), (42, 'Espada láser', NULL, false),
+(43, 'Episodio I', NULL, false), (43, 'Episodio II', NULL, false), (43, 'Episodio III', NULL, true), (43, 'Episodio IV', NULL, false),
+(44, 'Jules Verne', NULL, false), (44, 'Isaac Asimov', NULL, false), (44, 'Arthur C. Clarke', NULL, false), (44, 'H. G. Wells', NULL, true),
+(45, '15 de octubre de 2015', NULL, false), (45, '5 de mayo de 2000', NULL, false), (45, '21 de octubre de 2015', NULL, true), (45, '15 de agosto de 2012', NULL, false);
 
 -- Preguntas 46 a 50 (Películas - Imagen)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
