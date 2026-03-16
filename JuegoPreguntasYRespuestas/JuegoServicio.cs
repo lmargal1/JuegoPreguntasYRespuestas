@@ -70,5 +70,43 @@ namespace JuegoPreguntasYRespuestas
                 return tipoTexto;
             return tipoImagen;
         }
+
+        public static bool validaRespuesta(int idSeleccionada, List<Opcion> opciones)
+        {
+            bool esCorrecta = false;
+
+            foreach(Opcion opcion in opciones)
+            {
+                if(opcion.IdOpcion == idSeleccionada)
+                {
+                    esCorrecta = opcion.EsCorrecta;
+                    break;
+                }
+            }
+
+            registraRespuesta(esCorrecta);
+            return esCorrecta;
+        }
+
+        public static int calcularPorcentajeCorrecto()
+        {
+            int res=0;
+            if (totalPreguntas == 0)
+                return res;
+
+            res=correctas * 100 / totalPreguntas;
+
+            return res;
+        }
+        public static int calcularPorcentajeIncorrecto()
+        {
+            int res = 0;
+            if (totalPreguntas == 0)
+                return res;
+
+            res = incorrectas * 100 / totalPreguntas;
+
+            return res;
+        }
     }
 }
