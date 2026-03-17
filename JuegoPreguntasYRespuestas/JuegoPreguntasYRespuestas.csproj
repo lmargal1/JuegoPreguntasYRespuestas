@@ -137,6 +137,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="juegoDB.sql" />
+    <Content Include="Presentacion\Imagenes\deportes\alonso.jpg" />
+    <Content Include="Presentacion\Imagenes\deportes\bottas.jpeg" />
+    <Content Include="Presentacion\Imagenes\deportes\hamilton.jpg" />
+    <Content Include="Presentacion\Imagenes\deportes\kimi.jpeg" />
+    <Content Include="Presentacion\Imagenes\deportes\lindblad.jpeg" />
+    <Content Include="Presentacion\Imagenes\deportes\maxi.jpg" />
+    <Content Include="Presentacion\Imagenes\deportes\sainz.jpeg" />
     <Content Include="Presentacion\Imagenes\LOGO_SPAIN_2021.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

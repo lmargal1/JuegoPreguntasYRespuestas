@@ -131,11 +131,11 @@ INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
 
 -- Preguntas 6 a 10 (Deportes - Imagen)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
-(6, 'Imagen A', 'img/pruebaA.jpg', true), (6, 'Imagen B', 'img/pruebaB.jpg', false), (6, 'Imagen C', 'img/pruebaC.jpg', false), (6, 'Imagen D', 'img/pruebaD.jpg', false),
-(7, 'Imagen A', 'img/pruebaA.jpg', true), (7, 'Imagen B', 'img/pruebaB.jpg', false), (7, 'Imagen C', 'img/pruebaC.jpg', false), (7, 'Imagen D', 'img/pruebaD.jpg', false),
-(8, 'Imagen A', 'img/pruebaA.jpg', true), (8, 'Imagen B', 'img/pruebaB.jpg', false), (8, 'Imagen C', 'img/pruebaC.jpg', false), (8, 'Imagen D', 'img/pruebaD.jpg', false),
-(9, 'Imagen A', 'img/pruebaA.jpg', true), (9, 'Imagen B', 'img/pruebaB.jpg', false), (9, 'Imagen C', 'img/pruebaC.jpg', false), (9, 'Imagen D', 'img/pruebaD.jpg', false),
-(10, 'Imagen A', 'img/pruebaA.jpg', true), (10, 'Imagen B', 'img/pruebaB.jpg', false), (10, 'Imagen C', 'img/pruebaC.jpg', false), (10, 'Imagen D', 'img/pruebaD.jpg', false);
+(6, 'Imagen A', 'Presentacion/Imagenes/deportes/novak.jpg', true), (6, 'Imagen B', 'Presentacion/Imagenes/deportes/serena.jpg', false), (6, 'Imagen C', 'Presentacion/Imagenes/deportes/federer.jpg', false), (6, 'Imagen D', 'Presentacion/Imagenes/deportes/nadal.jpg', false),
+(7, 'Imagen A', 'Presentacion/Imagenes/deportes/spa.jpg', false), (7, 'Imagen B', 'Presentacion/Imagenes/deportes/silverstone.jpg', false), (7, 'Imagen C', 'Presentacion/Imagenes/deportes/monaco.jpg', true), (7, 'Imagen D', 'Presentacion/Imagenes/deportes/monza.jpg', false),
+(8, 'Imagen A', 'Presentacion/Imagenes/deportes/haaland.jpg', true), (8, 'Imagen B', 'Presentacion/Imagenes/deportes/mbappe.jpg', false), (8, 'Imagen C', 'Presentacion/Imagenes/deportes/yamal.jpg', false), (8, 'Imagen D', 'Presentacion/Imagenes/deportes/bellingham.jpg', false),
+(9, 'Imagen A', 'Presentacion/Imagenes/deportes/kimi.jpeg', false), (9, 'Presentacion/Imagenes/deportes/sainz.jpeg', false), (9, 'Imagen C', 'Presentacion/Imagenes/deportes/bottas.jpeg', false), (9, 'Imagen D', 'Presentacion/Imagenes/deportes/lindblad.jpeg', true),
+(10, 'Imagen A', 'Presentacion/Imagenes/deportes/sainz.jpeg', false), (10, 'Imagen B', 'Presentacion/Imagenes/deportes/hamilton.jpeg', false), (10, 'Imagen C', 'Presentacion/Imagenes/deportes/alonso.jpg', true), (10, 'Imagen D', 'Presentacion/Imagenes/deportes/maxi.jpeg', false);
 
 -- Preguntas 11 a 15 (Música - Texto)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
