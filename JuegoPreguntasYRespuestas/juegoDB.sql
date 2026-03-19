@@ -163,7 +163,7 @@ INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
 
 -- Preguntas 26 a 30 (Animales - Imagen)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
-(26, 'Imagen A', 'img/pruebaA.jpg', true), (26, 'Imagen B', 'img/pruebaB.jpg', false), (26, 'Imagen C', 'img/pruebaC.jpg', false), (26, 'Imagen D', 'img/pruebaD.jpg', false),
+(26, 'Imagen A', 'Presentacion/Imagenes/animales/marsupial.jpg', true), (26, 'Presentacion/Imagenes/animales/oso.jpg', false), (26, 'Imagen C', 'Presentacion/Imagenes/animales/perezoso.jpg', false), (26, 'Imagen D', 'Presentacion/Imagenes/animales/ratita.jpg', false),
 (27, 'Imagen A', 'img/pruebaA.jpg', true), (27, 'Imagen B', 'img/pruebaB.jpg', false), (27, 'Imagen C', 'img/pruebaC.jpg', false), (27, 'Imagen D', 'img/pruebaD.jpg', false),
 (28, 'Imagen A', 'img/pruebaA.jpg', true), (28, 'Imagen B', 'img/pruebaB.jpg', false), (28, 'Imagen C', 'img/pruebaC.jpg', false), (28, 'Imagen D', 'img/pruebaD.jpg', false),
 (29, 'Imagen A', 'img/pruebaA.jpg', true), (29, 'Imagen B', 'img/pruebaB.jpg', false), (29, 'Imagen C', 'img/pruebaC.jpg', false), (29, 'Imagen D', 'img/pruebaD.jpg', false),

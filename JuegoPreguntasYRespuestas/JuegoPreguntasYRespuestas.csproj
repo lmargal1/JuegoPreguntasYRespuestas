@@ -137,6 +137,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="juegoDB.sql" />
+    <Content Include="Presentacion\Imagenes\animales\marsupial.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\oso.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\perezoso.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\ratita.jpg" />
     <Content Include="Presentacion\Imagenes\deportes\alonso.jpg" />
     <Content Include="Presentacion\Imagenes\deportes\bottas.jpeg" />
     <Content Include="Presentacion\Imagenes\deportes\hamilton.jpg" />
