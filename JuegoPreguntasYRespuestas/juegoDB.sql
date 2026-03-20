@@ -147,11 +147,11 @@ INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
 
 -- Preguntas 16 a 20 (Música - Imagen)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
-(16, 'Imagen A', 'img/pruebaA.jpg', true), (16, 'Imagen B', 'img/pruebaB.jpg', false), (16, 'Imagen C', 'img/pruebaC.jpg', false), (16, 'Imagen D', 'img/pruebaD.jpg', false),
-(17, 'Imagen A', 'img/pruebaA.jpg', true), (17, 'Imagen B', 'img/pruebaB.jpg', false), (17, 'Imagen C', 'img/pruebaC.jpg', false), (17, 'Imagen D', 'img/pruebaD.jpg', false),
-(18, 'Imagen A', 'img/pruebaA.jpg', true), (18, 'Imagen B', 'img/pruebaB.jpg', false), (18, 'Imagen C', 'img/pruebaC.jpg', false), (18, 'Imagen D', 'img/pruebaD.jpg', false),
-(19, 'Imagen A', 'img/pruebaA.jpg', true), (19, 'Imagen B', 'img/pruebaB.jpg', false), (19, 'Imagen C', 'img/pruebaC.jpg', false), (19, 'Imagen D', 'img/pruebaD.jpg', false),
-(20, 'Imagen A', 'img/pruebaA.jpg', true), (20, 'Imagen B', 'img/pruebaB.jpg', false), (20, 'Imagen C', 'img/pruebaC.jpg', false), (20, 'Imagen D', 'img/pruebaD.jpg', false);
+(16, 'Imagen A', 'Presentacion/Imagenes/musica/namjoon.jpg', false), (16, 'Imagen B', 'Presentacion/Imagenes/musica/jin.jpg', false), (16, 'Imagen C', 'Presentacion/Imagenes/musica/yoongi.jpg', false), (16, 'Imagen D', 'Presentacion/Imagenes/musica/sanha.png', true),
+(17, 'Imagen A', 'Presentacion/Imagenes/musica/astros.jpeg', false), (17, 'Imagen B', 'Presentacion/Imagenes/musica/esencia.jpeg', true), (17, 'Imagen C', 'Presentacion/Imagenes/musica/aurora.jpeg', false), (17, 'Imagen D', 'Presentacion/Imagenes/musica/ddc.jpeg', false),
+(18, 'Imagen A', 'Presentacion/Imagenes/musica/rick.jpeg', true), (18, 'Imagen B', 'Presentacion/Imagenes/musica/uxi.jpeg', false), (18, 'Imagen C', 'Presentacion/Imagenes/musica/mike.jpeg', false), (18, 'Imagen D', 'Presentacion/Imagenes/musica/blnko.jpeg', false),
+(19, 'Imagen A', 'Presentacion/Imagenes/musica/liluzi.jpg', false), (19, 'Imagen B', 'Presentacion/Imagenes/musica/travis.jpg', false), (19, 'Imagen C', 'Presentacion/Imagenes/musica/juiceWRLD.jpg', true), (19, 'Imagen D', 'Presentacion/Imagenes/musica/xxxtentacion.jpg', false),
+(20, 'Imagen A', 'Presentacion/Imagenes/musica/elvis.jpg', false), (20, 'Imagen B', 'Presentacion/Imagenes/musica/mercury.jpg', false), (20, 'Imagen C', 'Presentacion/Imagenes/musica/sinatra.jpg', false), (20, 'Imagen D', 'Presentacion/Imagenes/musica/mj.jpg', true);
 
 -- Preguntas 21 a 25 (Animales - Texto)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES

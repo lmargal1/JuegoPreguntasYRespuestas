@@ -149,6 +149,26 @@
     <Content Include="Presentacion\Imagenes\deportes\maxi.jpg" />
     <Content Include="Presentacion\Imagenes\deportes\sainz.jpeg" />
     <Content Include="Presentacion\Imagenes\LOGO_SPAIN_2021.png" />
+    <Content Include="Presentacion\Imagenes\musica\astros.jpeg" />
+    <Content Include="Presentacion\Imagenes\musica\aurora.jpeg" />
+    <Content Include="Presentacion\Imagenes\musica\blnko.jpeg" />
+    <Content Include="Presentacion\Imagenes\musica\ddc.jpeg" />
+    <Content Include="Presentacion\Imagenes\musica\elvis.jpg" />
+    <Content Include="Presentacion\Imagenes\musica\esencia.jpeg" />
+    <Content Include="Presentacion\Imagenes\musica\jin.jpg" />
+    <Content Include="Presentacion\Imagenes\musica\juiceWRLD.jpg" />
+    <Content Include="Presentacion\Imagenes\musica\liluzi.jpg" />
+    <Content Include="Presentacion\Imagenes\musica\mercury.jpg" />
+    <Content Include="Presentacion\Imagenes\musica\mike.jpeg" />
+    <Content Include="Presentacion\Imagenes\musica\mj.jpg" />
+    <Content Include="Presentacion\Imagenes\musica\namjoon.jpg" />
+    <Content Include="Presentacion\Imagenes\musica\rick.jpeg" />
+    <Content Include="Presentacion\Imagenes\musica\sanha.png" />
+    <Content Include="Presentacion\Imagenes\musica\sinatra.jpg" />
+    <Content Include="Presentacion\Imagenes\musica\travis.jpg" />
+    <Content Include="Presentacion\Imagenes\musica\uxi.jpeg" />
+    <Content Include="Presentacion\Imagenes\musica\xxxtentacion.jpg" />
+    <Content Include="Presentacion\Imagenes\musica\yoongi.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
