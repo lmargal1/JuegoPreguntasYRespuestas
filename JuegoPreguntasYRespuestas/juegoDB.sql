@@ -143,7 +143,7 @@ INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
 (12, 'México', NULL, true), (12, 'Argentina', NULL, false), (12, 'España', NULL, false), (12, 'Colombia', NULL, false),
 (13, 'DTMF', NULL, false), (13, 'DtMf', NULL, false), (13, 'DTmF', NULL, false), (13, 'DtMF', NULL, true),
 (14, 'Mozart', NULL, false), (14, 'Beethoven', NULL, true), (14, 'Bach', NULL, false), (14, 'Chopin', NULL, false),
-(15, 'Frederick Mercury', NULL, false (15, 'Michael Bulsara', NULL, false), (15, 'Farrokh Bulsara', NULL, true), (15, 'Arthur Mercury', NULL, false);
+(15, 'Frederick Mercury', NULL, false), (15, 'Michael Bulsara', NULL, false), (15, 'Farrokh Bulsara', NULL, true), (15, 'Arthur Mercury', NULL, false);
 
 -- Preguntas 16 a 20 (Música - Imagen)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
@@ -164,10 +164,10 @@ INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
 -- Preguntas 26 a 30 (Animales - Imagen)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
 (26, 'Imagen A', 'Presentacion/Imagenes/animales/marsupial.jpg', true), (26, 'Presentacion/Imagenes/animales/oso.jpg', false), (26, 'Imagen C', 'Presentacion/Imagenes/animales/perezoso.jpg', false), (26, 'Imagen D', 'Presentacion/Imagenes/animales/ratita.jpg', false),
-(27, 'Imagen A', 'img/pruebaA.jpg', true), (27, 'Imagen B', 'img/pruebaB.jpg', false), (27, 'Imagen C', 'img/pruebaC.jpg', false), (27, 'Imagen D', 'img/pruebaD.jpg', false),
-(28, 'Imagen A', 'img/pruebaA.jpg', true), (28, 'Imagen B', 'img/pruebaB.jpg', false), (28, 'Imagen C', 'img/pruebaC.jpg', false), (28, 'Imagen D', 'img/pruebaD.jpg', false),
-(29, 'Imagen A', 'img/pruebaA.jpg', true), (29, 'Imagen B', 'img/pruebaB.jpg', false), (29, 'Imagen C', 'img/pruebaC.jpg', false), (29, 'Imagen D', 'img/pruebaD.jpg', false),
-(30, 'Imagen A', 'img/pruebaA.jpg', true), (30, 'Imagen B', 'img/pruebaB.jpg', false), (30, 'Imagen C', 'img/pruebaC.jpg', false), (30, 'Imagen D', 'img/pruebaD.jpg', false);
+(27, 'Imagen A', 'Presentacion/Imagenes/animales/tigre.jpg', true), (27, 'Imagen B', 'Presentacion/Imagenes/animales/civeta.jpg', false), (27, 'Imagen C', 'Presentacion/Imagenes/animales/fossa.jpg', false), (27, 'Imagen D', 'Presentacion/Imagenes/animales/lingsang.jpg', false),
+(28, 'Imagen A', 'Presentacion/Imagenes/animales/tortuga.png', false), (28, 'Imagen B', 'Presentacion/Imagenes/animales/tiburon.png', false), (28, 'Imagen C', 'Presentacion/Imagenes/animales/dugongo.jpg', true), (28, 'Imagen D', 'Presentacion/Imagenes/animales/pezLuna.jpg', false),
+(29, 'Imagen A', 'Presentacion/Imagenes/animales/varano.jpg', false), (29, 'Imagen B', 'Presentacion/Imagenes/animales/monitorAgua.jpg', false), (29, 'Imagen C', 'Presentacion/Imagenes/animales/cocodrilo.jpg', false), (29, 'Imagen D', 'Presentacion/Imagenes/animales/komodo.jpg', false),
+(30, 'Imagen A', 'Presentacion/Imagenes/animales/codorniz.jpg', false), (30, 'Imagen B', 'Presentacion/Imagenes/animales/cigoñino.jpg', false), (30, 'Imagen C', 'Presentacion/Imagenes/animales/perdigon.jpg', false), (30, 'Imagen D', 'Presentacion/Imagenes/animales/corvato.jpg', false);
 
 -- Preguntas 31 a 35 (Curiosidades - Texto)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES

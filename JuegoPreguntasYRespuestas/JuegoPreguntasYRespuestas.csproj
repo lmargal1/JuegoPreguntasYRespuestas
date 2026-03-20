@@ -137,10 +137,26 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="juegoDB.sql" />
+    <Content Include="Presentacion\Imagenes\animales\cigoñino.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\civeta.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\cocodrilo.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\codorniz.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\corvato.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\dugongo.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\fossa.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\komodo.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\lingsang.jpg" />
     <Content Include="Presentacion\Imagenes\animales\marsupial.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\monitorAgua.jpg" />
     <Content Include="Presentacion\Imagenes\animales\oso.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\perdigon.jpg" />
     <Content Include="Presentacion\Imagenes\animales\perezoso.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\pezLuna.jpg" />
     <Content Include="Presentacion\Imagenes\animales\ratita.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\tiburon.png" />
+    <Content Include="Presentacion\Imagenes\animales\tigre.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\tortuga.png" />
+    <Content Include="Presentacion\Imagenes\animales\varano.jpg" />
     <Content Include="Presentacion\Imagenes\deportes\alonso.jpg" />
     <Content Include="Presentacion\Imagenes\deportes\bottas.jpeg" />
     <Content Include="Presentacion\Imagenes\deportes\hamilton.jpg" />
