@@ -177,6 +177,7 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
                         DibujarBoton(g, new Rectangle(200, 130 + (i * 65), 400, 50), _categoriasLista[i].NombreCategoria, Color.FromArgb(50, 0, 150));
                     }
                     DibujarBoton(g, new Rectangle(200, 130 + (_categoriasLista.Count * 65), 400, 50), "🎲 MODO ALEATORIO", Color.Maroon);
+                    DibujarBoton(g, new Rectangle(200, 130 + ((_categoriasLista.Count + 1) * 65), 400, 50), "Regresar", Color.FromArgb(60, 60, 60));
                 }
             } else if (_pantallaActual == "Historial") {
                 DibujarTexto(g, "ÚLTIMAS PARTIDAS", 35, 180, 50, Color.Gold); 
@@ -277,6 +278,10 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
                     if (new Rectangle(200, 130 + (_categoriasLista.Count * 65), 400, 50).Contains(clickReal)) { 
                         _idCategoriaSeleccionada = 0; 
                         IniciarPartida(new JuegoDao().ObtenerTodasLasPreguntas()); 
+                    }
+                    if (new Rectangle(200, 130 + ((_categoriasLista.Count + 1) * 65), 400, 50).Contains(clickReal))
+                    {
+                        _pantallaActual = "Inicio";
                     }
                 }
             } else if (_pantallaActual == "Historial" && new Rectangle(280, 490, 240, 60).Contains(clickReal)) {
