@@ -120,7 +120,7 @@ INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
 (1, '3', NULL, true), (1, '2', NULL, false), (1, '4', NULL, false), (1, '5', NULL, false),
 (2, '18', NULL, false), (2, '20', NULL, false), (2, '22', NULL, true), (2, '24', NULL, false),
 (3, '2.5 segundos', NULL, false), (3, '1.8 segundos', NULL, true), (3, '1.6 segundos', NULL, false), (3, '3.1 segundos', NULL, false),
-(4, '17', NULL, true), (4, '16', NULL, false), (4, '15', NULL, false), (4, '14', NULL, false),
+(4, '17', NULL, false), (4, '16', NULL, false), (4, '15', NULL, true), (4, '14', NULL, false),
 (5, 'Bayern Munich', NULL, false), (5, 'Manchester United', NULL, true), (5, 'Juventus', NULL, false), (5, 'Manchester City', NULL, false),
 (6, 'Imagen A', 'Presentacion/Imagenes/deportes/novak.jpg', true), (6, 'Imagen B', 'Presentacion/Imagenes/deportes/serena.jpg', false), (6, 'Imagen C', 'Presentacion/Imagenes/deportes/federer.jpg', false), (6, 'Imagen D', 'Presentacion/Imagenes/deportes/nadal.jpg', false),
 (7, 'Imagen A', 'Presentacion/Imagenes/deportes/spa.jpg', false), (7, 'Imagen B', 'Presentacion/Imagenes/deportes/silverstone.jpg', false), (7, 'Imagen C', 'Presentacion/Imagenes/deportes/monaco.jpg', true), (7, 'Imagen D', 'Presentacion/Imagenes/deportes/monza.jpg', false),
