@@ -3,236 +3,315 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
+using System.IO;
+using System.Media;
 using System.Windows.Forms;
-using JuegoPreguntasYRespuestas.Data;
+using JuegoPreguntasYRespuestas.Data; //
 
 namespace JuegoPreguntasYRespuestas
 {
-    // 1. CREAMOS LA ESTRUCTURA PARA NUESTROS CUADROS ANIMADOS
     public class CuadroAnimado
     {
         public float X { get; set; }
         public float Y { get; set; }
-        public float Velocidad { get; set; }
+        public float VelX { get; set; } 
+        public float VelY { get; set; } 
         public int Tamaño { get; set; }
         public int Opacidad { get; set; }
+        public Color ColorCuadro { get; set; }
     }
 
     public partial class Form1 : Form
     {
-        private string pantallaActual = "Inicio"; 
-        private List<Categoria> categoriasDelJuego; 
+        private string pantallaActual = "Inicio";
+        private List<Categoria> categoriasLista; 
+        private List<Opcion> opcionesActuales; 
+        private int idCategoriaSeleccionada;
 
-        // Variables para la animación
+        private SoundPlayer reproductorMusica;
         private Timer motorAnimacion;
+        private Timer timerCronometro;
+        private Timer timerFeedback;
+        private int tiempoRestante = 20;
         private List<CuadroAnimado> listaCuadros;
         private Random rnd = new Random();
 
-        // Colores del tema
-        private readonly Color colorFondo = Color.FromArgb(5, 5, 20); // Azul casi negro
-        private readonly Color colorBotonBase = Color.FromArgb(0, 30, 150); 
-        private readonly Color colorBotonBorde = Color.FromArgb(0, 200, 255); 
-        private readonly int grosorPen = 3;
+        private int? indexOpcionSeleccionada = null;
+        private bool? respuestaCorrecta = null;
+
+        private readonly Color azulFondo = Color.FromArgb(5, 5, 25);
+        private readonly Color cyanBorde = Color.FromArgb(0, 200, 255);
 
         public Form1()
         {
             InitializeComponent();
-            
-            // Fundamental para que la animación no parpadee
-            this.DoubleBuffered = true; 
-            this.ClientSize = new Size(800, 600); 
+            this.DoubleBuffered = true;
+            this.ClientSize = new Size(800, 600);
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.FormBorderStyle = FormBorderStyle.FixedSingle; 
-            this.MaximizeBox = false;
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
 
-            // Inicializar los cuadros animados
-            GenerarCuadros();
+            IniciarParticulas(); // Movimiento inicial horizontal
+            CambiarMusica("tron_music.wav"); 
 
-            // Configurar el reloj (Timer) a ~60 FPS (16 milisegundos)
-            motorAnimacion = new Timer();
-            motorAnimacion.Interval = 16; 
-            motorAnimacion.Tick += Animacion_Tick; // Cada "Tick", ejecuta este método
+            motorAnimacion = new Timer { Interval = 16 };
+            motorAnimacion.Tick += (s, e) => { ActualizarParticulas(); this.Invalidate(); };
             motorAnimacion.Start();
+
+            timerCronometro = new Timer { Interval = 1000 };
+            timerCronometro.Tick += TimerCronometro_Tick;
+
+            timerFeedback = new Timer { Interval = 1500 };
+            timerFeedback.Tick += TimerFeedback_Tick;
         }
 
-        // --- LÓGICA DE ANIMACIÓN ---
-        private void GenerarCuadros()
+        // --- LÓGICA DE AUDIO ---
+        private void CambiarMusica(string nombreArchivo)
+        {
+            try {
+                if (reproductorMusica != null) reproductorMusica.Stop();
+                string ruta = Path.Combine(Application.StartupPath, "..", "..", "Presentacion", "musica", nombreArchivo);
+                if (File.Exists(ruta)) {
+                    reproductorMusica = new SoundPlayer(ruta);
+                    reproductorMusica.PlayLooping();
+                }
+            } catch { }
+        }
+
+        // --- MANEJO DE PARTÍCULAS ---
+        private void IniciarParticulas()
         {
             listaCuadros = new List<CuadroAnimado>();
-            // Vamos a crear 60 cuadros flotantes
-            for (int i = 0; i < 60; i++)
-            {
-                listaCuadros.Add(new CuadroAnimado
-                {
-                    X = rnd.Next(0, 800), // Posición horizontal aleatoria
-                    Y = rnd.Next(0, 600), // Posición vertical aleatoria
-                    Tamaño = rnd.Next(5, 25), // Unos grandes, otros pequeños
-                    Velocidad = (float)(rnd.NextDouble() * 3 + 0.5), // Velocidades distintas (efecto profundidad)
-                    Opacidad = rnd.Next(20, 100) // Unos más transparentes que otros
+            for (int i = 0; i < 60; i++) {
+                listaCuadros.Add(new CuadroAnimado {
+                    X = rnd.Next(800), 
+                    Y = rnd.Next(600), 
+                    Tamaño = rnd.Next(5, 20),
+                    VelX = (float)(rnd.NextDouble() * 3 + 1), // Movimiento solo a la derecha
+                    VelY = 0, // Sin movimiento vertical al principio
+                    Opacidad = rnd.Next(40, 150),
+                    ColorCuadro = Color.FromArgb(0, 150, 255)
                 });
             }
         }
 
-        private void Animacion_Tick(object sender, EventArgs e)
+        private void ActualizarParticulas()
         {
-            // Mover cada cuadro hacia la derecha
-            foreach (var cuadro in listaCuadros)
-            {
-                cuadro.X += cuadro.Velocidad;
-
-                // Si el cuadro se sale de la pantalla por la derecha, lo regresamos a la izquierda
-                if (cuadro.X > this.Width)
-                {
-                    cuadro.X = -cuadro.Tamaño;
-                    cuadro.Y = rnd.Next(0, this.Height); // Le damos una nueva altura para que sea impredecible
-                }
-            }
-
-            // Obligamos a la ventana a redibujarse con las nuevas posiciones
-            this.Invalidate(); 
-        }
-
-        // --- MÉTODOS DE DIBUJO AYUDANTES ---
-        private void DibujarTextoConContorno(Graphics g, string texto, Font fuente, Point pos, Color colorTexto, Color colorContorno, int grosor = 2)
-        {
-            float tamañoPixeles = fuente.Size * 96.0f / 72.0f;
-            using (GraphicsPath path = new GraphicsPath())
-            {
-                path.AddString(texto, fuente.FontFamily, (int)fuente.Style, tamañoPixeles, pos, StringFormat.GenericDefault);
-                using (Pen penContorno = new Pen(Color.FromArgb(200, colorContorno), grosor) { LineJoin = LineJoin.Round })
-                {
-                    g.DrawPath(penContorno, path);
-                }
-                using (Brush brochaTexto = new SolidBrush(colorTexto))
-                {
-                    g.FillPath(brochaTexto, path);
-                }
+            foreach (var c in listaCuadros) {
+                c.X += c.VelX;
+                c.Y += c.VelY;
+                // Wrapping infinito (reaparecen por el lado opuesto)
+                if (c.X > 800) c.X = -c.Tamaño; else if (c.X < -c.Tamaño) c.X = 800;
+                if (c.Y > 600) c.Y = -c.Tamaño; else if (c.Y < -c.Tamaño) c.Y = 600;
             }
         }
 
-        private void DibujarBotonEstilizado(Graphics g, Rectangle bounds, string texto, Font fuente, Color colorRelleno, Color colorBorde, Color colorTexto)
+        private void AlterarFondo()
         {
-            int margen = grosorPen * 2;
-            int width = bounds.Width - margen;
-            int height = bounds.Height - margen;
-            int cornerSize = height / 3; 
-
-            Point[] points = {
-                new Point(bounds.X + cornerSize, bounds.Y), 
-                new Point(bounds.X + width - cornerSize, bounds.Y), 
-                new Point(bounds.X + width, bounds.Y + cornerSize), 
-                new Point(bounds.X + width, bounds.Y + height - cornerSize), 
-                new Point(bounds.X + width - cornerSize, bounds.Y + height), 
-                new Point(bounds.X + cornerSize, bounds.Y + height), 
-                new Point(bounds.X, bounds.Y + height - cornerSize), 
-                new Point(bounds.X, bounds.Y + cornerSize) 
-            };
-
-            using (GraphicsPath path = new GraphicsPath())
-            {
-                path.AddPolygon(points);
-                using (LinearGradientBrush brush = new LinearGradientBrush(bounds, Color.FromArgb(20, colorRelleno), colorRelleno, LinearGradientMode.Vertical))
-                {
-                    g.FillPath(brush, path);
-                }
-                using (Pen pen = new Pen(colorBorde, grosorPen) { LineJoin = LineJoin.Round })
-                {
-                    g.DrawPath(pen, path);
-                }
+            // Explosión de color y movimiento al azar para la fase de preguntas
+            Color nuevoC = Color.FromArgb(rnd.Next(100, 255), rnd.Next(100, 255), rnd.Next(100, 255));
+            foreach (var c in listaCuadros) {
+                c.ColorCuadro = nuevoC;
+                c.VelX = (float)(rnd.NextDouble() * 8 - 4); // Velocidad aleatoria en X
+                c.VelY = (float)(rnd.NextDouble() * 8 - 4); // Velocidad aleatoria en Y
             }
-
-            StringFormat sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
-            g.DrawString(texto, fuente, new SolidBrush(colorTexto), bounds, sf);
         }
 
-        // --- EL DIBUJANTE NATIVO ---
+        // --- LÓGICA DEL JUEGO ---
+        private void TimerCronometro_Tick(object sender, EventArgs e)
+        {
+            tiempoRestante--;
+            if (tiempoRestante <= 0) FinalizarJuego();
+            this.Invalidate();
+        }
+
+        private void TimerFeedback_Tick(object sender, EventArgs e)
+        {
+            timerFeedback.Stop();
+            indexOpcionSeleccionada = null;
+            respuestaCorrecta = null;
+
+            if (JuegoServicio.siguientePregunta()) {
+                CargarPreguntaActual();
+                timerCronometro.Start();
+            } else {
+                FinalizarJuego();
+            }
+            this.Invalidate();
+        }
+
+        private void FinalizarJuego()
+        {
+            timerCronometro.Stop();
+            // Guardar partida en la base de datos
+            new JuegoDAO().GuardarPartida(idCategoriaSeleccionada, JuegoServicio.correctas, JuegoServicio.incorrectas);
+            pantallaActual = "Puntaje";
+            CambiarMusica("tron_music.wav");
+        }
+
+        private void CargarPreguntaActual()
+        {
+            if (JuegoServicio.preguntaActual < JuegoServicio.totalPreguntas) {
+                Pregunta pregunta = JuegoServicio.obtenerPreguntaActual();
+                opcionesActuales = new JuegoDAO().ObtenerOpcionesPorPregunta(pregunta.IdPregunta);
+                tiempoRestante = 20;
+                AlterarFondo(); // Activa el movimiento caótico
+            }
+        }
+
+        // --- DIBUJO ---
         protected override void OnPaint(PaintEventArgs e)
         {
             Graphics g = e.Graphics;
             g.SmoothingMode = SmoothingMode.HighQuality;
             g.TextRenderingHint = TextRenderingHint.AntiAlias;
+            g.Clear(azulFondo);
 
-            // 1. Pintar el fondo sólido
-            g.Clear(colorFondo);
-
-            // 2. Dibujar el fondo animado (Nuestros cuadros Matrix horizontales)
-            foreach (var cuadro in listaCuadros)
-            {
-                // Usamos el color cyan brillante de tus bordes, pero con opacidad variable
-                using (SolidBrush brochaCuadro = new SolidBrush(Color.FromArgb(cuadro.Opacidad, 0, 200, 255)))
-                {
-                    g.FillRectangle(brochaCuadro, cuadro.X, cuadro.Y, cuadro.Tamaño, cuadro.Tamaño);
-                }
+            foreach (var c in listaCuadros) {
+                using (SolidBrush b = new SolidBrush(Color.FromArgb(c.Opacidad, c.ColorCuadro)))
+                    g.FillRectangle(b, c.X, c.Y, c.Tamaño, c.Tamaño);
             }
 
-            // 3. Dibujar la Interfaz (Títulos y Botones) por encima de la animación
-            if (pantallaActual == "Inicio")
-            {
-                // ¡Ajusté el tamaño de la letra de 64 a 50 para que quepa bien en tu pantalla!
-                using (Font fuenteTitulo = new Font("Times New Roman", 50, FontStyle.Bold))
-                {
-                    DibujarTextoConContorno(g, "TRIVIA MÁXIMA", fuenteTitulo, new Point(110, 100), Color.White, Color.Gold, 4);
-                }
-
-                Rectangle boundsBoton = new Rectangle(280, 270, 240, 70);
-                using (Font fuenteBoton = new Font("Segoe UI", 24, FontStyle.Bold))
-                {
-                    DibujarBotonEstilizado(g, boundsBoton, "¡JUGAR!", fuenteBoton, colorBotonBase, colorBotonBorde, Color.Gold);
-                }
+            if (pantallaActual == "Inicio") {
+                DibujarTextoContorno(g, "TRIVIA MÁXIMA", new Font("Times New Roman", 50, FontStyle.Bold), new Point(110, 150), Color.White, Color.Gold, 3);
+                DibujarBoton(g, new Rectangle(280, 300, 240, 70), "¡JUGAR!", Color.FromArgb(0, 30, 150), true);
             }
-            else if (pantallaActual == "Categorias")
-            {
-                using (Font fuenteCatTitle = new Font("Segoe UI", 32, FontStyle.Bold))
-                {
-                    DibujarTextoConContorno(g, "Elige una Categoría", fuenteCatTitle, new Point(180, 50), Color.White, Color.Gold, 2);
-                }
+            else if (pantallaActual == "Categorias") {
+                DibujarTextoContorno(g, "Elige Categoría", new Font("Segoe UI", 30, FontStyle.Bold), new Point(220, 50), Color.White, Color.Gold, 2);
+                if (categoriasLista != null)
+                    for (int i = 0; i < categoriasLista.Count; i++)
+                        DibujarBoton(g, new Rectangle(200, 130 + (i * 75), 400, 55), categoriasLista[i].NombreCategoria, Color.FromArgb(50, 0, 150), false);
+            }
+            else if (pantallaActual == "Jugando") {
+                DibujarPantallaJuego(g);
+            }
+            else if (pantallaActual == "Puntaje") {
+                DibujarPantallaPuntaje(g);
+            }
+        }
 
-                if (categoriasDelJuego != null)
-                {
-                    int posY = 130;
-                    foreach (Categoria cat in categoriasDelJuego)
-                    {
-                        Rectangle boundsCat = new Rectangle(200, posY, 400, 60);
-                        Color colorBotonCat = Color.FromArgb(50, 0, 150);
-                        
-                        using (Font fuenteCat = new Font("Segoe UI", 18, FontStyle.Bold))
-                        {
-                            DibujarBotonEstilizado(g, boundsCat, cat.NombreCategoria, fuenteCat, colorBotonCat, colorBotonBorde, Color.White);
-                        }
-                        posY += 80; 
+        private void DibujarPantallaJuego(Graphics g)
+        {
+            if (JuegoServicio.preguntaActual >= JuegoServicio.totalPreguntas) return;
+
+            Pregunta p = JuegoServicio.obtenerPreguntaActual();
+            Color cReloj = tiempoRestante > 5 ? Color.Cyan : Color.Red;
+            DibujarTextoContorno(g, tiempoRestante.ToString(), new Font("Consolas", 35, FontStyle.Bold), new Point(710, 20), cReloj, Color.Black);
+            
+            Rectangle rectP = new Rectangle(50, 100, 700, 80);
+            StringFormat sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
+            g.DrawString(p.TextoPregunta, new Font("Segoe UI", 18, FontStyle.Bold), Brushes.White, rectP, sf);
+
+            if (opcionesActuales != null) {
+                bool esImagen = JuegoServicio.esTipo(p) == "imagen";
+                for (int i = 0; i < opcionesActuales.Count; i++) {
+                    int x = (i % 2 == 0) ? 100 : 420;
+                    int y = (i < 2) ? 250 : 330;
+                    Rectangle rB = new Rectangle(x, y, 280, 60);
+                    Color cB = (indexOpcionSeleccionada == i) ? (respuestaCorrecta == true ? Color.Lime : Color.Crimson) : Color.FromArgb(30, 30, 80);
+
+                    if (esImagen && !string.IsNullOrEmpty(opcionesActuales[i].RutaImagen)) {
+                        DibujarBotonImagen(g, rB, opcionesActuales[i].RutaImagen, cB);
+                    } else {
+                        DibujarBoton(g, rB, opcionesActuales[i].TextoOpcion, cB, false);
                     }
                 }
             }
         }
 
-        // --- EL RADAR DE CLICS ---
+        private void DibujarPantallaPuntaje(Graphics g)
+        {
+            DibujarTextoContorno(g, "RESULTADOS", new Font("Segoe UI", 45, FontStyle.Bold), new Point(200, 80), Color.Gold, Color.Black, 3);
+            string s = $"Correctas: {JuegoServicio.correctas}\n" +
+                       $"Incorrectas: {JuegoServicio.incorrectas}\n" +
+                       $"Efectividad: {JuegoServicio.calcularPorcentajeCorrecto()}%";
+            
+            Rectangle rS = new Rectangle(100, 200, 600, 200);
+            StringFormat sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
+            g.DrawString(s, new Font("Segoe UI", 25, FontStyle.Bold), Brushes.White, rS, sf);
+            
+            DibujarBoton(g, new Rectangle(280, 420, 240, 70), "REINICIAR", Color.FromArgb(0, 150, 50), true);
+        }
+
+        private void DibujarBoton(Graphics g, Rectangle r, string txt, Color bck, bool esD)
+        {
+            DibujarBaseBoton(g, r, bck);
+            float fS = (txt.Length > 30) ? 9 : (txt.Length > 20) ? 10 : 12;
+            StringFormat sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
+            g.DrawString(txt, new Font("Segoe UI", fS, FontStyle.Bold), new SolidBrush(esD ? Color.Gold : Color.White), r, sf);
+        }
+
+        private void DibujarBotonImagen(Graphics g, Rectangle r, string ruta, Color bck)
+        {
+            DibujarBaseBoton(g, r, bck);
+            try {
+                string p = Path.Combine(Application.StartupPath, "..", "..", "Presentacion", "imagenes", ruta);
+                if (File.Exists(p)) {
+                    using (Image img = Image.FromFile(p)) {
+                        g.DrawImage(img, new Rectangle(r.X + 10, r.Y + 5, r.Width - 20, r.Height - 10));
+                    }
+                }
+            } catch { }
+        }
+
+        private void DibujarBaseBoton(Graphics g, Rectangle r, Color bck)
+        {
+            using (GraphicsPath p = new GraphicsPath()) {
+                int c = r.Height / 3;
+                p.AddPolygon(new Point[] { new Point(r.X+c, r.Y), new Point(r.Right-c, r.Y), new Point(r.Right, r.Y+c), new Point(r.Right, r.Bottom-c), new Point(r.Right-c, r.Bottom), new Point(r.X+c, r.Bottom), new Point(r.X, r.Bottom-c), new Point(r.X, r.Y+c) });
+                g.FillPath(new SolidBrush(bck), p);
+                g.DrawPath(new Pen(cyanBorde, 3), p);
+            }
+        }
+
+        private void DibujarTextoContorno(Graphics g, string t, Font f, Point p, Color cT, Color cC, int gr = 2)
+        {
+            using (Brush bC = new SolidBrush(cC)) {
+                for (int x = -gr; x <= gr; x += gr)
+                    for (int y = -gr; y <= gr; y += gr)
+                        g.DrawString(t, f, bC, new Point(p.X + x, p.Y + y));
+            }
+            g.DrawString(t, f, new SolidBrush(cT), p);
+        }
+
         protected override void OnMouseClick(MouseEventArgs e)
         {
-            base.OnMouseClick(e);
-
-            if (pantallaActual == "Inicio")
-            {
-                Rectangle hitBoxJugar = new Rectangle(280, 270, 240, 70); 
-
-                if (hitBoxJugar.Contains(e.Location))
-                {
-                    JuegoDAO dao = new JuegoDAO(); 
-                    categoriasDelJuego = dao.ObtenerCategorias(); 
-
-                    pantallaActual = "Categorias";
+            if (pantallaActual == "Inicio" && new Rectangle(280, 300, 240, 70).Contains(e.Location)) {
+                categoriasLista = new JuegoDAO().ObtenerCategorias();
+                pantallaActual = "Categorias";
+            }
+            else if (pantallaActual == "Categorias" && categoriasLista != null) {
+                for (int i = 0; i < categoriasLista.Count; i++) {
+                    if (new Rectangle(200, 130 + (i * 75), 400, 55).Contains(e.Location)) {
+                        idCategoriaSeleccionada = categoriasLista[i].IdCategoria;
+                        var pregs = new JuegoDAO().ObtenerPreguntasPorCategoria(idCategoriaSeleccionada);
+                        JuegoServicio.iniciaJuego(pregs);
+                        CambiarMusica("tron_loop.wav"); 
+                        CargarPreguntaActual();
+                        pantallaActual = "Jugando";
+                        timerCronometro.Start();
+                    }
                 }
             }
+            else if (pantallaActual == "Jugando" && opcionesActuales != null && indexOpcionSeleccionada == null) {
+                for (int i = 0; i < opcionesActuales.Count; i++) {
+                    int x = (i % 2 == 0) ? 100 : 420;
+                    int y = (i < 2) ? 250 : 330;
+                    if (new Rectangle(x, y, 280, 60).Contains(e.Location)) {
+                        timerCronometro.Stop();
+                        indexOpcionSeleccionada = i;
+                        respuestaCorrecta = opcionesActuales[i].EsCorrecta;
+                        JuegoServicio.validaRespuesta(opcionesActuales[i].IdOpcion, opcionesActuales);
+                        timerFeedback.Start();
+                    }
+                }
+            }
+            else if (pantallaActual == "Puntaje" && new Rectangle(280, 420, 240, 70).Contains(e.Location)) {
+                pantallaActual = "Inicio"; 
+                IniciarParticulas(); // Reset de movimiento a horizontal
+            }
+            this.Invalidate();
         }
 
-        // Al cerrar, detenemos el motor para no dejar procesos corriendo en la memoria
-        protected override void OnFormClosed(FormClosedEventArgs e) 
-        {
-            base.OnFormClosed(e);
-            if (motorAnimacion != null)
-            {
-                motorAnimacion.Stop();
-                motorAnimacion.Dispose();
-            }
-        }
+        protected override void OnFormClosed(FormClosedEventArgs e) { base.OnFormClosed(e); motorAnimacion?.Stop(); timerCronometro?.Stop(); reproductorMusica?.Stop(); }
     }
 }
