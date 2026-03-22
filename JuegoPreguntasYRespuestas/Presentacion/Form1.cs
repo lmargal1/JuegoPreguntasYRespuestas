@@ -204,17 +204,14 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
             var p = JuegoServicio.obtenerPreguntaActual(); 
             if (p == null) return;
             
-            // Reloj en la esquina superior derecha
             DibujarTexto(g, _tiempoRestante.ToString(), 35, 710, 20, _tiempoRestante > 5 ? Color.Cyan : Color.Red);
             
-            // Texto de la pregunta centrado
             g.DrawString(p.TextoPregunta, new Font("Segoe UI", 18, FontStyle.Bold), Brushes.White, new Rectangle(50, 100, 700, 80), new StringFormat { Alignment = StringAlignment.Center });
             
             bool esImagen = JuegoServicio.esTipo(p) == "imagen";
             
             if (_opcionesActuales != null) {
                 for (int i = 0; i < _opcionesActuales.Count; i++) {
-                    // Grilla: i%2 da Izquierda/Derecha. i/2 da Fila superior/inferior.
                     Rectangle r = new Rectangle((i % 2 == 0) ? 100 : 420, esImagen ? 200 + (i / 2 * 135) : 250 + (i / 2 * 80), 280, esImagen ? 120 : 60);
                     Color c = (_indexOpcionSeleccionada == i) ? (_respuestaCorrecta == true ? Color.Lime : Color.Crimson) : Color.FromArgb(30, 30, 80);
                     
@@ -225,7 +222,6 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
                             string fp = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", _opcionesActuales[i].RutaImagen)); 
                             if (File.Exists(fp)) { 
                                 using (Image im = Image.FromFile(fp)) { 
-                                    // Escala proporcionalmente para que las imágenes no se estiren
                                     float s = Math.Min((float)(r.Width - 10) / im.Width, (float)(r.Height - 10) / im.Height); 
                                     g.DrawImage(im, r.X + (r.Width - im.Width * s) / 2, r.Y + (r.Height - im.Height * s) / 2, im.Width * s, im.Height * s); 
                                 } 
@@ -238,7 +234,6 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
             }
         }
 
-        // Borde falso negro para que el texto resalte (estilo sombra)
         private void DibujarTexto(Graphics g, string t, int s, int x, int y, Color c) { 
             using (var f = new Font("Segoe UI", s, FontStyle.Bold)) { 
                 for (int i = -2; i <= 2; i += 2) for (int j = -2; j <= 2; j += 2) g.DrawString(t, f, Brushes.Black, x + i, y + j); 
@@ -248,7 +243,6 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
 
         private void DibujarBoton(Graphics g, Rectangle r, string t, Color b) {
             using (var path = new GraphicsPath()) { 
-                // Corte de esquinas Sci-Fi (Geometría del botón)
                 int c = r.Height / 3; 
                 path.AddPolygon(new[] { 
                     new Point(r.X + c, r.Y), new Point(r.Right - c, r.Y), 
@@ -263,11 +257,7 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
                 g.DrawString(t, new Font("Segoe UI", t.Length > 20 ? 9 : 11, FontStyle.Bold), Brushes.White, r, new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
         }
 
-        // ====================================================================
-        // 🖱️ ZONA DE CLICS E INTERACCIÓN
-        // ====================================================================
         protected override void OnMouseClick(MouseEventArgs e) {
-            // Nota equipo: Se resta el centro al ratón para que los clics no se desfasen al maximizar la ventana
             float offsetX = (ClientSize.Width - 800) / 2f;
             float offsetY = (ClientSize.Height - 600) / 2f;
             Point clickReal = new Point((int)(e.X - offsetX), (int)(e.Y - offsetY));
@@ -320,7 +310,7 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
             JuegoServicio.iniciaJuego(l); 
             CargarPreguntaActual(); 
             _pantallaActual = "Jugando"; 
-            CambiarMusica("tron_loop.wav"); // Música al entrar a la partida
+            CambiarMusica("tron_loop.wav");
             _timerCronometro.Start(); 
         }
 
