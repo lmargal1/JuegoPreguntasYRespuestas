@@ -151,8 +151,8 @@ INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
 (26, 'Imagen A', 'Presentacion/Imagenes/animales/marsupial.jpg', true), (26, 'Imagen B', 'Presentacion/Imagenes/animales/oso.jpg', false), (26, 'Imagen C', 'Presentacion/Imagenes/animales/perezoso.jpg', false), (26, 'Imagen D', 'Presentacion/Imagenes/animales/ratita.jpg', false),
 (27, 'Imagen A', 'Presentacion/Imagenes/animales/tigre.jpg', true), (27, 'Imagen B', 'Presentacion/Imagenes/animales/civeta.jpg', false), (27, 'Imagen C', 'Presentacion/Imagenes/animales/fossa.jpg', false), (27, 'Imagen D', 'Presentacion/Imagenes/animales/lingsang.jpg', false),
 (28, 'Imagen A', 'Presentacion/Imagenes/animales/tortuga.png', false), (28, 'Imagen B', 'Presentacion/Imagenes/animales/tiburon.png', false), (28, 'Imagen C', 'Presentacion/Imagenes/animales/dugongo.jpg', true), (28, 'Imagen D', 'Presentacion/Imagenes/animales/pezLuna.jpg', false),
-(29, 'Imagen A', 'Presentacion/Imagenes/animales/varano.jpg', false), (29, 'Imagen B', 'Presentacion/Imagenes/animales/monitorAgua.jpg', false), (29, 'Imagen C', 'Presentacion/Imagenes/animales/cocodrilo.jpg', false), (29, 'Imagen D', 'Presentacion/Imagenes/animales/komodo.jpg', false),
-(30, 'Imagen A', 'Presentacion/Imagenes/animales/codorniz.jpg', false), (30, 'Imagen B', 'Presentacion/Imagenes/animales/cigoñino.jpg', false), (30, 'Imagen C', 'Presentacion/Imagenes/animales/perdigon.jpg', false), (30, 'Imagen D', 'Presentacion/Imagenes/animales/corvato.jpg', false);
+(29, 'Imagen A', 'Presentacion/Imagenes/animales/varano.jpg', false), (29, 'Imagen B', 'Presentacion/Imagenes/animales/monitorAgua.jpg', false), (29, 'Imagen C', 'Presentacion/Imagenes/animales/cocodrilo.jpg', false), (29, 'Imagen D', 'Presentacion/Imagenes/animales/komodo.jpg', true),
+(30, 'Imagen A', 'Presentacion/Imagenes/animales/codorniz.jpg', false), (30, 'Imagen B', 'Presentacion/Imagenes/animales/cigoñino.jpg', false), (30, 'Imagen C', 'Presentacion/Imagenes/animales/perdigon.jpg', false), (30, 'Imagen D', 'Presentacion/Imagenes/animales/corvato.jpg', true);
 
 -- Curiosidades
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
