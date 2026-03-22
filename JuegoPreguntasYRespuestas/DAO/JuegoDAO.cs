@@ -5,10 +5,6 @@ using MySql.Data.MySqlClient;
 
 namespace JuegoPreguntasYRespuestas.DAO
 {
-    /// <summary>
-    /// Clase encargada de toda la comunicación con la Base de Datos.
-    /// Si falla algo con MySQL, es aquí donde hay que revisar.
-    /// </summary>
     public class JuegoDao
     {
         private readonly ConexionBD _conexionBd = new ConexionBD();
@@ -19,7 +15,6 @@ namespace JuegoPreguntasYRespuestas.DAO
             using (var conexion = _conexionBd.ObtenerConexion())
             {
                 conexion.Open();
-                // language=sql
                 const string query = "SELECT * FROM Categorias";
                 var cmd = new MySqlCommand(query, conexion);
                 
@@ -44,8 +39,6 @@ namespace JuegoPreguntasYRespuestas.DAO
             {
                 conexion.Open();
                 
-                // ORDER BY RAND() es el truco para que las preguntas no salgan siempre en el mismo orden
-                // language=sql
                 const string query = "SELECT * FROM Preguntas WHERE idCategoria = @idCategoria ORDER BY RAND()"; 
                 var cmd = new MySqlCommand(query, conexion);
                 cmd.Parameters.AddWithValue("@idCategoria", idCategoria);
@@ -73,7 +66,6 @@ namespace JuegoPreguntasYRespuestas.DAO
             {
                 conexion.Open();
                 
-                // language=sql
                 const string query = "SELECT * FROM Opciones WHERE idPregunta = @idPregunta";
                 var cmd = new MySqlCommand(query, conexion);
                 cmd.Parameters.AddWithValue("@idPregunta", idPregunta);
@@ -105,11 +97,9 @@ namespace JuegoPreguntasYRespuestas.DAO
                 {
                     conexion.Open();
                     
-                    // language=sql
                     const string query = "INSERT INTO Partidas (idCategoria, correctas, incorrectas) VALUES (@id, @c, @i)";
                     var cmd = new MySqlCommand(query, conexion);
                     
-                    // Si el id es 0 (Modo Aleatorio), guardamos un NULL en la base de datos
                     cmd.Parameters.AddWithValue("@id", idCat == 0 ? (object)DBNull.Value : idCat);
                     cmd.Parameters.AddWithValue("@c", corr);
                     cmd.Parameters.AddWithValue("@i", incorr);
@@ -126,8 +116,6 @@ namespace JuegoPreguntasYRespuestas.DAO
             {
                 conexion.Open();
                 
-                // LIMIT 15 define el máximo de preguntas en el modo aleatorio. ¡Cámbialo si quieres partidas más largas o cortas!
-                // language=sql
                 const string query = "SELECT * FROM Preguntas ORDER BY RAND() LIMIT 15"; 
                 var cmd = new MySqlCommand(query, conexion);
                 
@@ -155,9 +143,6 @@ namespace JuegoPreguntasYRespuestas.DAO
                 {
                     conexion.Open();
                     
-                    // IFNULL pone la palabra 'Aleatorio' si no hay categoría asignada.
-                    // LIMIT 10 define cuántas partidas se muestran en el historial.
-                    // language=sql
                     const string query = @"SELECT IFNULL(c.nombreCategoria, 'Aleatorio') as Cat, p.correctas, p.incorrectas 
                                      FROM Partidas p LEFT JOIN Categorias c ON p.idCategoria = c.idCategoria 
                                      ORDER BY p.idPartida DESC LIMIT 10";

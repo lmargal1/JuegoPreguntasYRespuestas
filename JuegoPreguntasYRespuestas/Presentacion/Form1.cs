@@ -9,34 +9,25 @@ using System.Windows.Forms;
 using JuegoPreguntasYRespuestas.DAO;
 
 namespace JuegoPreguntasYRespuestas.Presentacion {
-    /// <summary>
-    /// Representa los cuadros de fondo que se mueven (efecto tecnológico).
-    /// </summary>
     public class CuadroAnimado { public float X, Y, VelX, VelY; public int Tamaño, Opacidad; public Color ColorCuadro; }
 
     public partial class Form1 : Form {
-        // ====================================================================
-        // ⚙️ ZONA DE CONFIGURACIÓN RÁPIDA (Notas para el equipo)
-        // ====================================================================
-        // Rider exige PascalCase para las constantes privadas
         private const int TiempoPorPregunta = 20; 
         private const int TotalParticulas = 60;                        
-        private readonly Color _colorFondo = Color.FromArgb(5, 5, 25);     // Azul muy oscuro para el espacio profundo
-        private readonly Color _colorBordes = Color.FromArgb(0, 200, 255);   // Cyan neón para los botones
-        // ====================================================================
+        private readonly Color _colorFondo = Color.FromArgb(5, 5, 25);
+        private readonly Color _colorBordes = Color.FromArgb(0, 200, 255);
 
-        // --- VARIABLES DE ESTADO DEL JUEGO ---
-        private string _pantallaActual = "Inicio"; // Define qué se está dibujando en pantalla
+
+        private string _pantallaActual = "Inicio";
         private List<Categoria> _categoriasLista;
         private List<Opcion> _opcionesActuales;
         private List<string> _listaHistorial;
         
         private int _idCategoriaSeleccionada;
         private int _tiempoRestante;
-        private int? _indexOpcionSeleccionada; // ¿Qué botón presionó el usuario?
-        private bool? _respuestaCorrecta;      // ¿Fue correcta la respuesta? (Controla color verde/rojo)
+        private int? _indexOpcionSeleccionada;
+        private bool? _respuestaCorrecta;
 
-        // --- HERRAMIENTAS INTERNAS ---
         private Process _procesoMusica;
         private System.Media.SoundPlayer _reproductorWindows;
         private Timer _timerCronometro, _timerFeedback;
@@ -49,18 +40,15 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
             IniciarParticulas();
             CambiarMusica("tron_music.wav"); 
             
-            // MOTOR DE ANIMACIÓN: Como solo se usa aquí, Rider sugirió hacerlo variable local
             Timer motorAnimacion = new Timer { Interval = 16 };
             motorAnimacion.Tick += (s, e) => { ActualizarParticulas(); Invalidate(); };
             
-            // CRONÓMETRO: Baja el tiempo cada segundo (1000ms)
             (_timerCronometro = new Timer { Interval = 1000 }).Tick += (s, e) => { 
                 _tiempoRestante--;
                 if (_tiempoRestante <= 0) FinalizarJuego(); 
                 Invalidate(); 
             };
             
-            // FEEDBACK: Pausa de 1.5s para ver si la respuesta fue correcta o incorrecta
             (_timerFeedback = new Timer { Interval = 1500 }).Tick += TimerFeedback_Tick;
             
             motorAnimacion.Start();
@@ -68,16 +56,14 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
 
         private void ConfigurarVentana() {
             Text = @"Trivia Máxima"; 
-            DoubleBuffered = true; // Evita parpadeos al redibujar
+            DoubleBuffered = true; 
             ClientSize = new Size(800, 600);
-            MinimumSize = new Size(800, 600); // Evita que la ventana se rompa si la hacen muy pequeña
+            MinimumSize = new Size(800, 600); 
             StartPosition = FormStartPosition.CenterScreen; 
             
-            // Permite Maximizar y adaptar el dibujo al tamaño de la pantalla
             FormBorderStyle = FormBorderStyle.Sizable; 
             BackColor = _colorFondo;
             
-            // LÍNEA CRUCIAL PARA WINDOWS: Evita los bordes transparentes bugueados
             TransparencyKey = Color.Empty; 
         }
 
@@ -89,7 +75,6 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
                 string r = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "Presentacion", "musica", n));
                 if (!File.Exists(r)) return;
 
-                // Detecta el sistema operativo para reproducir el audio correctamente
                 if (Environment.OSVersion.Platform == PlatformID.Unix) 
                     _procesoMusica = Process.Start(new ProcessStartInfo("paplay", $"\"{r}\"") { CreateNoWindow = true, UseShellExecute = false });
                 else {
@@ -103,7 +88,7 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
             _listaCuadros.Clear();
             for (int i = 0; i < TotalParticulas; i++) 
                 _listaCuadros.Add(new CuadroAnimado { 
-                    X = _rnd.Next(2000), Y = _rnd.Next(2000), // Rango grande por si maximizan pantalla
+                    X = _rnd.Next(2000), Y = _rnd.Next(2000),
                     Tamaño = _rnd.Next(5, 20), 
                     VelX = (float)(_rnd.NextDouble() * 3 + 1), 
                     VelY = 0,
@@ -119,7 +104,6 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
             _listaCuadros.ForEach(c => { 
                 c.X += c.VelX; 
                 c.Y += c.VelY; 
-                // Efecto "Pac-Man": si salen por un lado, entran por el otro
                 if (c.X > ancho) c.X = -20; if (c.X < -20) c.X = ancho; 
                 if (c.Y > alto) c.Y = -20; if (c.Y < -20) c.Y = alto; 
             });
@@ -160,33 +144,27 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
             
             _tiempoRestante = TiempoPorPregunta; 
             
-            // Efecto Sci-Fi: Cambia los colores y dirección del fondo cada que hay nueva pregunta
             Color nc = Color.FromArgb(_rnd.Next(100, 255), _rnd.Next(100, 255), _rnd.Next(100, 255));
             _listaCuadros.ForEach(c => { c.ColorCuadro = nc; c.VelX = _rnd.Next(-5, 6); c.VelY = _rnd.Next(-5, 6); });
         }
 
-        // ====================================================================
-        // ZONA DE DIBUJO 
-        // ====================================================================
+
+
         protected override void OnPaint(PaintEventArgs e) {
             Graphics g = e.Graphics; 
             g.SmoothingMode = SmoothingMode.HighQuality; 
             g.TextRenderingHint = TextRenderingHint.AntiAlias;
 
-            // 1. DIBUJAR FONDO (Ocupa siempre toda la ventana, incluso maximizada)
             g.Clear(_colorFondo);
             _listaCuadros.ForEach(c => { 
                 using (var b = new SolidBrush(Color.FromArgb(c.Opacidad, c.ColorCuadro))) 
                     g.FillRectangle(b, c.X, c.Y, c.Tamaño, c.Tamaño); 
             });
 
-            // 2. LÓGICA DE CENTRADO DINÁMICO
-            // Esto asegura que la interfaz siempre esté al centro si la pantalla es más grande que 800x600
             float offsetX = (ClientSize.Width - 800) / 2f;
             float offsetY = (ClientSize.Height - 600) / 2f;
             g.TranslateTransform(offsetX, offsetY); 
             
-            // 3. DIBUJAR INTERFAZ
             if (_pantallaActual == "Inicio") { 
                 DibujarTexto(g, "TRIVIA MÁXIMA", 50, 110, 150, Color.Gold); 
                 DibujarBoton(g, new Rectangle(280, 280, 240, 60), "¡JUGAR!", Color.FromArgb(0, 30, 150)); 
@@ -194,7 +172,6 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
             } else if (_pantallaActual == "Categorias") {
                 DibujarTexto(g, "Elige Categoría", 30, 220, 50, Color.Gold);
                 
-                // Validación para evitar NullReferenceException
                 if (_categoriasLista != null) {
                     for (int i = 0; i < _categoriasLista.Count; i++) {
                         DibujarBoton(g, new Rectangle(200, 130 + (i * 65), 400, 50), _categoriasLista[i].NombreCategoria, Color.FromArgb(50, 0, 150));
