@@ -1,14 +1,14 @@
--- Crea base de datos
+-- 1. Preparación de la Base de Datos
 CREATE DATABASE IF NOT EXISTS juegoDB;
 USE juegoDB;
 
--- El orden de DROP es vital por las llaves foráneas
+-- 2. Limpieza (Orden correcto por llaves foráneas)
 DROP TABLE IF EXISTS Opciones;
-DROP TABLE IF EXISTS Preguntas;
 DROP TABLE IF EXISTS Partidas;
+DROP TABLE IF EXISTS Preguntas;
 DROP TABLE IF EXISTS Categorias;
 
--- TABLAS
+-- 3. Creación de Tablas
 CREATE TABLE Categorias
 (
     idCategoria INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
@@ -34,21 +34,22 @@ CREATE TABLE Opciones
     FOREIGN KEY (idPregunta) REFERENCES Preguntas(idPregunta)
 );
 
+-- CORRECCIÓN: idCategoria ahora permite NULL para el Modo Aleatorio
 CREATE TABLE Partidas
 (
     idPartida INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    idCategoria INT NOT NULL,
+    idCategoria INT NULL, 
     correctas INT NOT NULL,
     incorrectas INT NOT NULL,
-    FOREIGN KEY (idCategoria) REFERENCES Categorias (idCategoria)
+    FOREIGN KEY (idCategoria) REFERENCES Categorias(idCategoria)
 );
 
--- CATEGORÍAS
+-- 4. Inserción de Categorías
 INSERT INTO Categorias(nombreCategoria) VALUES
 ('Deportes'), ('Música'), ('Animales'), ('Curiosidades'), ('Películas');
 
--- PREGUNTAS
--- Deportes
+-- 5. Inserción de Preguntas
+-- Deportes (id 1)
 INSERT INTO Preguntas(textoPregunta, tipo, idCategoria) VALUES
 ('¿Cuántos sets se necesitan ganar para ganar un partido de singles varonil en un Grand Slam de tenis?', 'texto', 1),
 ('¿Cuántos pilotos participan actualmente en una carrera de Fórmula 1?', 'texto', 1),
@@ -61,7 +62,7 @@ INSERT INTO Preguntas(textoPregunta, tipo, idCategoria) VALUES
 ('¿Cuál de estos pilotos pertenece actualmente a la escudería Visa Cash App Racing Bulls?', 'imagen', 1),
 ('¿Cuál de estos pilotos ha estado en más escuderías durante su trayectoria en Fórmula 1?', 'imagen', 1);
 
--- Música
+-- Música (id 2)
 INSERT INTO Preguntas(textoPregunta, tipo, idCategoria) VALUES
 ('¿Cuántas veces se dice la palabra "baby" en la canción con el mismo nombre, de Justin Bieber?', 'texto', 2),
 ('¿De qué país es originario el cantante Alex Soto?', 'texto', 2),
@@ -74,7 +75,7 @@ INSERT INTO Preguntas(textoPregunta, tipo, idCategoria) VALUES
 ('¿Cuál de estas personas es el cantante Juice WRLD?', 'imagen', 2),
 ('¿Cuál es el cantante más famoso de todos los tiempos?', 'imagen', 2);
 
--- Animales
+-- Animales (id 3)
 INSERT INTO Preguntas(textoPregunta, tipo, idCategoria) VALUES
 ('¿Cómo se llama un grupo de búhos?', 'texto', 3),
 ('¿Cuál es el animal terrestre más rápido del mundo?', 'texto', 3),
@@ -87,7 +88,7 @@ INSERT INTO Preguntas(textoPregunta, tipo, idCategoria) VALUES
 ('¿Cuál de estos es un dragón de komodo?', 'imagen', 3),
 ('¿Cuál de estos es un corvato?', 'imagen', 3);
 
--- Curiosidades
+-- Curiosidades (id 4)
 INSERT INTO Preguntas(textoPregunta, tipo, idCategoria) VALUES
 ('¿Qué significan las siglas del restaurante TOKS?', 'texto', 4),
 ('¿Cuál es el único continente sin hormigas?', 'texto', 4),
@@ -100,7 +101,7 @@ INSERT INTO Preguntas(textoPregunta, tipo, idCategoria) VALUES
 ('¿Cuál es el emoji más utilizado en el mundo?', 'imagen', 4),
 ('¿En cuál de estos planetas llueven diamantes?', 'imagen', 4);
 
--- Películas
+-- Películas (id 5)
 INSERT INTO Preguntas(textoPregunta, tipo, idCategoria) VALUES
 ('¿Quién es el protagonista de la película "Volver al futuro"?', 'texto', 5),
 ('¿Cómo se llama el arma característica de los Jedi en Star Wars?', 'texto', 5),
@@ -113,7 +114,7 @@ INSERT INTO Preguntas(textoPregunta, tipo, idCategoria) VALUES
 ('¿Cuál de estos personajes no ha sido doblado al español por el actor mexicano Omar Chaparro?', 'imagen', 5),
 ('¿Cuál fue la primera película en ganar el Oscar a Mejor Película Animada?', 'imagen', 5);
 
--- OPCIONES
+-- 6. Inserción de Opciones
 -- Deportes
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
 (1, '3', NULL, true), (1, '2', NULL, false), (1, '4', NULL, false), (1, '5', NULL, false),
@@ -125,7 +126,6 @@ INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
 (7, 'Imagen A', 'Presentacion/Imagenes/deportes/spa.jpg', false), (7, 'Imagen B', 'Presentacion/Imagenes/deportes/silverstone.jpg', false), (7, 'Imagen C', 'Presentacion/Imagenes/deportes/monaco.jpg', true), (7, 'Imagen D', 'Presentacion/Imagenes/deportes/monza.jpg', false),
 (8, 'Imagen A', 'Presentacion/Imagenes/deportes/haaland.jpg', true), (8, 'Imagen B', 'Presentacion/Imagenes/deportes/mbappe.jpg', false), (8, 'Imagen C', 'Presentacion/Imagenes/deportes/yamal.jpg', false), (8, 'Imagen D', 'Presentacion/Imagenes/deportes/bellingham.jpg', false),
 (9, 'Imagen A', 'Presentacion/Imagenes/deportes/kimi.jpeg', false), (9, 'Imagen B', 'Presentacion/Imagenes/deportes/sainz.jpeg', false), (9, 'Imagen C', 'Presentacion/Imagenes/deportes/bottas.jpeg', false), (9, 'Imagen D', 'Presentacion/Imagenes/deportes/lindblad.jpeg', true),
--- CORREGIDO: hamilton.jpg y maxi.jpg (eran .jpeg en tu SQL)
 (10, 'Imagen A', 'Presentacion/Imagenes/deportes/sainz.jpeg', false), (10, 'Imagen B', 'Presentacion/Imagenes/deportes/hamilton.jpg', false), (10, 'Imagen C', 'Presentacion/Imagenes/deportes/alonso.jpg', true), (10, 'Imagen D', 'Presentacion/Imagenes/deportes/maxi.jpg', false);
 
 -- Música
@@ -156,18 +156,13 @@ INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
 
 -- Curiosidades
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
--- CORREGIDO: Paréntesis cerrado en Skot
 (31, 'Skot (apellido del fundador al revés)', NULL, false), (31, 'Today Okay Service', NULL, true), (31, 'The Original Kitchen Service', NULL, false), (31, 'No significa nada', NULL, false),
 (32, 'África', NULL, false), (32, 'Oceanía', NULL, false), (32, 'Asia', NULL, false), (32, 'Antártida', NULL, true),
 (33, 'Queso', NULL, true), (33, 'Pan', NULL, false), (33, 'Chocolate', NULL, false), (33, 'Café', NULL, false),
 (34, 'Dragón', NULL, false), (34, 'Águila', NULL, false), (34, 'Unicornio', NULL, true), (34, 'Caballo', NULL, false),
 (35, 'J', NULL, false), (35, 'K', NULL, false), (35, 'Z', NULL, false), (35, 'Q', NULL, true),
-(36, 'Imagen A', 'Presentacion/Imagenes/curiosidades/cd.png', true), (36, 'Imagen B', 'Presentacion/Imagenes/curiosidades/crema.png', false), 
--- CORREGIDO: libro.jpg (era .png)
-(36, 'Imagen C', 'Presentacion/Imagenes/curiosidades/libro.jpg', false), (36, 'Imagen D', 'Presentacion/Imagenes/curiosidades/pizza.png', false),
-(37, 'Imagen A', 'Presentacion/Imagenes/curiosidades/mayonesa.jpg', false), 
--- CORREGIDO: catsup.jpg (era .png)
-(37, 'Imagen B', 'Presentacion/Imagenes/curiosidades/catsup.jpg', true), (37, 'Imagen C', 'Presentacion/Imagenes/curiosidades/cannabis.jpeg', false), (37, 'Imagen D', 'Presentacion/Imagenes/curiosidades/chocolate.jpg', false),
+(36, 'Imagen A', 'Presentacion/Imagenes/curiosidades/cd.png', true), (36, 'Imagen B', 'Presentacion/Imagenes/curiosidades/crema.png', false), (36, 'Imagen C', 'Presentacion/Imagenes/curiosidades/libro.jpg', false), (36, 'Imagen D', 'Presentacion/Imagenes/curiosidades/pizza.png', false),
+(37, 'Imagen A', 'Presentacion/Imagenes/curiosidades/mayonesa.jpg', false), (37, 'Imagen B', 'Presentacion/Imagenes/curiosidades/catsup.jpg', true), (37, 'Imagen C', 'Presentacion/Imagenes/curiosidades/cannabis.jpeg', false), (37, 'Imagen D', 'Presentacion/Imagenes/curiosidades/chocolate.jpg', false),
 (38, 'Imagen A', 'Presentacion/Imagenes/curiosidades/twitter.png', false), (38, 'Imagen B', 'Presentacion/Imagenes/curiosidades/vine.jpg', false), (38, 'Imagen C', 'Presentacion/Imagenes/curiosidades/facebook.jpg', true), (38, 'Imagen D', 'Presentacion/Imagenes/curiosidades/pinterest.png', false),
 (39, 'Imagen A', 'Presentacion/Imagenes/curiosidades/feliz.png', false), (39, 'Imagen B', 'Presentacion/Imagenes/curiosidades/fuego.png', false), (39, 'Imagen C', 'Presentacion/Imagenes/curiosidades/risa.png', false), (39, 'Imagen D', 'Presentacion/Imagenes/curiosidades/corazon.png', true),
 (40, 'Imagen A', 'Presentacion/Imagenes/curiosidades/mercurio.jpg', false), (40, 'Imagen B', 'Presentacion/Imagenes/curiosidades/jupiter.jpg', false), (40, 'Imagen C', 'Presentacion/Imagenes/curiosidades/marte.jpg', false), (40, 'Imagen D', 'Presentacion/Imagenes/curiosidades/neptuno.jpg', true);
@@ -182,6 +177,5 @@ INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
 (46, 'Imagen A', 'Presentacion/Imagenes/peliculas/jurassic.jpg', false), (46, 'Imagen B', 'Presentacion/Imagenes/peliculas/sw2.png', false), (46, 'Imagen C', 'Presentacion/Imagenes/peliculas/piratas.png', false), (46, 'Imagen D', 'Presentacion/Imagenes/peliculas/epVII.jpg', true),
 (47, 'Imagen A', 'Presentacion/Imagenes/peliculas/henry.png', false), (47, 'Imagen B', 'Presentacion/Imagenes/peliculas/liam.png', false), (47, 'Imagen C', 'Presentacion/Imagenes/peliculas/adam.png', true), (47, 'Imagen D', 'Presentacion/Imagenes/peliculas/mbj.png', false),
 (48, 'Imagen A', 'Presentacion/Imagenes/peliculas/chan.jpg', false), (48, 'Imagen B', 'Presentacion/Imagenes/peliculas/danny.jpeg', true), (48, 'Imagen C', 'Presentacion/Imagenes/peliculas/lee.png', false), (48, 'Imagen D', 'Presentacion/Imagenes/peliculas/samuel.jpg', false),
--- CORREGIDO: po.png (era poo.png)
 (49, 'Imagen A', 'Presentacion/Imagenes/peliculas/shrek.png', true), (49, 'Imagen B', 'Presentacion/Imagenes/peliculas/sindrome.jpg', false), (49, 'Imagen C', 'Presentacion/Imagenes/peliculas/po.png', false), (49, 'Imagen D', 'Presentacion/Imagenes/peliculas/abuelita.png', false),
 (50, 'Imagen A', 'Presentacion/Imagenes/peliculas/monsters.png', false), (50, 'Imagen B', 'Presentacion/Imagenes/peliculas/shrekPic.jpg', true), (50, 'Imagen C', 'Presentacion/Imagenes/peliculas/toyStory.jpg', false), (50, 'Imagen D', 'Presentacion/Imagenes/peliculas/wg.png', false);

@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using MySql.Data.MySqlClient;
 
 namespace JuegoPreguntasYRespuestas.Data
@@ -12,129 +8,139 @@ namespace JuegoPreguntasYRespuestas.Data
     {
         private ConexionBD conexionBD = new ConexionBD();
 
-        //Obtener categorías
         public List<Categoria> ObtenerCategorias()
         {
             List<Categoria> categorias = new List<Categoria>();
-
             using (MySqlConnection conexion = conexionBD.ObtenerConexion())
             {
                 conexion.Open();
-
                 string query = "SELECT * FROM Categorias";
                 MySqlCommand cmd = new MySqlCommand(query, conexion);
                 MySqlDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    Categoria categoria = new Categoria();
-                    categoria.IdCategoria = reader.GetInt32("idCategoria");
-                    categoria.NombreCategoria = reader.GetString("nombreCategoria");
-                    categorias.Add(categoria);
+                    Categoria cat = new Categoria {
+                        IdCategoria = reader.GetInt32("idCategoria"),
+                        NombreCategoria = reader.GetString("nombreCategoria")
+                    };
+                    categorias.Add(cat);
                 }
             }
             return categorias;
         }
 
-        //Obtener preguntas por categoría
         public List<Pregunta> ObtenerPreguntasPorCategoria(int idCategoria)
         {
             List<Pregunta> preguntas = new List<Pregunta>();
-
             using (MySqlConnection conexion = conexionBD.ObtenerConexion())
             {
                 conexion.Open();
-
-                //Para mostrar aleatoriamente las preguntas
                 string query = "SELECT * FROM Preguntas WHERE idCategoria = @idCategoria ORDER BY RAND()"; 
                 MySqlCommand cmd = new MySqlCommand(query, conexion);
                 cmd.Parameters.AddWithValue("@idCategoria", idCategoria);
                 MySqlDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    Pregunta pregunta = new Pregunta();
-                    pregunta.IdPregunta = reader.GetInt32("idPregunta");
-                    pregunta.TextoPregunta = reader.GetString("textoPregunta");
-                    pregunta.Tipo = reader.GetString("tipo");
-                    pregunta.IdCategoria = reader.GetInt32("idCategoria");
-                    preguntas.Add(pregunta);
+                    preguntas.Add(new Pregunta {
+                        IdPregunta = reader.GetInt32("idPregunta"),
+                        TextoPregunta = reader.GetString("textoPregunta"),
+                        Tipo = reader.GetString("tipo"),
+                        IdCategoria = reader.GetInt32("idCategoria")
+                    });
                 }
             }
             return preguntas;
         }
 
-        //Obtener opciones por pregunta
         public List<Opcion> ObtenerOpcionesPorPregunta(int idPregunta)
         {
             List<Opcion> opciones = new List<Opcion>();
-
             using (MySqlConnection conexion = conexionBD.ObtenerConexion())
             {
                 conexion.Open();
-
                 string query = "SELECT * FROM Opciones WHERE idPregunta = @idPregunta";
                 MySqlCommand cmd = new MySqlCommand(query, conexion);
                 cmd.Parameters.AddWithValue("@idPregunta", idPregunta);
                 MySqlDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    Opcion opcion = new Opcion();
-                    opcion.IdOpcion = reader.GetInt32("idOpcion");
-                    opcion.IdPregunta = reader.GetInt32("idPregunta");
-                    opcion.TextoOpcion = reader.GetString("textoOpcion");
-
-                    if (reader.IsDBNull(reader.GetOrdinal("rutaImagen")))
-                        opcion.RutaImagen = null;
-                    else
-                        opcion.RutaImagen = reader.GetString("rutaImagen");
-
-                    opcion.EsCorrecta = reader.GetBoolean("esCorrecta");
-                    opciones.Add(opcion);
+                    opciones.Add(new Opcion {
+                        IdOpcion = reader.GetInt32("idOpcion"),
+                        IdPregunta = reader.GetInt32("idPregunta"),
+                        TextoOpcion = reader.GetString("textoOpcion"),
+                        RutaImagen = reader.IsDBNull(reader.GetOrdinal("rutaImagen")) ? null : reader.GetString("rutaImagen"),
+                        EsCorrecta = reader.GetBoolean("esCorrecta")
+                    });
                 }
             }
             return opciones;
         }
 
-        //Guardar partida
-        public void GuardarPartida(int idCategoria, int correctas, int incorrectas)
+        public void GuardarPartida(int idCat, int corr, int incorr)
         {
-            using (MySqlConnection conexion = conexionBD.ObtenerConexion())
+            try 
             {
-                conexion.Open();
-
-                string query = "INSERT INTO Partidas (idCategoria, correctas, incorrectas) VALUES (@idCategoria, @correctas, @incorrectas)";
-                MySqlCommand cmd = new MySqlCommand(query, conexion);
-                cmd.Parameters.AddWithValue("@idCategoria", idCategoria);
-                cmd.Parameters.AddWithValue("@correctas", correctas);
-                cmd.Parameters.AddWithValue("@incorrectas", incorrectas);
-                cmd.ExecuteNonQuery();
+                using (MySqlConnection conexion = conexionBD.ObtenerConexion())
+                {
+                    conexion.Open();
+                    // Usamos @idCat para que coincida con el parámetro
+                    string query = "INSERT INTO Partidas (idCategoria, correctas, incorrectas) VALUES (@idCat, @corr, @incorr)";
+                    MySqlCommand cmd = new MySqlCommand(query, conexion);
+                    
+                    // Si idCat es 0 (Aleatorio), mandamos NULL a la base de datos
+                    cmd.Parameters.AddWithValue("@idCat", idCat == 0 ? (object)DBNull.Value : idCat);
+                    cmd.Parameters.AddWithValue("@corr", corr);
+                    cmd.Parameters.AddWithValue("@incorr", incorr);
+                    
+                    cmd.ExecuteNonQuery();
+                }
             }
-
+            catch (Exception ex)
+            {
+                // Si falla el guardado, lo imprimimos en consola pero NO cerramos el juego
+                Console.WriteLine("Error al guardar partida: " + ex.Message);
+            }
         }
 
-        // --- NUEVO MÉTODO: Obtener preguntas de TODAS las categorías al azar ---
         public List<Pregunta> ObtenerTodasLasPreguntas()
         {
             List<Pregunta> preguntas = new List<Pregunta>();
-
             using (MySqlConnection conexion = conexionBD.ObtenerConexion())
             {
                 conexion.Open();
-
-                // Traemos 15 preguntas aleatorias de cualquier categoría
                 string query = "SELECT * FROM Preguntas ORDER BY RAND() LIMIT 15"; 
+                MySqlCommand cmd = new MySqlCommand(query, conexion); // <--- ESTA LÍNEA FALTABA
+                MySqlDataReader reader = cmd.ExecuteReader();      // <--- ESTA TAMBIÉN
+                while (reader.Read())
+                {
+                    preguntas.Add(new Pregunta {
+                        IdPregunta = reader.GetInt32("idPregunta"),
+                        TextoPregunta = reader.GetString("textoPregunta"),
+                        Tipo = reader.GetString("tipo"),
+                        IdCategoria = reader.GetInt32("idCategoria")
+                    });
+                }
+            }
+            return preguntas;
+        }
+
+        public List<string> ObtenerHistorial()
+        {
+            List<string> historial = new List<string>();
+            using (MySqlConnection conexion = conexionBD.ObtenerConexion())
+            {
+                conexion.Open();
+                string query = @"SELECT IFNULL(c.nombreCategoria, 'Aleatorio') as Cat, p.correctas, p.incorrectas 
+                                 FROM Partidas p LEFT JOIN Categorias c ON p.idCategoria = c.idCategoria 
+                                 ORDER BY p.idPartida DESC LIMIT 10";
                 MySqlCommand cmd = new MySqlCommand(query, conexion);
                 MySqlDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    Pregunta pregunta = new Pregunta();
-                    pregunta.IdPregunta = reader.GetInt32("idPregunta");
-                    pregunta.TextoPregunta = reader.GetString("textoPregunta");
-                    pregunta.Tipo = reader.GetString("tipo");
-                    pregunta.IdCategoria = reader.GetInt32("idCategoria");
-                    preguntas.Add(pregunta);
+                    historial.Add($"{reader["Cat"].ToString().PadRight(12)} | ✅{reader["correctas"]} | ❌{reader["incorrectas"]}");
                 }
             }
-            return preguntas;
+            return historial;
         }
     }
 }
