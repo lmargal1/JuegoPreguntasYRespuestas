@@ -95,19 +95,23 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Categoria.cs" />
-    <Compile Include="Data\ConexionBD.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="Modelo\Categoria.cs" />
+    <Compile Include="DAO\ConexionBD.cs" />
+    <Compile Include="Presentacion\Form1.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
+    <Compile Include="Presentacion\Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="JuegoDAO.cs" />
-    <Compile Include="Opcion.cs" />
-    <Compile Include="Pregunta.cs" />
+    <Compile Include="DAO\JuegoDAO.cs" />
+    <Compile Include="Servicio\JuegoServicio.cs" />
+    <Compile Include="Modelo\Opcion.cs" />
+    <Compile Include="Modelo\Pregunta.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Presentacion\Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -133,6 +137,93 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="juegoDB.sql" />
+    <Content Include="Presentacion\Imagenes\animales\cigoñino.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\civeta.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\cocodrilo.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\codorniz.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\corvato.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\dugongo.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\fossa.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\komodo.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\lingsang.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\marsupial.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\monitorAgua.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\oso.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\perdigon.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\perezoso.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\pezLuna.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\ratita.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\tiburon.png" />
+    <Content Include="Presentacion\Imagenes\animales\tigre.jpg" />
+    <Content Include="Presentacion\Imagenes\animales\tortuga.png" />
+    <Content Include="Presentacion\Imagenes\animales\varano.jpg" />
+    <Content Include="Presentacion\Imagenes\curiosidades\cannabis.jpeg" />
+    <Content Include="Presentacion\Imagenes\curiosidades\catsup.jpg" />
+    <Content Include="Presentacion\Imagenes\curiosidades\cd.png" />
+    <Content Include="Presentacion\Imagenes\curiosidades\chocolate.jpg" />
+    <Content Include="Presentacion\Imagenes\curiosidades\corazon.png" />
+    <Content Include="Presentacion\Imagenes\curiosidades\crema.png" />
+    <Content Include="Presentacion\Imagenes\curiosidades\facebook.jpg" />
+    <Content Include="Presentacion\Imagenes\curiosidades\feliz.png" />
+    <Content Include="Presentacion\Imagenes\curiosidades\fuego.png" />
+    <Content Include="Presentacion\Imagenes\curiosidades\jupiter.jpg" />
+    <Content Include="Presentacion\Imagenes\curiosidades\libro.jpg" />
+    <Content Include="Presentacion\Imagenes\curiosidades\marte.jpg" />
+    <Content Include="Presentacion\Imagenes\curiosidades\mayonesa.jpg" />
+    <Content Include="Presentacion\Imagenes\curiosidades\mercurio.jpg" />
+    <Content Include="Presentacion\Imagenes\curiosidades\neptuno.jpg" />
+    <Content Include="Presentacion\Imagenes\curiosidades\pinterest.png" />
+    <Content Include="Presentacion\Imagenes\curiosidades\pizza.png" />
+    <Content Include="Presentacion\Imagenes\curiosidades\risa.png" />
+    <Content Include="Presentacion\Imagenes\curiosidades\twitter.png" />
+    <Content Include="Presentacion\Imagenes\curiosidades\vine.jpg" />
+    <Content Include="Presentacion\Imagenes\deportes\alonso.jpg" />
+    <Content Include="Presentacion\Imagenes\deportes\bottas.jpeg" />
+    <Content Include="Presentacion\Imagenes\deportes\hamilton.jpg" />
+    <Content Include="Presentacion\Imagenes\deportes\kimi.jpeg" />
+    <Content Include="Presentacion\Imagenes\deportes\lindblad.jpeg" />
+    <Content Include="Presentacion\Imagenes\deportes\maxi.jpg" />
+    <Content Include="Presentacion\Imagenes\deportes\sainz.jpeg" />
+    <Content Include="Presentacion\Imagenes\LOGO_SPAIN_2021.png" />
+    <Content Include="Presentacion\Imagenes\musica\astros.jpeg" />
+    <Content Include="Presentacion\Imagenes\musica\aurora.jpeg" />
+    <Content Include="Presentacion\Imagenes\musica\blnko.jpeg" />
+    <Content Include="Presentacion\Imagenes\musica\ddc.jpeg" />
+    <Content Include="Presentacion\Imagenes\musica\elvis.jpg" />
+    <Content Include="Presentacion\Imagenes\musica\esencia.jpeg" />
+    <Content Include="Presentacion\Imagenes\musica\jin.jpg" />
+    <Content Include="Presentacion\Imagenes\musica\juiceWRLD.jpg" />
+    <Content Include="Presentacion\Imagenes\musica\liluzi.jpg" />
+    <Content Include="Presentacion\Imagenes\musica\mercury.jpg" />
+    <Content Include="Presentacion\Imagenes\musica\mike.jpeg" />
+    <Content Include="Presentacion\Imagenes\musica\mj.jpg" />
+    <Content Include="Presentacion\Imagenes\musica\namjoon.jpg" />
+    <Content Include="Presentacion\Imagenes\musica\rick.jpeg" />
+    <Content Include="Presentacion\Imagenes\musica\sanha.png" />
+    <Content Include="Presentacion\Imagenes\musica\sinatra.jpg" />
+    <Content Include="Presentacion\Imagenes\musica\travis.jpg" />
+    <Content Include="Presentacion\Imagenes\musica\uxi.jpeg" />
+    <Content Include="Presentacion\Imagenes\musica\xxxtentacion.jpg" />
+    <Content Include="Presentacion\Imagenes\musica\yoongi.jpg" />
+    <Content Include="Presentacion\Imagenes\peliculas\abuelita.png" />
+    <Content Include="Presentacion\Imagenes\peliculas\adam.png" />
+    <Content Include="Presentacion\Imagenes\peliculas\chan.jpg" />
+    <Content Include="Presentacion\Imagenes\peliculas\danny.jpeg" />
+    <Content Include="Presentacion\Imagenes\peliculas\epVII.jpg" />
+    <Content Include="Presentacion\Imagenes\peliculas\henry.png" />
+    <Content Include="Presentacion\Imagenes\peliculas\jurassic.jpg" />
+    <Content Include="Presentacion\Imagenes\peliculas\lee.png" />
+    <Content Include="Presentacion\Imagenes\peliculas\liam.png" />
+    <Content Include="Presentacion\Imagenes\peliculas\mbj.png" />
+    <Content Include="Presentacion\Imagenes\peliculas\monsters.png" />
+    <Content Include="Presentacion\Imagenes\peliculas\piratas.png" />
+    <Content Include="Presentacion\Imagenes\peliculas\po.png" />
+    <Content Include="Presentacion\Imagenes\peliculas\samuel.jpg" />
+    <Content Include="Presentacion\Imagenes\peliculas\shrek.png" />
+    <Content Include="Presentacion\Imagenes\peliculas\shrekPic.jpg" />
+    <Content Include="Presentacion\Imagenes\peliculas\sindrome.jpg" />
+    <Content Include="Presentacion\Imagenes\peliculas\sw2.png" />
+    <Content Include="Presentacion\musica\tron_music.wav" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
