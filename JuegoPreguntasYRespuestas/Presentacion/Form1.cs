@@ -166,7 +166,7 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
         }
 
         // ====================================================================
-        // 🎨 ZONA DE DIBUJO (Todo lo visual y adaptativo)
+        // ZONA DE DIBUJO 
         // ====================================================================
         protected override void OnPaint(PaintEventArgs e) {
             Graphics g = e.Graphics; 
