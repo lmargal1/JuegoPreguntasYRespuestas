@@ -2,3 +2,6 @@
 bin/
 obj/
 *.user
+/.vs/JuegoPreguntasYRespuestas.slnx/v18/DocumentLayout.json
+/.vs/JuegoPreguntasYRespuestas.slnx/v18/DocumentLayout.backup.json
+/.vs
