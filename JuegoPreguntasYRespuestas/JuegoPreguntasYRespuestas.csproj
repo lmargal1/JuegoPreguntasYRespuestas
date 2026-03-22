@@ -205,6 +205,7 @@
     <Content Include="Presentacion\Imagenes\musica\uxi.jpeg" />
     <Content Include="Presentacion\Imagenes\musica\xxxtentacion.jpg" />
     <Content Include="Presentacion\Imagenes\musica\yoongi.jpg" />
+    <Content Include="Presentacion\Imagenes\peliculas\abuelita.png" />
     <Content Include="Presentacion\Imagenes\peliculas\adam.png" />
     <Content Include="Presentacion\Imagenes\peliculas\chan.jpg" />
     <Content Include="Presentacion\Imagenes\peliculas\danny.jpeg" />
@@ -214,9 +215,16 @@
     <Content Include="Presentacion\Imagenes\peliculas\lee.png" />
     <Content Include="Presentacion\Imagenes\peliculas\liam.png" />
     <Content Include="Presentacion\Imagenes\peliculas\mbj.png" />
+    <Content Include="Presentacion\Imagenes\peliculas\monsters.png" />
     <Content Include="Presentacion\Imagenes\peliculas\piratas.png" />
+    <Content Include="Presentacion\Imagenes\peliculas\po.png" />
     <Content Include="Presentacion\Imagenes\peliculas\samuel.jpg" />
+    <Content Include="Presentacion\Imagenes\peliculas\shrek.png" />
+    <Content Include="Presentacion\Imagenes\peliculas\shrekPic.jpg" />
+    <Content Include="Presentacion\Imagenes\peliculas\sindrome.jpg" />
     <Content Include="Presentacion\Imagenes\peliculas\sw2.png" />
+    <Content Include="Presentacion\Imagenes\peliculas\toyStory.jpg" />
+    <Content Include="Presentacion\Imagenes\peliculas\wg.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

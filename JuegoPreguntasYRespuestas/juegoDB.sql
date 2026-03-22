@@ -134,7 +134,7 @@ INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
 (6, 'Imagen A', 'Presentacion/Imagenes/deportes/novak.jpg', true), (6, 'Imagen B', 'Presentacion/Imagenes/deportes/serena.jpg', false), (6, 'Imagen C', 'Presentacion/Imagenes/deportes/federer.jpg', false), (6, 'Imagen D', 'Presentacion/Imagenes/deportes/nadal.jpg', false),
 (7, 'Imagen A', 'Presentacion/Imagenes/deportes/spa.jpg', false), (7, 'Imagen B', 'Presentacion/Imagenes/deportes/silverstone.jpg', false), (7, 'Imagen C', 'Presentacion/Imagenes/deportes/monaco.jpg', true), (7, 'Imagen D', 'Presentacion/Imagenes/deportes/monza.jpg', false),
 (8, 'Imagen A', 'Presentacion/Imagenes/deportes/haaland.jpg', true), (8, 'Imagen B', 'Presentacion/Imagenes/deportes/mbappe.jpg', false), (8, 'Imagen C', 'Presentacion/Imagenes/deportes/yamal.jpg', false), (8, 'Imagen D', 'Presentacion/Imagenes/deportes/bellingham.jpg', false),
-(9, 'Imagen A', 'Presentacion/Imagenes/deportes/kimi.jpeg', false), (9, 'Presentacion/Imagenes/deportes/sainz.jpeg', false), (9, 'Imagen C', 'Presentacion/Imagenes/deportes/bottas.jpeg', false), (9, 'Imagen D', 'Presentacion/Imagenes/deportes/lindblad.jpeg', true),
+(9, 'Imagen A', 'Presentacion/Imagenes/deportes/kimi.jpeg', false), (9, 'Imagen B', 'Presentacion/Imagenes/deportes/sainz.jpeg', false), (9, 'Imagen C', 'Presentacion/Imagenes/deportes/bottas.jpeg', false), (9, 'Imagen D', 'Presentacion/Imagenes/deportes/lindblad.jpeg', true),
 (10, 'Imagen A', 'Presentacion/Imagenes/deportes/sainz.jpeg', false), (10, 'Imagen B', 'Presentacion/Imagenes/deportes/hamilton.jpeg', false), (10, 'Imagen C', 'Presentacion/Imagenes/deportes/alonso.jpg', true), (10, 'Imagen D', 'Presentacion/Imagenes/deportes/maxi.jpeg', false);
 
 -- Preguntas 11 a 15 (Música - Texto)
@@ -159,7 +159,7 @@ INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
 (22, 'León', NULL, false), (22, 'Guepardo', NULL, true), (22, 'Antílope', NULL, false), (22, 'Avestruz', NULL, false),
 (23, 'Delfines', NULL, true), (23, 'Ballenas', NULL, false), (23, 'Lobos', NULL, false), (23, 'Canarios', NULL, false),
 (24, 'Elefante africano', NULL, false), (24, 'Patagotitan', NULL, false), (24, 'Ballena Azul', NULL, true), (24, 'Mamut', NULL, false),
-(25, 'Chimpancé', NULL, false (25, 'Hombre', NULL, true), (25, 'Delfín', NULL, false), (25, 'Elefante', NULL, false);
+(25, 'Chimpancé', NULL, false), (25, 'Hombre', NULL, true), (25, 'Delfín', NULL, false), (25, 'Elefante', NULL, false);
 
 -- Preguntas 26 a 30 (Animales - Imagen)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
@@ -180,7 +180,7 @@ INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
 -- Preguntas 36 a 40 (Curiosidades - Imagen)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
 (36, 'Imagen A', 'Presentacion/Imagenes/curiosidades/cd.png', true), (36, 'Imagen B', 'Presentacion/Imagenes/curiosidades/crema.png', false), (36, 'Imagen C', 'Presentacion/Imagenes/curiosidades/libro.png', false), (36, 'Imagen D', 'Presentacion/Imagenes/curiosidades/pizza.png', false),
-(37, 'Imagen A', 'Presentacion/Imagenes/curiosidades/mayonesa.jpg', false), (37, 'Imagen B', 'Presentacion/Imagenes/curiosidades/catsup.png true), (37, 'Imagen C', 'Presentacion/Imagenes/curiosidades/cannabis.jpeg', false), (37, 'Imagen D', 'Presentacion/Imagenes/curiosidades/chocolate.jpg', false),
+(37, 'Imagen A', 'Presentacion/Imagenes/curiosidades/mayonesa.jpg', false), (37, 'Imagen B', 'Presentacion/Imagenes/curiosidades/catsup.png', true), (37, 'Imagen C', 'Presentacion/Imagenes/curiosidades/cannabis.jpeg', false), (37, 'Imagen D', 'Presentacion/Imagenes/curiosidades/chocolate.jpg', false),
 (38, 'Imagen A', 'Presentacion/Imagenes/curiosidades/twitter.png', false), (38, 'Imagen B', 'Presentacion/Imagenes/curiosidades/vine.jpg', false), (38, 'Imagen C', 'Presentacion/Imagenes/curiosidades/facebook.jpg', true), (38, 'Imagen D', 'Presentacion/Imagenes/curiosidades/pinterest.png', false),
 (39, 'Imagen A', 'Presentacion/Imagenes/curiosidades/feliz.png', false), (39, 'Imagen B', 'Presentacion/Imagenes/curiosidades/fuego.png', false), (39, 'Imagen C', 'Presentacion/Imagenes/curiosidades/risa.png', false), (39, 'Imagen D', 'Presentacion/Imagenes/curiosidades/corazon.png', true),
 (40, 'Imagen A', 'Presentacion/Imagenes/curiosidades/mercurio.jpg', false), (40, 'Imagen B', 'Presentacion/Imagenes/curiosidades/jupiter.jpg', false), (40, 'Imagen C', 'Presentacion/Imagenes/curiosidades/marte.jpg', false), (40, 'Imagen D', 'Presentacion/Imagenes/curiosidades/neptuno.jpg', true);
@@ -197,6 +197,6 @@ INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
 (46, 'Imagen A', 'Presentacion/Imagenes/peliculas/jurassic.jpg', false), (46, 'Imagen B', 'Presentacion/Imagenes/peliculas/sw2.png', false), (46, 'Imagen C', 'Presentacion/Imagenes/peliculas/piratas.png', false), (46, 'Imagen D', 'Presentacion/Imagenes/peliculas/epVII.jpg', true),
 (47, 'Imagen A', 'Presentacion/Imagenes/peliculas/henry.png', false), (47, 'Imagen B', 'Presentacion/Imagenes/peliculas/liam.png', false), (47, 'Imagen C', 'Presentacion/Imagenes/peliculas/adam.png', true), (47, 'Imagen D', 'Presentacion/Imagenes/peliculas/mbj.png', false),
-(48, 'Imagen A', 'Presentacion/Imagenes/peliculas/chan.jpg', false), (48, 'Imagen B', 'Presentacion/Imagenes/peliculas/danny.jpeg', true), (48, 'Imagen C', 'img/pruebaC.jpg', false), (48, 'Imagen D', 'img/pruebaD.jpg', false),
-(49, 'Imagen A', 'img/pruebaA.jpg', true), (49, 'Imagen B', 'img/pruebaB.jpg', false), (49, 'Imagen C', 'img/pruebaC.jpg', false), (49, 'Imagen D', 'img/pruebaD.jpg', false),
-(50, 'Imagen A', 'img/pruebaA.jpg', false), (50, 'Imagen B', 'img/pruebaB.jpg', true), (50, 'Imagen C', 'img/pruebaC.jpg', false), (50, 'Imagen D', 'img/pruebaD.jpg', false);
+(48, 'Imagen A', 'Presentacion/Imagenes/peliculas/chan.jpg', false), (48, 'Imagen B', 'Presentacion/Imagenes/peliculas/danny.jpeg', true), (48, 'Imagen C', 'Presentacion/Imagenes/peliculas/lee.png', false), (48, 'Imagen D', 'Presentacion/Imagenes/peliculas/samuel.jpg', false),
+(49, 'Imagen A', 'Presentacion/Imagenes/peliculas/shrek.png', true), (49, 'Imagen B', 'Presentacion/Imagenes/peliculas/sindrome.jpg', false), (49, 'Imagen C', 'Presentacion/Imagenes/peliculas/poo.png', false), (49, 'Imagen D', 'Presentacion/Imagenes/peliculas/abuelita.png', false),
+(50, 'Imagen A', 'Presentacion/Imagenes/peliculas/monsters.png', false), (50, 'Imagen B', 'Presentacion/Imagenes/peliculas/shrekPic.jpg', true), (50, 'Imagen C', 'Presentacion/Imagenes/peliculas/toyStory.jpg', false), (50, 'Imagen D', 'Presentacion/Imagenes/peliculas/wg.png', false);
