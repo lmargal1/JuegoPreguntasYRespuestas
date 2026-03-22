@@ -120,7 +120,7 @@ INSERT INTO Preguntas(textoPregunta, tipo, idCategoria) VALUES
 ('¿Cuál fue la primera película en ganar el Oscar a Mejor Película Animada?', 'imagen', 5);
 
 
--- OPCIONES (DATOS DE PRUEBA PARA DISEÑO DE INTERFAZ)
+-- OPCIONES
 -- Preguntas 1 a 5 (Deportes - Texto)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
 (1, '3', NULL, true), (1, '2', NULL, false), (1, '4', NULL, false), (1, '5', NULL, false),
@@ -179,11 +179,11 @@ INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
 
 -- Preguntas 36 a 40 (Curiosidades - Imagen)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
-(36, 'Imagen A', 'img/pruebaA.jpg', true), (36, 'Imagen B', 'img/pruebaB.jpg', false), (36, 'Imagen C', 'img/pruebaC.jpg', false), (36, 'Imagen D', 'img/pruebaD.jpg', false),
-(37, 'Imagen A', 'img/pruebaA.jpg', true), (37, 'Imagen B', 'img/pruebaB.jpg', false), (37, 'Imagen C', 'img/pruebaC.jpg', false), (37, 'Imagen D', 'img/pruebaD.jpg', false),
-(38, 'Imagen A', 'img/pruebaA.jpg', true), (38, 'Imagen B', 'img/pruebaB.jpg', false), (38, 'Imagen C', 'img/pruebaC.jpg', false), (38, 'Imagen D', 'img/pruebaD.jpg', false),
-(39, 'Imagen A', 'img/pruebaA.jpg', true), (39, 'Imagen B', 'img/pruebaB.jpg', false), (39, 'Imagen C', 'img/pruebaC.jpg', false), (39, 'Imagen D', 'img/pruebaD.jpg', false),
-(40, 'Imagen A', 'img/pruebaA.jpg', true), (40, 'Imagen B', 'img/pruebaB.jpg', false), (40, 'Imagen C', 'img/pruebaC.jpg', false), (40, 'Imagen D', 'img/pruebaD.jpg', false);
+(36, 'Imagen A', 'Presentacion/Imagenes/curiosidades/cd.png', true), (36, 'Imagen B', 'Presentacion/Imagenes/curiosidades/crema.png', false), (36, 'Imagen C', 'Presentacion/Imagenes/curiosidades/libro.png', false), (36, 'Imagen D', 'Presentacion/Imagenes/curiosidades/pizza.png', false),
+(37, 'Imagen A', 'Presentacion/Imagenes/curiosidades/mayonesa.jpg', false), (37, 'Imagen B', 'Presentacion/Imagenes/curiosidades/catsup.png true), (37, 'Imagen C', 'Presentacion/Imagenes/curiosidades/cannabis.jpeg', false), (37, 'Imagen D', 'Presentacion/Imagenes/curiosidades/chocolate.jpg', false),
+(38, 'Imagen A', 'Presentacion/Imagenes/curiosidades/twitter.png', false), (38, 'Imagen B', 'Presentacion/Imagenes/curiosidades/vine.jpg', false), (38, 'Imagen C', 'Presentacion/Imagenes/curiosidades/facebook.jpg', true), (38, 'Imagen D', 'Presentacion/Imagenes/curiosidades/pinterest.png', false),
+(39, 'Imagen A', 'Presentacion/Imagenes/curiosidades/feliz.png', false), (39, 'Imagen B', 'Presentacion/Imagenes/curiosidades/fuego.png', false), (39, 'Imagen C', 'Presentacion/Imagenes/curiosidades/risa.png', false), (39, 'Imagen D', 'Presentacion/Imagenes/curiosidades/corazon.png', true),
+(40, 'Imagen A', 'Presentacion/Imagenes/curiosidades/mercurio.jpg', false), (40, 'Imagen B', 'Presentacion/Imagenes/curiosidades/jupiter.jpg', false), (40, 'Imagen C', 'Presentacion/Imagenes/curiosidades/marte.jpg', false), (40, 'Imagen D', 'Presentacion/Imagenes/curiosidades/neptuno.jpg', true);
 
 -- Preguntas 41 a 45 (Películas - Texto)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
