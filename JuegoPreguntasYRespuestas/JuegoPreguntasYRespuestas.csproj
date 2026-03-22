@@ -223,8 +223,6 @@
     <Content Include="Presentacion\Imagenes\peliculas\shrekPic.jpg" />
     <Content Include="Presentacion\Imagenes\peliculas\sindrome.jpg" />
     <Content Include="Presentacion\Imagenes\peliculas\sw2.png" />
-    <Content Include="Presentacion\Imagenes\peliculas\toyStory.jpg" />
-    <Content Include="Presentacion\Imagenes\peliculas\wg.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
