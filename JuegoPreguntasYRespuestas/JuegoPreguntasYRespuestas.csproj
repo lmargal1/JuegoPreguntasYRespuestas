@@ -217,6 +217,9 @@
     <Content Include="Presentacion\Imagenes\peliculas\piratas.png" />
     <Content Include="Presentacion\Imagenes\peliculas\samuel.jpg" />
     <Content Include="Presentacion\Imagenes\peliculas\sw2.png" />
+    <Content Include="Presentacion\musica\tron_music.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

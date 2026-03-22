@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.IO;
-using System.Media;
 using System.Windows.Forms;
 using JuegoPreguntasYRespuestas.Data; 
 
@@ -28,7 +28,7 @@ namespace JuegoPreguntasYRespuestas
         private List<Opcion> opcionesActuales; 
         private int idCategoriaSeleccionada;
 
-        private SoundPlayer reproductorMusica;
+        private Process procesoMusica; // Nuestro nuevo reproductor nativo para Linux
         private Timer motorAnimacion;
         private Timer timerCronometro;
         private Timer timerFeedback;
@@ -64,30 +64,40 @@ namespace JuegoPreguntasYRespuestas
             timerFeedback.Tick += TimerFeedback_Tick;
         }
 
-        // --- LÓGICA DE AUDIO ---
         private void CambiarMusica(string nombreArchivo)
         {
-            try {
-                if (reproductorMusica != null) {
-                    reproductorMusica.Stop();
-                    reproductorMusica.Dispose(); 
+            try 
+            {
+                // Matamos la música anterior si estaba sonando
+                if (procesoMusica != null && !procesoMusica.HasExited) {
+                    procesoMusica.Kill();
+                    procesoMusica.Dispose(); 
                 }
-        
-                string ruta = Path.Combine(Application.StartupPath, "..", "..", "Presentacion", "musica", nombreArchivo);
-        
-                if (File.Exists(ruta)) {
-                    reproductorMusica = new SoundPlayer(ruta);
-                    reproductorMusica.PlayLooping();
-                } else {
-                    // Si sale este mensaje, el archivo no está en la carpeta correcta o tiene un error de mayúsculas
-                    MessageBox.Show("No se encuentra el audio en:\n" + ruta, "Aviso de Audio");
+
+                string rutaBase = AppDomain.CurrentDomain.BaseDirectory;
+                string ruta = Path.Combine(rutaBase, "Presentacion", "musica", nombreArchivo);
+
+                if (File.Exists(ruta)) 
+                {
+                    // Ejecutamos paplay de forma invisible
+                    procesoMusica = new Process();
+                    procesoMusica.StartInfo.FileName = "paplay";
+                    procesoMusica.StartInfo.Arguments = $"\"{ruta}\""; 
+                    procesoMusica.StartInfo.UseShellExecute = false;
+                    procesoMusica.StartInfo.CreateNoWindow = true; 
+                    procesoMusica.Start();
+                } 
+                else
+                {
+                    Console.WriteLine("No se encontró la ruta: " + ruta);
                 }
-            } catch (Exception ex) {
-                Console.WriteLine("Error de audio: " + ex.Message);
+            } 
+            catch (Exception ex) 
+            {
+                Console.WriteLine("Error al ejecutar paplay: " + ex.Message);
             }
         }
 
-        // --- MANEJO DE PARTÍCULAS ---
         private void IniciarParticulas()
         {
             listaCuadros = new List<CuadroAnimado>();
@@ -96,7 +106,7 @@ namespace JuegoPreguntasYRespuestas
                     X = rnd.Next(800), 
                     Y = rnd.Next(600), 
                     Tamaño = rnd.Next(5, 20),
-                    VelX = (float)(rnd.NextDouble() * 3 + 1), // Movimiento inicial tranquilo a la derecha
+                    VelX = (float)(rnd.NextDouble() * 3 + 1), 
                     VelY = 0, 
                     Opacidad = rnd.Next(40, 150),
                     ColorCuadro = Color.FromArgb(0, 150, 255)
@@ -119,12 +129,11 @@ namespace JuegoPreguntasYRespuestas
             Color nuevoC = Color.FromArgb(rnd.Next(100, 255), rnd.Next(100, 255), rnd.Next(100, 255));
             foreach (var c in listaCuadros) {
                 c.ColorCuadro = nuevoC;
-                c.VelX = (float)(rnd.NextDouble() * 8 - 4); // Caos en todas direcciones
+                c.VelX = (float)(rnd.NextDouble() * 8 - 4); 
                 c.VelY = (float)(rnd.NextDouble() * 8 - 4); 
             }
         }
 
-        // --- LÓGICA DEL JUEGO ---
         private void TimerCronometro_Tick(object sender, EventArgs e)
         {
             tiempoRestante--;
@@ -150,7 +159,16 @@ namespace JuegoPreguntasYRespuestas
         private void FinalizarJuego()
         {
             timerCronometro.Stop();
-            new JuegoDAO().GuardarPartida(idCategoriaSeleccionada, JuegoServicio.correctas, JuegoServicio.incorrectas);
+            
+            // ESCUDO ANTICRASH: Solo guarda si jugaste una categoría específica (ID > 0)
+            try {
+                if (idCategoriaSeleccionada > 0) {
+                    new JuegoDAO().GuardarPartida(idCategoriaSeleccionada, JuegoServicio.correctas, JuegoServicio.incorrectas);
+                }
+            } catch (Exception ex) {
+                Console.WriteLine("Error al guardar partida: " + ex.Message);
+            }
+
             pantallaActual = "Puntaje";
             CambiarMusica("tron_music.wav");
         }
@@ -161,10 +179,12 @@ namespace JuegoPreguntasYRespuestas
                 Pregunta pregunta = JuegoServicio.obtenerPreguntaActual();
                 opcionesActuales = new JuegoDAO().ObtenerOpcionesPorPregunta(pregunta.IdPregunta);
                 
-                // Parche para saltar si hay errores en BD con opciones faltantes
                 if (opcionesActuales == null || opcionesActuales.Count == 0) {
-                    JuegoServicio.siguientePregunta();
-                    CargarPreguntaActual();
+                    if (JuegoServicio.siguientePregunta()) {
+                        CargarPreguntaActual();
+                    } else {
+                        FinalizarJuego();
+                    }
                     return; 
                 }
 
@@ -176,17 +196,16 @@ namespace JuegoPreguntasYRespuestas
         private void IniciarPartida(List<Pregunta> preguntas) 
         {
             if(preguntas == null || preguntas.Count == 0) {
-                MessageBox.Show("No se encontraron preguntas.");
+                MessageBox.Show("No se encontraron preguntas para este modo.");
                 return;
             }
             JuegoServicio.iniciaJuego(preguntas);
-            CambiarMusica("tron_loop.wav"); 
+            CambiarMusica("tron_music.wav"); 
             CargarPreguntaActual();
             pantallaActual = "Jugando";
             timerCronometro.Start();
         }
 
-        // --- DIBUJO ---
         protected override void OnPaint(PaintEventArgs e)
         {
             Graphics g = e.Graphics;
@@ -369,6 +388,13 @@ namespace JuegoPreguntasYRespuestas
             this.Invalidate();
         }
 
-        protected override void OnFormClosed(FormClosedEventArgs e) { base.OnFormClosed(e); motorAnimacion?.Stop(); timerCronometro?.Stop(); reproductorMusica?.Stop(); }
+        // Aquí apagamos el proceso de paplay correctamente al cerrar el juego
+        protected override void OnFormClosed(FormClosedEventArgs e) 
+        { 
+            base.OnFormClosed(e); 
+            motorAnimacion?.Stop(); 
+            timerCronometro?.Stop(); 
+            if (procesoMusica != null && !procesoMusica.HasExited) procesoMusica.Kill(); 
+        }
     }
 }
