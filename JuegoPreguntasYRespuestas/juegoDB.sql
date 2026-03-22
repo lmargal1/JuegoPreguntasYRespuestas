@@ -195,8 +195,8 @@ INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
 
 -- Preguntas 46 a 50 (Películas - Imagen)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
-(46, 'Imagen A', 'img/pruebaA.jpg', true), (46, 'Imagen B', 'img/pruebaB.jpg', false), (46, 'Imagen C', 'img/pruebaC.jpg', false), (46, 'Imagen D', 'img/pruebaD.jpg', false),
-(47, 'Imagen A', 'img/pruebaA.jpg', true), (47, 'Imagen B', 'img/pruebaB.jpg', false), (47, 'Imagen C', 'img/pruebaC.jpg', false), (47, 'Imagen D', 'img/pruebaD.jpg', false),
-(48, 'Imagen A', 'img/pruebaA.jpg', true), (48, 'Imagen B', 'img/pruebaB.jpg', false), (48, 'Imagen C', 'img/pruebaC.jpg', false), (48, 'Imagen D', 'img/pruebaD.jpg', false),
+(46, 'Imagen A', 'Presentacion/Imagenes/peliculas/jurassic.jpg', false), (46, 'Imagen B', 'Presentacion/Imagenes/peliculas/sw2.png', false), (46, 'Imagen C', 'Presentacion/Imagenes/peliculas/piratas.png', false), (46, 'Imagen D', 'Presentacion/Imagenes/peliculas/epVII.jpg', true),
+(47, 'Imagen A', 'Presentacion/Imagenes/peliculas/henry.png', false), (47, 'Imagen B', 'Presentacion/Imagenes/peliculas/liam.png', false), (47, 'Imagen C', 'Presentacion/Imagenes/peliculas/adam.png', true), (47, 'Imagen D', 'Presentacion/Imagenes/peliculas/mbj.png', false),
+(48, 'Imagen A', 'Presentacion/Imagenes/peliculas/chan.jpg', false), (48, 'Imagen B', 'Presentacion/Imagenes/peliculas/danny.jpeg', true), (48, 'Imagen C', 'img/pruebaC.jpg', false), (48, 'Imagen D', 'img/pruebaD.jpg', false),
 (49, 'Imagen A', 'img/pruebaA.jpg', true), (49, 'Imagen B', 'img/pruebaB.jpg', false), (49, 'Imagen C', 'img/pruebaC.jpg', false), (49, 'Imagen D', 'img/pruebaD.jpg', false),
-(50, 'Imagen A', 'img/pruebaA.jpg', true), (50, 'Imagen B', 'img/pruebaB.jpg', false), (50, 'Imagen C', 'img/pruebaC.jpg', false), (50, 'Imagen D', 'img/pruebaD.jpg', false);
+(50, 'Imagen A', 'img/pruebaA.jpg', false), (50, 'Imagen B', 'img/pruebaB.jpg', true), (50, 'Imagen C', 'img/pruebaC.jpg', false), (50, 'Imagen D', 'img/pruebaD.jpg', false);
