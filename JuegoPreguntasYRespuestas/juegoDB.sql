@@ -120,83 +120,83 @@ INSERT INTO Preguntas(textoPregunta, tipo, idCategoria) VALUES
 ('¿Cuál fue la primera película en ganar el Oscar a Mejor Película Animada?', 'imagen', 5);
 
 
--- OPCIONES (DATOS DE PRUEBA PARA DISEÑO DE INTERFAZ)
+-- OPCIONES
 -- Preguntas 1 a 5 (Deportes - Texto)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
-(1, 'Opción A', NULL, true), (1, 'Opción B', NULL, false), (1, 'Opción C', NULL, false), (1, 'Opción D', NULL, false),
-(2, 'Opción A', NULL, true), (2, 'Opción B', NULL, false), (2, 'Opción C', NULL, false), (2, 'Opción D', NULL, false),
-(3, 'Opción A', NULL, true), (3, 'Opción B', NULL, false), (3, 'Opción C', NULL, false), (3, 'Opción D', NULL, false),
-(4, 'Opción A', NULL, true), (4, 'Opción B', NULL, false), (4, 'Opción C', NULL, false), (4, 'Opción D', NULL, false),
-(5, 'Opción A', NULL, true), (5, 'Opción B', NULL, false), (5, 'Opción C', NULL, false), (5, 'Opción D', NULL, false);
+(1, '3', NULL, true), (1, '2', NULL, false), (1, '4', NULL, false), (1, '5', NULL, false),
+(2, '18', NULL, false), (2, '20', NULL, false), (2, '22', NULL, true), (2, '24', NULL, false),
+(3, '2.5 segundos', NULL, false), (3, '1.8 segundos', NULL, true), (3, '1.6 segundos', NULL, false), (3, '3.1 segundos', NULL, false),
+(4, '17', NULL, true), (4, '16', NULL, false), (4, '15', NULL, false), (4, '14', NULL, false),
+(5, 'Bayern Munich', NULL, false), (5, 'Manchester United', NULL, true), (5, 'Juventus', NULL, false), (5, 'Manchester City', NULL, false);
 
 -- Preguntas 6 a 10 (Deportes - Imagen)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
-(6, 'Imagen A', 'img/pruebaA.jpg', true), (6, 'Imagen B', 'img/pruebaB.jpg', false), (6, 'Imagen C', 'img/pruebaC.jpg', false), (6, 'Imagen D', 'img/pruebaD.jpg', false),
-(7, 'Imagen A', 'img/pruebaA.jpg', true), (7, 'Imagen B', 'img/pruebaB.jpg', false), (7, 'Imagen C', 'img/pruebaC.jpg', false), (7, 'Imagen D', 'img/pruebaD.jpg', false),
-(8, 'Imagen A', 'img/pruebaA.jpg', true), (8, 'Imagen B', 'img/pruebaB.jpg', false), (8, 'Imagen C', 'img/pruebaC.jpg', false), (8, 'Imagen D', 'img/pruebaD.jpg', false),
-(9, 'Imagen A', 'img/pruebaA.jpg', true), (9, 'Imagen B', 'img/pruebaB.jpg', false), (9, 'Imagen C', 'img/pruebaC.jpg', false), (9, 'Imagen D', 'img/pruebaD.jpg', false),
-(10, 'Imagen A', 'img/pruebaA.jpg', true), (10, 'Imagen B', 'img/pruebaB.jpg', false), (10, 'Imagen C', 'img/pruebaC.jpg', false), (10, 'Imagen D', 'img/pruebaD.jpg', false);
+(6, 'Imagen A', 'Presentacion/Imagenes/deportes/novak.jpg', true), (6, 'Imagen B', 'Presentacion/Imagenes/deportes/serena.jpg', false), (6, 'Imagen C', 'Presentacion/Imagenes/deportes/federer.jpg', false), (6, 'Imagen D', 'Presentacion/Imagenes/deportes/nadal.jpg', false),
+(7, 'Imagen A', 'Presentacion/Imagenes/deportes/spa.jpg', false), (7, 'Imagen B', 'Presentacion/Imagenes/deportes/silverstone.jpg', false), (7, 'Imagen C', 'Presentacion/Imagenes/deportes/monaco.jpg', true), (7, 'Imagen D', 'Presentacion/Imagenes/deportes/monza.jpg', false),
+(8, 'Imagen A', 'Presentacion/Imagenes/deportes/haaland.jpg', true), (8, 'Imagen B', 'Presentacion/Imagenes/deportes/mbappe.jpg', false), (8, 'Imagen C', 'Presentacion/Imagenes/deportes/yamal.jpg', false), (8, 'Imagen D', 'Presentacion/Imagenes/deportes/bellingham.jpg', false),
+(9, 'Imagen A', 'Presentacion/Imagenes/deportes/kimi.jpeg', false), (9, 'Presentacion/Imagenes/deportes/sainz.jpeg', false), (9, 'Imagen C', 'Presentacion/Imagenes/deportes/bottas.jpeg', false), (9, 'Imagen D', 'Presentacion/Imagenes/deportes/lindblad.jpeg', true),
+(10, 'Imagen A', 'Presentacion/Imagenes/deportes/sainz.jpeg', false), (10, 'Imagen B', 'Presentacion/Imagenes/deportes/hamilton.jpeg', false), (10, 'Imagen C', 'Presentacion/Imagenes/deportes/alonso.jpg', true), (10, 'Imagen D', 'Presentacion/Imagenes/deportes/maxi.jpeg', false);
 
 -- Preguntas 11 a 15 (Música - Texto)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
-(11, 'Opción A', NULL, true), (11, 'Opción B', NULL, false), (11, 'Opción C', NULL, false), (11, 'Opción D', NULL, false),
-(12, 'Opción A', NULL, true), (12, 'Opción B', NULL, false), (12, 'Opción C', NULL, false), (12, 'Opción D', NULL, false),
-(13, 'Opción A', NULL, true), (13, 'Opción B', NULL, false), (13, 'Opción C', NULL, false), (13, 'Opción D', NULL, false),
-(14, 'Opción A', NULL, true), (14, 'Opción B', NULL, false), (14, 'Opción C', NULL, false), (14, 'Opción D', NULL, false),
-(15, 'Opción A', NULL, true), (15, 'Opción B', NULL, false), (15, 'Opción C', NULL, false), (15, 'Opción D', NULL, false);
+(11, '56', NULL, true), (11, '32', NULL, false), (11, '40', NULL, false), (11, '48', NULL, false),
+(12, 'México', NULL, true), (12, 'Argentina', NULL, false), (12, 'España', NULL, false), (12, 'Colombia', NULL, false),
+(13, 'DTMF', NULL, false), (13, 'DtMf', NULL, false), (13, 'DTmF', NULL, false), (13, 'DtMF', NULL, true),
+(14, 'Mozart', NULL, false), (14, 'Beethoven', NULL, true), (14, 'Bach', NULL, false), (14, 'Chopin', NULL, false),
+(15, 'Frederick Mercury', NULL, false), (15, 'Michael Bulsara', NULL, false), (15, 'Farrokh Bulsara', NULL, true), (15, 'Arthur Mercury', NULL, false);
 
 -- Preguntas 16 a 20 (Música - Imagen)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
-(16, 'Imagen A', 'img/pruebaA.jpg', true), (16, 'Imagen B', 'img/pruebaB.jpg', false), (16, 'Imagen C', 'img/pruebaC.jpg', false), (16, 'Imagen D', 'img/pruebaD.jpg', false),
-(17, 'Imagen A', 'img/pruebaA.jpg', true), (17, 'Imagen B', 'img/pruebaB.jpg', false), (17, 'Imagen C', 'img/pruebaC.jpg', false), (17, 'Imagen D', 'img/pruebaD.jpg', false),
-(18, 'Imagen A', 'img/pruebaA.jpg', true), (18, 'Imagen B', 'img/pruebaB.jpg', false), (18, 'Imagen C', 'img/pruebaC.jpg', false), (18, 'Imagen D', 'img/pruebaD.jpg', false),
-(19, 'Imagen A', 'img/pruebaA.jpg', true), (19, 'Imagen B', 'img/pruebaB.jpg', false), (19, 'Imagen C', 'img/pruebaC.jpg', false), (19, 'Imagen D', 'img/pruebaD.jpg', false),
-(20, 'Imagen A', 'img/pruebaA.jpg', true), (20, 'Imagen B', 'img/pruebaB.jpg', false), (20, 'Imagen C', 'img/pruebaC.jpg', false), (20, 'Imagen D', 'img/pruebaD.jpg', false);
+(16, 'Imagen A', 'Presentacion/Imagenes/musica/namjoon.jpg', false), (16, 'Imagen B', 'Presentacion/Imagenes/musica/jin.jpg', false), (16, 'Imagen C', 'Presentacion/Imagenes/musica/yoongi.jpg', false), (16, 'Imagen D', 'Presentacion/Imagenes/musica/sanha.png', true),
+(17, 'Imagen A', 'Presentacion/Imagenes/musica/astros.jpeg', false), (17, 'Imagen B', 'Presentacion/Imagenes/musica/esencia.jpeg', true), (17, 'Imagen C', 'Presentacion/Imagenes/musica/aurora.jpeg', false), (17, 'Imagen D', 'Presentacion/Imagenes/musica/ddc.jpeg', false),
+(18, 'Imagen A', 'Presentacion/Imagenes/musica/rick.jpeg', true), (18, 'Imagen B', 'Presentacion/Imagenes/musica/uxi.jpeg', false), (18, 'Imagen C', 'Presentacion/Imagenes/musica/mike.jpeg', false), (18, 'Imagen D', 'Presentacion/Imagenes/musica/blnko.jpeg', false),
+(19, 'Imagen A', 'Presentacion/Imagenes/musica/liluzi.jpg', false), (19, 'Imagen B', 'Presentacion/Imagenes/musica/travis.jpg', false), (19, 'Imagen C', 'Presentacion/Imagenes/musica/juiceWRLD.jpg', true), (19, 'Imagen D', 'Presentacion/Imagenes/musica/xxxtentacion.jpg', false),
+(20, 'Imagen A', 'Presentacion/Imagenes/musica/elvis.jpg', false), (20, 'Imagen B', 'Presentacion/Imagenes/musica/mercury.jpg', false), (20, 'Imagen C', 'Presentacion/Imagenes/musica/sinatra.jpg', false), (20, 'Imagen D', 'Presentacion/Imagenes/musica/mj.jpg', true);
 
 -- Preguntas 21 a 25 (Animales - Texto)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
-(21, 'Opción A', NULL, true), (21, 'Opción B', NULL, false), (21, 'Opción C', NULL, false), (21, 'Opción D', NULL, false),
-(22, 'Opción A', NULL, true), (22, 'Opción B', NULL, false), (22, 'Opción C', NULL, false), (22, 'Opción D', NULL, false),
-(23, 'Opción A', NULL, true), (23, 'Opción B', NULL, false), (23, 'Opción C', NULL, false), (23, 'Opción D', NULL, false),
-(24, 'Opción A', NULL, true), (24, 'Opción B', NULL, false), (24, 'Opción C', NULL, false), (24, 'Opción D', NULL, false),
-(25, 'Opción A', NULL, true), (25, 'Opción B', NULL, false), (25, 'Opción C', NULL, false), (25, 'Opción D', NULL, false);
+(21, 'Parvada', NULL, false), (21, 'Bandada', NULL, false), (21, 'Colonia', NULL, false), (21, 'Parlamento', NULL, true),
+(22, 'León', NULL, false), (22, 'Guepardo', NULL, true), (22, 'Antílope', NULL, false), (22, 'Avestruz', NULL, false),
+(23, 'Delfines', NULL, true), (23, 'Ballenas', NULL, false), (23, 'Lobos', NULL, false), (23, 'Canarios', NULL, false),
+(24, 'Elefante africano', NULL, false), (24, 'Patagotitan', NULL, false), (24, 'Ballena Azul', NULL, true), (24, 'Mamut', NULL, false),
+(25, 'Chimpancé', NULL, false (25, 'Hombre', NULL, true), (25, 'Delfín', NULL, false), (25, 'Elefante', NULL, false);
 
 -- Preguntas 26 a 30 (Animales - Imagen)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
-(26, 'Imagen A', 'img/pruebaA.jpg', true), (26, 'Imagen B', 'img/pruebaB.jpg', false), (26, 'Imagen C', 'img/pruebaC.jpg', false), (26, 'Imagen D', 'img/pruebaD.jpg', false),
-(27, 'Imagen A', 'img/pruebaA.jpg', true), (27, 'Imagen B', 'img/pruebaB.jpg', false), (27, 'Imagen C', 'img/pruebaC.jpg', false), (27, 'Imagen D', 'img/pruebaD.jpg', false),
-(28, 'Imagen A', 'img/pruebaA.jpg', true), (28, 'Imagen B', 'img/pruebaB.jpg', false), (28, 'Imagen C', 'img/pruebaC.jpg', false), (28, 'Imagen D', 'img/pruebaD.jpg', false),
-(29, 'Imagen A', 'img/pruebaA.jpg', true), (29, 'Imagen B', 'img/pruebaB.jpg', false), (29, 'Imagen C', 'img/pruebaC.jpg', false), (29, 'Imagen D', 'img/pruebaD.jpg', false),
-(30, 'Imagen A', 'img/pruebaA.jpg', true), (30, 'Imagen B', 'img/pruebaB.jpg', false), (30, 'Imagen C', 'img/pruebaC.jpg', false), (30, 'Imagen D', 'img/pruebaD.jpg', false);
+(26, 'Imagen A', 'Presentacion/Imagenes/animales/marsupial.jpg', true), (26, 'Presentacion/Imagenes/animales/oso.jpg', false), (26, 'Imagen C', 'Presentacion/Imagenes/animales/perezoso.jpg', false), (26, 'Imagen D', 'Presentacion/Imagenes/animales/ratita.jpg', false),
+(27, 'Imagen A', 'Presentacion/Imagenes/animales/tigre.jpg', true), (27, 'Imagen B', 'Presentacion/Imagenes/animales/civeta.jpg', false), (27, 'Imagen C', 'Presentacion/Imagenes/animales/fossa.jpg', false), (27, 'Imagen D', 'Presentacion/Imagenes/animales/lingsang.jpg', false),
+(28, 'Imagen A', 'Presentacion/Imagenes/animales/tortuga.png', false), (28, 'Imagen B', 'Presentacion/Imagenes/animales/tiburon.png', false), (28, 'Imagen C', 'Presentacion/Imagenes/animales/dugongo.jpg', true), (28, 'Imagen D', 'Presentacion/Imagenes/animales/pezLuna.jpg', false),
+(29, 'Imagen A', 'Presentacion/Imagenes/animales/varano.jpg', false), (29, 'Imagen B', 'Presentacion/Imagenes/animales/monitorAgua.jpg', false), (29, 'Imagen C', 'Presentacion/Imagenes/animales/cocodrilo.jpg', false), (29, 'Imagen D', 'Presentacion/Imagenes/animales/komodo.jpg', false),
+(30, 'Imagen A', 'Presentacion/Imagenes/animales/codorniz.jpg', false), (30, 'Imagen B', 'Presentacion/Imagenes/animales/cigoñino.jpg', false), (30, 'Imagen C', 'Presentacion/Imagenes/animales/perdigon.jpg', false), (30, 'Imagen D', 'Presentacion/Imagenes/animales/corvato.jpg', false);
 
 -- Preguntas 31 a 35 (Curiosidades - Texto)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
-(31, 'Opción A', NULL, true), (31, 'Opción B', NULL, false), (31, 'Opción C', NULL, false), (31, 'Opción D', NULL, false),
-(32, 'Opción A', NULL, true), (32, 'Opción B', NULL, false), (32, 'Opción C', NULL, false), (32, 'Opción D', NULL, false),
-(33, 'Opción A', NULL, true), (33, 'Opción B', NULL, false), (33, 'Opción C', NULL, false), (33, 'Opción D', NULL, false),
-(34, 'Opción A', NULL, true), (34, 'Opción B', NULL, false), (34, 'Opción C', NULL, false), (34, 'Opción D', NULL, false),
-(35, 'Opción A', NULL, true), (35, 'Opción B', NULL, false), (35, 'Opción C', NULL, false), (35, 'Opción D', NULL, false);
+(31, 'Skot (apellido del fundador al revés', NULL, false), (31, 'Today Okay Service', NULL, true), (31, 'The Original Kitchen Service', NULL, false), (31, 'No significa nada', NULL, false),
+(32, 'África', NULL, false), (32, 'Oceanía', NULL, false), (32, 'Asia', NULL, false), (32, 'Antártida', NULL, true),
+(33, 'Queso', NULL, true), (33, 'Pan', NULL, false), (33, 'Chocolate', NULL, false), (33, 'Café', NULL, false),
+(34, 'Dragón', NULL, false), (34, 'Águila', NULL, false), (34, 'Unicornio', NULL, true), (34, 'Caballo', NULL, false),
+(35, 'J', NULL, false), (35, 'K', NULL, false), (35, 'Z', NULL, false), (35, 'Q', NULL, true);
 
 -- Preguntas 36 a 40 (Curiosidades - Imagen)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
-(36, 'Imagen A', 'img/pruebaA.jpg', true), (36, 'Imagen B', 'img/pruebaB.jpg', false), (36, 'Imagen C', 'img/pruebaC.jpg', false), (36, 'Imagen D', 'img/pruebaD.jpg', false),
-(37, 'Imagen A', 'img/pruebaA.jpg', true), (37, 'Imagen B', 'img/pruebaB.jpg', false), (37, 'Imagen C', 'img/pruebaC.jpg', false), (37, 'Imagen D', 'img/pruebaD.jpg', false),
-(38, 'Imagen A', 'img/pruebaA.jpg', true), (38, 'Imagen B', 'img/pruebaB.jpg', false), (38, 'Imagen C', 'img/pruebaC.jpg', false), (38, 'Imagen D', 'img/pruebaD.jpg', false),
-(39, 'Imagen A', 'img/pruebaA.jpg', true), (39, 'Imagen B', 'img/pruebaB.jpg', false), (39, 'Imagen C', 'img/pruebaC.jpg', false), (39, 'Imagen D', 'img/pruebaD.jpg', false),
-(40, 'Imagen A', 'img/pruebaA.jpg', true), (40, 'Imagen B', 'img/pruebaB.jpg', false), (40, 'Imagen C', 'img/pruebaC.jpg', false), (40, 'Imagen D', 'img/pruebaD.jpg', false);
+(36, 'Imagen A', 'Presentacion/Imagenes/curiosidades/cd.png', true), (36, 'Imagen B', 'Presentacion/Imagenes/curiosidades/crema.png', false), (36, 'Imagen C', 'Presentacion/Imagenes/curiosidades/libro.png', false), (36, 'Imagen D', 'Presentacion/Imagenes/curiosidades/pizza.png', false),
+(37, 'Imagen A', 'Presentacion/Imagenes/curiosidades/mayonesa.jpg', false), (37, 'Imagen B', 'Presentacion/Imagenes/curiosidades/catsup.png true), (37, 'Imagen C', 'Presentacion/Imagenes/curiosidades/cannabis.jpeg', false), (37, 'Imagen D', 'Presentacion/Imagenes/curiosidades/chocolate.jpg', false),
+(38, 'Imagen A', 'Presentacion/Imagenes/curiosidades/twitter.png', false), (38, 'Imagen B', 'Presentacion/Imagenes/curiosidades/vine.jpg', false), (38, 'Imagen C', 'Presentacion/Imagenes/curiosidades/facebook.jpg', true), (38, 'Imagen D', 'Presentacion/Imagenes/curiosidades/pinterest.png', false),
+(39, 'Imagen A', 'Presentacion/Imagenes/curiosidades/feliz.png', false), (39, 'Imagen B', 'Presentacion/Imagenes/curiosidades/fuego.png', false), (39, 'Imagen C', 'Presentacion/Imagenes/curiosidades/risa.png', false), (39, 'Imagen D', 'Presentacion/Imagenes/curiosidades/corazon.png', true),
+(40, 'Imagen A', 'Presentacion/Imagenes/curiosidades/mercurio.jpg', false), (40, 'Imagen B', 'Presentacion/Imagenes/curiosidades/jupiter.jpg', false), (40, 'Imagen C', 'Presentacion/Imagenes/curiosidades/marte.jpg', false), (40, 'Imagen D', 'Presentacion/Imagenes/curiosidades/neptuno.jpg', true);
 
 -- Preguntas 41 a 45 (Películas - Texto)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
-(41, 'Opción A', NULL, true), (41, 'Opción B', NULL, false), (41, 'Opción C', NULL, false), (41, 'Opción D', NULL, false),
-(42, 'Opción A', NULL, true), (42, 'Opción B', NULL, false), (42, 'Opción C', NULL, false), (42, 'Opción D', NULL, false),
-(43, 'Opción A', NULL, true), (43, 'Opción B', NULL, false), (43, 'Opción C', NULL, false), (43, 'Opción D', NULL, false),
-(44, 'Opción A', NULL, true), (44, 'Opción B', NULL, false), (44, 'Opción C', NULL, false), (44, 'Opción D', NULL, false),
-(45, 'Opción A', NULL, true), (45, 'Opción B', NULL, false), (45, 'Opción C', NULL, false), (45, 'Opción D', NULL, false);
+(41, 'Marty McFly', NULL, true), (41, 'Doc Brown', NULL, false), (41, 'Biff Tannen', NULL, false), (41, 'Martin McFly', NULL, false),
+(42, 'Sable obscuro', NULL, false), (42, 'Sable de luz', NULL, true), (42, 'Espada Jedi', NULL, false), (42, 'Espada láser', NULL, false),
+(43, 'Episodio I', NULL, false), (43, 'Episodio II', NULL, false), (43, 'Episodio III', NULL, true), (43, 'Episodio IV', NULL, false),
+(44, 'Jules Verne', NULL, false), (44, 'Isaac Asimov', NULL, false), (44, 'Arthur C. Clarke', NULL, false), (44, 'H. G. Wells', NULL, true),
+(45, '15 de octubre de 2015', NULL, false), (45, '5 de mayo de 2000', NULL, false), (45, '21 de octubre de 2015', NULL, true), (45, '15 de agosto de 2012', NULL, false);
 
 -- Preguntas 46 a 50 (Películas - Imagen)
 INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
-(46, 'Imagen A', 'img/pruebaA.jpg', true), (46, 'Imagen B', 'img/pruebaB.jpg', false), (46, 'Imagen C', 'img/pruebaC.jpg', false), (46, 'Imagen D', 'img/pruebaD.jpg', false),
-(47, 'Imagen A', 'img/pruebaA.jpg', true), (47, 'Imagen B', 'img/pruebaB.jpg', false), (47, 'Imagen C', 'img/pruebaC.jpg', false), (47, 'Imagen D', 'img/pruebaD.jpg', false),
-(48, 'Imagen A', 'img/pruebaA.jpg', true), (48, 'Imagen B', 'img/pruebaB.jpg', false), (48, 'Imagen C', 'img/pruebaC.jpg', false), (48, 'Imagen D', 'img/pruebaD.jpg', false),
+(46, 'Imagen A', 'Presentacion/Imagenes/peliculas/jurassic.jpg', false), (46, 'Imagen B', 'Presentacion/Imagenes/peliculas/sw2.png', false), (46, 'Imagen C', 'Presentacion/Imagenes/peliculas/piratas.png', false), (46, 'Imagen D', 'Presentacion/Imagenes/peliculas/epVII.jpg', true),
+(47, 'Imagen A', 'Presentacion/Imagenes/peliculas/henry.png', false), (47, 'Imagen B', 'Presentacion/Imagenes/peliculas/liam.png', false), (47, 'Imagen C', 'Presentacion/Imagenes/peliculas/adam.png', true), (47, 'Imagen D', 'Presentacion/Imagenes/peliculas/mbj.png', false),
+(48, 'Imagen A', 'Presentacion/Imagenes/peliculas/chan.jpg', false), (48, 'Imagen B', 'Presentacion/Imagenes/peliculas/danny.jpeg', true), (48, 'Imagen C', 'img/pruebaC.jpg', false), (48, 'Imagen D', 'img/pruebaD.jpg', false),
 (49, 'Imagen A', 'img/pruebaA.jpg', true), (49, 'Imagen B', 'img/pruebaB.jpg', false), (49, 'Imagen C', 'img/pruebaC.jpg', false), (49, 'Imagen D', 'img/pruebaD.jpg', false),
-(50, 'Imagen A', 'img/pruebaA.jpg', true), (50, 'Imagen B', 'img/pruebaB.jpg', false), (50, 'Imagen C', 'img/pruebaC.jpg', false), (50, 'Imagen D', 'img/pruebaD.jpg', false);
+(50, 'Imagen A', 'img/pruebaA.jpg', false), (50, 'Imagen B', 'img/pruebaB.jpg', true), (50, 'Imagen C', 'img/pruebaC.jpg', false), (50, 'Imagen D', 'img/pruebaD.jpg', false);
