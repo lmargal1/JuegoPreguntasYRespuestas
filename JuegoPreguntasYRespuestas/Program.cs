@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+// ESTA ES LA LÍNEA CLAVE QUE FALTA:
+using JuegoPreguntasYRespuestas.Presentacion; 
 
 namespace JuegoPreguntasYRespuestas
 {
-    //conexion abel
-    internal static class Program
+    static class Program
     {
         /// <summary>
         /// Punto de entrada principal para la aplicación.
@@ -17,7 +15,8 @@ namespace JuegoPreguntasYRespuestas
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            // Ahora sí encontrará Form1 gracias al using de arriba
+            Application.Run(new Form1()); 
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace JuegoPreguntasYRespuestas
+﻿namespace JuegoPreguntasYRespuestas.Presentacion
 {
     partial class Form1
     {
@@ -23,8 +23,8 @@
         #region Código generado por el Diseñador de Windows Forms
 
         /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
+        /// Método necesario para admitir el Diseñador. No se puede modificar
+        /// el contenido de este método con el editor de código.
         /// </summary>
         private void InitializeComponent()
         {
@@ -32,18 +32,20 @@
             // 
             // Form1
             // 
+            // Usamos nombres completos (System.Drawing) para evitar errores si faltan usings
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.ActiveBorder;
-            this.ClientSize = new System.Drawing.Size(868, 448);
-            this.ForeColor = System.Drawing.Color.Black;
+            
+            // CORRECCIÓN: Paréntesis cerrados correctamente y color simplificado
+            this.BackColor = System.Drawing.Color.FromArgb(5, 5, 25);
+            
+            this.ClientSize = new System.Drawing.Size(800, 600);
+            this.ForeColor = System.Drawing.Color.White;
             this.Name = "Form1";
-            this.Text = "FormInicio";
-            this.TransparencyKey = System.Drawing.Color.White;
+            this.Text = "Trivia Máxima";
             this.ResumeLayout(false);
         }
 
         #endregion
     }
 }
-
