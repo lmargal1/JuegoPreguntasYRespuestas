@@ -12,7 +12,6 @@ namespace JuegoPreguntasYRespuestas.Data
     {
         private ConexionBD conexionBD = new ConexionBD();
 
-        //Obtener categorías
         public List<Categoria> ObtenerCategorias()
         {
             List<Categoria> categorias = new List<Categoria>();
@@ -34,8 +33,6 @@ namespace JuegoPreguntasYRespuestas.Data
             }
             return categorias;
         }
-
-        //Obtener preguntas por categoría
         public List<Pregunta> ObtenerPreguntasPorCategoria(int idCategoria)
         {
             List<Pregunta> preguntas = new List<Pregunta>();
@@ -62,7 +59,6 @@ namespace JuegoPreguntasYRespuestas.Data
             return preguntas;
         }
 
-        //Obtener opciones por pregunta
         public List<Opcion> ObtenerOpcionesPorPregunta(int idPregunta)
         {
             List<Opcion> opciones = new List<Opcion>();
@@ -94,7 +90,6 @@ namespace JuegoPreguntasYRespuestas.Data
             return opciones;
         }
 
-        //Guardar partida
         public void GuardarPartida(int idCategoria, int correctas, int incorrectas)
         {
             using (MySqlConnection conexion = conexionBD.ObtenerConexion())
@@ -111,7 +106,6 @@ namespace JuegoPreguntasYRespuestas.Data
 
         }
 
-        // --- NUEVO MÉTODO: Obtener preguntas de TODAS las categorías al azar ---
         public List<Pregunta> ObtenerTodasLasPreguntas()
         {
             List<Pregunta> preguntas = new List<Pregunta>();
