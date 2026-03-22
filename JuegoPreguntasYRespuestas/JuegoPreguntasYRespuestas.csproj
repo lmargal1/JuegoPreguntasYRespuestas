@@ -223,6 +223,7 @@
     <Content Include="Presentacion\Imagenes\peliculas\shrekPic.jpg" />
     <Content Include="Presentacion\Imagenes\peliculas\sindrome.jpg" />
     <Content Include="Presentacion\Imagenes\peliculas\sw2.png" />
+    <Content Include="Presentacion\musica\tron_music.wav" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
