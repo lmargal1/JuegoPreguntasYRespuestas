@@ -365,7 +365,6 @@ private void ActualizarParticulas() {
             JuegoServicio.iniciaJuego(l); 
             CargarPreguntaActual(); 
             _pantallaActual = "Jugando"; 
-            CambiarMusica("tron_loop.wav");
             _timerCronometro.Start(); 
         }
 
