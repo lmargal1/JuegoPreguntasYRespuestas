@@ -13,8 +13,8 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
     public partial class Form1 : Form {
     
     // ZONA DE CONFIGURACION RAPIDA
-    private const int TiempoPorPregunta = 10; 
-    private const int TotalParticulas = 60;                        
+    private const int TiempoPorPregunta = 15; 
+    private const int TotalParticulas = 150;                        
     private readonly Color _colorFondo = Color.FromArgb(5, 5, 25);
     private readonly Color _colorBordes = Color.FromArgb(0, 200, 255);
 
@@ -265,6 +265,11 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
         JuegoServicio.iniciaJuego(l);
         _vidasRestantes = 3; 
         _puntosTemporales = 0f;
+        
+        // --- LIMPIEZA DE VARIABLES DE LA PARTIDA ANTERIOR ---
+        _indexOpcionSeleccionada = null; 
+        _respuestaCorrecta = null;
+        
         CargarPreguntaActual(); 
         _pantallaActual = "Jugando"; 
         _timerCronometro.Start(); 
@@ -483,15 +488,14 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
             }
         } else if (_pantallaActual == "Puntaje" && new Rectangle(280, 440, 240, 70).Contains(clickReal)) { 
             _pantallaActual = "Inicio"; 
+            
+            // --- LIMPIEZA ADICIONAL AL VOLVER AL INICIO ---
+            _indexOpcionSeleccionada = null;
+            _respuestaCorrecta = null;
+            
             IniciarParticulas(); 
         }
         Invalidate(); 
-    }
-
-    // CIERRE DE FORMULARIO
-    protected override void OnFormClosed(FormClosedEventArgs e) { 
-        if (_procesoMusica != null && !_procesoMusica.HasExited) _procesoMusica.Kill(); 
-        base.OnFormClosed(e); 
     }
 }
 }
