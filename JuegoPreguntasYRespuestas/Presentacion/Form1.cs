@@ -12,11 +12,12 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
     public class CuadroAnimado { public float X, Y, VelX, VelY; public int Tamaño, Opacidad; public Color ColorCuadro; }
 
     public partial class Form1 : Form {
+        
+        // ZONA DE CONFIGURACIÓN RÁPIDA (Notas para el equipo)
         private const int TiempoPorPregunta = 20; 
         private const int TotalParticulas = 60;                        
         private readonly Color _colorFondo = Color.FromArgb(5, 5, 25);
         private readonly Color _colorBordes = Color.FromArgb(0, 200, 255);
-
 
         private string _pantallaActual = "Inicio";
         private List<Categoria> _categoriasLista;
@@ -60,10 +61,8 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
             ClientSize = new Size(800, 600);
             MinimumSize = new Size(800, 600); 
             StartPosition = FormStartPosition.CenterScreen; 
-            
             FormBorderStyle = FormBorderStyle.Sizable; 
             BackColor = _colorFondo;
-            
             TransparencyKey = Color.Empty; 
         }
 
@@ -84,6 +83,7 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
             } catch (Exception ex) { Console.WriteLine(@"Error Audio: " + ex.Message); }
         }
 
+        // SISTEMA DE PARTÍCULAS (ESPACIO VS EXPLOSIÓN)
         private void IniciarParticulas() {
             _listaCuadros.Clear();
             for (int i = 0; i < TotalParticulas; i++) 
@@ -97,17 +97,65 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
                 });
         }
 
-        private void ActualizarParticulas() {
-            int ancho = ClientSize.Width + 20;
-            int alto = ClientSize.Height + 20;
+private void IniciarExplosion() {
+    _listaCuadros.Clear();
+    Color[] coloresExplosion = { Color.Gold, Color.Lime, Color.Cyan, Color.White };
+    
+    int centroX = ClientSize.Width / 2;
+    int centroY = ClientSize.Height / 2;
 
-            _listaCuadros.ForEach(c => { 
-                c.X += c.VelX; 
-                c.Y += c.VelY; 
-                if (c.X > ancho) c.X = -20; if (c.X < -20) c.X = ancho; 
-                if (c.Y > alto) c.Y = -20; if (c.Y < -20) c.Y = alto; 
-            });
-        }
+    for (int i = 0; i < 150; i++) { 
+        double angulo = _rnd.NextDouble() * Math.PI * 2;
+        // Le damos un poco más de fuerza inicial a la explosión para pantallas grandes
+        double velocidad = _rnd.NextDouble() * 18 + 5; 
+        
+        _listaCuadros.Add(new CuadroAnimado { 
+            X = centroX, 
+            Y = centroY, 
+            Tamaño = _rnd.Next(4, 12), 
+            VelX = (float)(Math.Cos(angulo) * velocidad), 
+            VelY = (float)(Math.Sin(angulo) * velocidad),
+            Opacidad = 255, 
+            ColorCuadro = coloresExplosion[_rnd.Next(coloresExplosion.Length)]
+        });
+    }
+}
+
+private void ActualizarParticulas() {
+    int ancho = ClientSize.Width + 20;
+    int alto = ClientSize.Height + 20;
+    int centroX = ClientSize.Width / 2;
+    int centroY = ClientSize.Height / 2;
+
+    if (_pantallaActual == "Puntaje") {
+        _listaCuadros.ForEach(c => { 
+            c.X += c.VelX; 
+            c.Y += c.VelY;
+            c.VelY += 0.15f; 
+            c.VelX *= 0.96f; 
+            c.VelY *= 0.96f; 
+            
+            if (c.Opacidad > 4) c.Opacidad -= 4; 
+            else {
+                c.X = _rnd.Next(0, ClientSize.Width); 
+                c.Y = _rnd.Next(0, ClientSize.Height);
+                
+                double angulo = _rnd.NextDouble() * Math.PI * 2;
+                double velocidad = _rnd.NextDouble() * 8 + 2;
+                c.VelX = (float)(Math.Cos(angulo) * velocidad);
+                c.VelY = (float)(Math.Sin(angulo) * velocidad);
+                c.Opacidad = 255;
+            }
+        });
+    } else {
+        _listaCuadros.ForEach(c => { 
+            c.X += c.VelX; 
+            c.Y += c.VelY; 
+            if (c.X > ancho) c.X = -20; if (c.X < -20) c.X = ancho; 
+            if (c.Y > alto) c.Y = -20; if (c.Y < -20) c.Y = alto; 
+        });
+    }
+}
 
         private void TimerFeedback_Tick(object sender, EventArgs e) {
             _timerFeedback.Stop(); 
@@ -128,6 +176,7 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
             new JuegoDao().GuardarPartida(_idCategoriaSeleccionada, JuegoServicio.correctas, JuegoServicio.incorrectas); 
             _pantallaActual = "Puntaje"; 
             CambiarMusica("tron_music.wav"); 
+            IniciarExplosion(); 
         }
 
         private void CargarPreguntaActual() {
@@ -145,11 +194,12 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
             _tiempoRestante = TiempoPorPregunta; 
             
             Color nc = Color.FromArgb(_rnd.Next(100, 255), _rnd.Next(100, 255), _rnd.Next(100, 255));
-            _listaCuadros.ForEach(c => { c.ColorCuadro = nc; c.VelX = _rnd.Next(-5, 6); c.VelY = _rnd.Next(-5, 6); });
+            if (_pantallaActual != "Puntaje") {
+                _listaCuadros.ForEach(c => { c.ColorCuadro = nc; c.VelX = _rnd.Next(-5, 6); c.VelY = _rnd.Next(-5, 6); });
+            }
         }
 
-
-
+        // ZONA DE DIBUJO Y CLICS 
         protected override void OnPaint(PaintEventArgs e) {
             Graphics g = e.Graphics; 
             g.SmoothingMode = SmoothingMode.HighQuality; 
@@ -176,7 +226,7 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
                     for (int i = 0; i < _categoriasLista.Count; i++) {
                         DibujarBoton(g, new Rectangle(200, 130 + (i * 65), 400, 50), _categoriasLista[i].NombreCategoria, Color.FromArgb(50, 0, 150));
                     }
-                    DibujarBoton(g, new Rectangle(200, 130 + (_categoriasLista.Count * 65), 400, 50), "🎲 MODO ALEATORIO", Color.Maroon);
+                    DibujarBoton(g, new Rectangle(200, 130 + (_categoriasLista.Count * 65), 400, 50), "MUESTRA ALEATORIA", Color.Maroon);
                     DibujarBoton(g, new Rectangle(200, 130 + ((_categoriasLista.Count + 1) * 65), 400, 50), "Regresar", Color.FromArgb(60, 60, 60));
                 }
             } else if (_pantallaActual == "Historial") {
