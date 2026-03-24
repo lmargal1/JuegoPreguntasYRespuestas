@@ -146,7 +146,7 @@ INSERT INTO Opciones (idPregunta, textoOpcion, rutaImagen, esCorrecta) VALUES
 (21, 'Parvada', NULL, false), (21, 'Bandada', NULL, false), (21, 'Colonia', NULL, false), (21, 'Parlamento', NULL, true),
 (22, 'León', NULL, false), (22, 'Guepardo', NULL, true), (22, 'Antílope', NULL, false), (22, 'Avestruz', NULL, false),
 (23, 'Delfines', NULL, true), (23, 'Ballenas', NULL, false), (23, 'Lobos', NULL, false), (23, 'Canarios', NULL, false),
-(24, 'Elefante africano', NULL, false), (24, 'Patagotitan', NULL, false), (24, 'Ballena Azul', NULL, true), (24, 'Mamut', NULL, false),
+(24, 'Elefante africano', NULL, false), (24, 'Patagotitán', NULL, false), (24, 'Ballena Azul', NULL, true), (24, 'Mamut', NULL, false),
 (25, 'Chimpancé', NULL, false), (25, 'Hombre', NULL, true), (25, 'Delfín', NULL, false), (25, 'Elefante', NULL, false),
 (26, 'Imagen A', 'Presentacion/Imagenes/animales/marsupial.jpg', true), (26, 'Imagen B', 'Presentacion/Imagenes/animales/oso.jpg', false), (26, 'Imagen C', 'Presentacion/Imagenes/animales/perezoso.jpg', false), (26, 'Imagen D', 'Presentacion/Imagenes/animales/ratita.jpg', false),
 (27, 'Imagen A', 'Presentacion/Imagenes/animales/tigre.jpg', true), (27, 'Imagen B', 'Presentacion/Imagenes/animales/civeta.jpg', false), (27, 'Imagen C', 'Presentacion/Imagenes/animales/fossa.jpg', false), (27, 'Imagen D', 'Presentacion/Imagenes/animales/lingsang.jpg', false),

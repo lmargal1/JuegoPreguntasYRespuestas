@@ -14,7 +14,7 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
     
     // ZONA DE CONFIGURACION RAPIDA
     private const int TiempoPorPregunta = 15; 
-    private const int TotalParticulas = 150;                        
+    private const int TotalParticulas = 75;                        
     private readonly Color _colorFondo = Color.FromArgb(5, 5, 25);
     private readonly Color _colorBordes = Color.FromArgb(0, 200, 255);
 
