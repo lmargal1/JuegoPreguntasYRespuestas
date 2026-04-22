@@ -95,23 +95,41 @@ namespace JuegoPreguntasYRespuestas.Data
         }
 
         //Guardar partida
-        public void GuardarPartida(int idCategoria, int correctas, int incorrectas)
+        public int GuardarPartida(int idCategoria, int correctas, int incorrectas)
         {
             using (MySqlConnection conexion = conexionBD.ObtenerConexion())
             {
                 conexion.Open();
 
-                string query = "INSERT INTO Partidas (idCategoria, correctas, incorrectas) VALUES (@idCategoria, @correctas, @incorrectas)";
+                string query = "INSERT INTO Partidas (idCategoria, correctas, incorrectas) VALUES (@idCategoria, @correctas, @incorrectas);
+                                SELECT LAST_INSERT_ID();";
                 MySqlCommand cmd = new MySqlCommand(query, conexion);
                 cmd.Parameters.AddWithValue("@idCategoria", idCategoria);
                 cmd.Parameters.AddWithValue("@correctas", correctas);
                 cmd.Parameters.AddWithValue("@incorrectas", incorrectas);
                 cmd.ExecuteNonQuery();
-            }
 
+                int idPartida = Convert.ToInt32(cmd.ExecuteScalar());
+                return idPartida;
+            }
         }
 
-        // --- NUEVO MÉTODO: Obtener preguntas de TODAS las categorías al azar ---
+        //Guardar respuesta 
+        public void GuardarRespuesta(int idPartida, int idPregunta, bool esCorrecta)
+        {
+            using (MySqlConnection conexion = conexionBD.ObtenerConexion())
+            {
+                conexion.Open();
+                string query = "INSERT INTO RespuestaJugador(idPartida, idPregunta, esCorrecta) VALUES (@idPartida, @idPregunta, @esCorrecta)";
+                MySqlCommand cmd = new MySqlCommand(query, conexion);
+                cmd.Parameters.AddWithValue("@idPartida", idPartida);
+                cmd.Parameters.AddWithValue("@idPregunta", idPregunta);
+                cmd.Parameters.AddWithValue("@esCorrecta", esCorrecta);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        //Obtener preguntas de TODAS las categorías al azar
         public List<Pregunta> ObtenerTodasLasPreguntas()
         {
             List<Pregunta> preguntas = new List<Pregunta>();

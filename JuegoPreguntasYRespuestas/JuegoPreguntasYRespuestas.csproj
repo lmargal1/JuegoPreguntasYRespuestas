@@ -97,6 +97,7 @@
   <ItemGroup>
     <Compile Include="Modelo\Categoria.cs" />
     <Compile Include="DAO\ConexionBD.cs" />
+    <Compile Include="Modelo\Respuesta.cs" />
     <Compile Include="Presentacion\Form1.cs">
       <SubType>Form</SubType>
     </Compile>
