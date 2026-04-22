@@ -107,7 +107,6 @@ namespace JuegoPreguntasYRespuestas.Data
                 cmd.Parameters.AddWithValue("@idCategoria", idCategoria);
                 cmd.Parameters.AddWithValue("@correctas", correctas);
                 cmd.Parameters.AddWithValue("@incorrectas", incorrectas);
-                cmd.ExecuteNonQuery();
 
                 int idPartida = Convert.ToInt32(cmd.ExecuteScalar());
                 return idPartida;
