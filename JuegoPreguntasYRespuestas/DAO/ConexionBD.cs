@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MySql.Data.MySqlClient;
 
-using MySql.Data.MySqlClient;
-
-namespace JuegoPreguntasYRespuestas.Data
+namespace JuegoPreguntasYRespuestas.DAO 
 {
     public class ConexionBD
     {
-        private string connectionString = "Server = localhost; Database = juegoDB; User ID = root; Password = root;";
+
+        private const string CadenaConexion = "Server = localhost; Database = juegoDB; User ID = root; Password = root;";
 
         public MySqlConnection ObtenerConexion()
         {
-            return new MySqlConnection(connectionString);
+            return new MySqlConnection(CadenaConexion);
         }
     }
 }

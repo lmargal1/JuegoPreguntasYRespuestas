@@ -1,400 +1,501 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.IO;
 using System.Windows.Forms;
-using JuegoPreguntasYRespuestas.Data; 
+using JuegoPreguntasYRespuestas.DAO;
 
-namespace JuegoPreguntasYRespuestas
-{
-    public class CuadroAnimado
-    {
-        public float X { get; set; }
-        public float Y { get; set; }
-        public float VelX { get; set; } 
-        public float VelY { get; set; } 
-        public int Tamaño { get; set; }
-        public int Opacidad { get; set; }
-        public Color ColorCuadro { get; set; }
+namespace JuegoPreguntasYRespuestas.Presentacion {
+    public class CuadroAnimado { public float X, Y, VelX, VelY; public int Tamaño, Opacidad; public Color ColorCuadro; }
+    public partial class Form1 : Form {
+    
+    // ZONA DE CONFIGURACION RAPIDA
+    private const int TiempoPorPregunta = 15; 
+    private const int TotalParticulas = 75;                        
+    private readonly Color _colorFondo = Color.FromArgb(5, 5, 25);
+    private readonly Color _colorBordes = Color.FromArgb(0, 200, 255);
+
+    private string _pantallaActual = "Inicio";
+    private List<Categoria> _categoriasLista;
+    private List<Opcion> _opcionesActuales;
+    private List<string> _listaHistorial;
+    
+    private int _idCategoriaSeleccionada;
+    private int _tiempoRestante;
+    private int? _indexOpcionSeleccionada;
+    private bool? _respuestaCorrecta;
+    private int _vidasRestantes = 3;
+    private float _puntosTemporales = 0f;
+
+    private Process _procesoMusica;
+    private System.Media.SoundPlayer _reproductorWindows;
+    private Timer _timerCronometro, _timerFeedback;
+    private readonly List<CuadroAnimado> _listaCuadros = new List<CuadroAnimado>();
+    private readonly Random _rnd = new Random();
+
+    // INICIALIZACION
+    public Form1() {
+        InitializeComponent();
+        ConfigurarVentana();
+        IniciarParticulas();
+        CambiarMusica("tron_music.wav"); 
+        
+        Timer motorAnimacion = new Timer { Interval = 16 };
+        motorAnimacion.Tick += (s, e) => { ActualizarParticulas(); Invalidate(); };
+        
+        (_timerCronometro = new Timer { Interval = 1000 }).Tick += (s, e) => { 
+            _tiempoRestante--;
+            if (_tiempoRestante <= 0) {
+                _timerCronometro.Stop();
+                PerderVidaYContinuar();
+            }
+            Invalidate(); 
+        };
+        
+        (_timerFeedback = new Timer { Interval = 1500 }).Tick += TimerFeedback_Tick;
+        
+        motorAnimacion.Start();
     }
 
-    public partial class Form1 : Form
-    {
-        private string pantallaActual = "Inicio";
-        private List<Categoria> categoriasLista; 
-        private List<Opcion> opcionesActuales; 
-        private int idCategoriaSeleccionada;
+    // CONFIGURACION DE VENTANA
+    private void ConfigurarVentana() {
+        Text = @"Trivia Máxima"; 
+        DoubleBuffered = true; 
+        ClientSize = new Size(800, 600);
+        MinimumSize = new Size(800, 600); 
+        StartPosition = FormStartPosition.CenterScreen; 
+        FormBorderStyle = FormBorderStyle.Sizable; 
+        BackColor = _colorFondo;
+        TransparencyKey = Color.Empty; 
+    }
 
-        private Process procesoMusica; // Nuestro nuevo reproductor nativo para Linux
-        private Timer motorAnimacion;
-        private Timer timerCronometro;
-        private Timer timerFeedback;
-        private int tiempoRestante = 20;
-        private List<CuadroAnimado> listaCuadros;
-        private Random rnd = new Random();
+    // CONTROL DE MUSICA
+    private void CambiarMusica(string n) {
+        try {
+            if (_procesoMusica != null && !_procesoMusica.HasExited) _procesoMusica.Kill();
+            _reproductorWindows?.Stop();
+            
+            string r = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "Presentacion", "musica", n));
+            if (!File.Exists(r)) return;
 
-        private int? indexOpcionSeleccionada = null;
-        private bool? respuestaCorrecta = null;
-
-        private readonly Color azulFondo = Color.FromArgb(5, 5, 25);
-        private readonly Color cyanBorde = Color.FromArgb(0, 200, 255);
-
-        public Form1()
-        {
-            InitializeComponent();
-            this.DoubleBuffered = true;
-            this.ClientSize = new Size(800, 600);
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.FormBorderStyle = FormBorderStyle.FixedSingle;
-
-            IniciarParticulas(); 
-            CambiarMusica("tron_music.wav"); 
-
-            motorAnimacion = new Timer { Interval = 16 };
-            motorAnimacion.Tick += (s, e) => { ActualizarParticulas(); this.Invalidate(); };
-            motorAnimacion.Start();
-
-            timerCronometro = new Timer { Interval = 1000 };
-            timerCronometro.Tick += TimerCronometro_Tick;
-
-            timerFeedback = new Timer { Interval = 1500 };
-            timerFeedback.Tick += TimerFeedback_Tick;
-        }
-
-        private void CambiarMusica(string nombreArchivo)
-        {
-            try 
-            {
-                // Matamos la música anterior si estaba sonando
-                if (procesoMusica != null && !procesoMusica.HasExited) {
-                    procesoMusica.Kill();
-                    procesoMusica.Dispose(); 
-                }
-
-                string rutaBase = AppDomain.CurrentDomain.BaseDirectory;
-                string ruta = Path.Combine(rutaBase, "Presentacion", "musica", nombreArchivo);
-
-                if (File.Exists(ruta)) 
-                {
-                    // Ejecutamos paplay de forma invisible
-                    procesoMusica = new Process();
-                    procesoMusica.StartInfo.FileName = "paplay";
-                    procesoMusica.StartInfo.Arguments = $"\"{ruta}\""; 
-                    procesoMusica.StartInfo.UseShellExecute = false;
-                    procesoMusica.StartInfo.CreateNoWindow = true; 
-                    procesoMusica.Start();
-                } 
-                else
-                {
-                    Console.WriteLine("No se encontró la ruta: " + ruta);
-                }
-            } 
-            catch (Exception ex) 
-            {
-                Console.WriteLine("Error al ejecutar paplay: " + ex.Message);
+            if (Environment.OSVersion.Platform == PlatformID.Unix) 
+                _procesoMusica = Process.Start(new ProcessStartInfo("paplay", $"\"{r}\"") { CreateNoWindow = true, UseShellExecute = false });
+            else {
+                _reproductorWindows = new System.Media.SoundPlayer(r);
+                _reproductorWindows.PlayLooping();
             }
-        }
+        } catch (Exception ex) { Console.WriteLine(@"Error Audio: " + ex.Message); }
+    }
 
-        private void IniciarParticulas()
-        {
-            listaCuadros = new List<CuadroAnimado>();
-            for (int i = 0; i < 60; i++) {
-                listaCuadros.Add(new CuadroAnimado {
-                    X = rnd.Next(800), 
-                    Y = rnd.Next(600), 
-                    Tamaño = rnd.Next(5, 20),
-                    VelX = (float)(rnd.NextDouble() * 3 + 1), 
-                    VelY = 0, 
-                    Opacidad = rnd.Next(40, 150),
-                    ColorCuadro = Color.FromArgb(0, 150, 255)
+    // SISTEMA DE PARTICULAS NORMALES
+    private void IniciarParticulas() {
+        _listaCuadros.Clear();
+        for (int i = 0; i < TotalParticulas; i++) 
+            _listaCuadros.Add(new CuadroAnimado { 
+                X = _rnd.Next(2000), Y = _rnd.Next(2000),
+                Tamaño = _rnd.Next(5, 20), 
+                VelX = (float)(_rnd.NextDouble() * 3 + 1), 
+                VelY = 0,
+                Opacidad = _rnd.Next(40, 150), 
+                ColorCuadro = Color.FromArgb(0, 150, 255) 
+            });
+    }
+
+    // EXPLOSION FINAL VICTORIA
+    private void IniciarExplosion() {
+        _listaCuadros.Clear();
+        Color[] coloresExplosion = { Color.Gold, Color.Lime, Color.Cyan, Color.White };
+        
+        int centroX = ClientSize.Width / 2;
+        int centroY = ClientSize.Height / 2;
+
+        for (int i = 0; i < 150; i++) { 
+            double angulo = _rnd.NextDouble() * Math.PI * 2;
+            double velocidad = _rnd.NextDouble() * 18 + 5; 
+            
+            _listaCuadros.Add(new CuadroAnimado { 
+                X = centroX, 
+                Y = centroY, 
+                Tamaño = _rnd.Next(4, 12), 
+                VelX = (float)(Math.Cos(angulo) * velocidad), 
+                VelY = (float)(Math.Sin(angulo) * velocidad),
+                Opacidad = 255, 
+                ColorCuadro = coloresExplosion[_rnd.Next(coloresExplosion.Length)]
+            });
+        }
+    }
+
+    // CENIZAS FINAL DERROTA
+    private void IniciarCenizas() {
+        _listaCuadros.Clear();
+        for (int i = 0; i < 100; i++) {
+            _listaCuadros.Add(new CuadroAnimado {
+                X = _rnd.Next(0, ClientSize.Width),
+                Y = _rnd.Next(ClientSize.Height, ClientSize.Height + 200),
+                Tamaño = _rnd.Next(3, 8),
+                VelX = (float)(_rnd.NextDouble() * 2 - 1),
+                VelY = (float)(_rnd.NextDouble() * -2 - 1), 
+                Opacidad = _rnd.Next(100, 255),
+                ColorCuadro = Color.FromArgb(120, 120, 120) 
+            });
+        }
+    }
+
+    // ACTUALIZAR PARTICULAS
+    private void ActualizarParticulas() {
+        int ancho = ClientSize.Width + 20;
+        int alto = ClientSize.Height + 20;
+
+        if (_pantallaActual == "Puntaje") {
+            if (JuegoServicio.correctas >= 6) {
+                _listaCuadros.ForEach(c => { 
+                    c.X += c.VelX; 
+                    c.Y += c.VelY;
+                    c.VelY += 0.15f; 
+                    c.VelX *= 0.96f; 
+                    c.VelY *= 0.96f; 
+                    
+                    if (c.Opacidad > 4) c.Opacidad -= 4; 
+                    else {
+                        c.X = _rnd.Next(0, ClientSize.Width); 
+                        c.Y = _rnd.Next(0, ClientSize.Height);
+                        double angulo = _rnd.NextDouble() * Math.PI * 2;
+                        double velocidad = _rnd.NextDouble() * 8 + 2;
+                        c.VelX = (float)(Math.Cos(angulo) * velocidad);
+                        c.VelY = (float)(Math.Sin(angulo) * velocidad);
+                        c.Opacidad = 255;
+                    }
+                });
+            } else {
+                _listaCuadros.ForEach(c => {
+                    c.X += c.VelX;
+                    c.Y += c.VelY;
+                    c.Opacidad -= 2;
+                    if (c.Opacidad <= 0 || c.Y < -10) {
+                        c.Y = ClientSize.Height + 10;
+                        c.X = _rnd.Next(0, ClientSize.Width);
+                        c.Opacidad = _rnd.Next(100, 255);
+                    }
                 });
             }
-        }
-
-        private void ActualizarParticulas()
-        {
-            foreach (var c in listaCuadros) {
-                c.X += c.VelX;
-                c.Y += c.VelY;
-                if (c.X > 800) c.X = -c.Tamaño; else if (c.X < -c.Tamaño) c.X = 800;
-                if (c.Y > 600) c.Y = -c.Tamaño; else if (c.Y < -c.Tamaño) c.Y = 600;
-            }
-        }
-
-        private void AlterarFondo()
-        {
-            Color nuevoC = Color.FromArgb(rnd.Next(100, 255), rnd.Next(100, 255), rnd.Next(100, 255));
-            foreach (var c in listaCuadros) {
-                c.ColorCuadro = nuevoC;
-                c.VelX = (float)(rnd.NextDouble() * 8 - 4); 
-                c.VelY = (float)(rnd.NextDouble() * 8 - 4); 
-            }
-        }
-
-        private void TimerCronometro_Tick(object sender, EventArgs e)
-        {
-            tiempoRestante--;
-            if (tiempoRestante <= 0) FinalizarJuego();
-            this.Invalidate();
-        }
-
-        private void TimerFeedback_Tick(object sender, EventArgs e)
-        {
-            timerFeedback.Stop();
-            indexOpcionSeleccionada = null;
-            respuestaCorrecta = null;
-
-            if (JuegoServicio.siguientePregunta()) {
-                CargarPreguntaActual();
-                timerCronometro.Start();
-            } else {
-                FinalizarJuego();
-            }
-            this.Invalidate();
-        }
-
-        private void FinalizarJuego()
-        {
-            timerCronometro.Stop();
-            
-            // ESCUDO ANTICRASH: Solo guarda si jugaste una categoría específica (ID > 0)
-            try {
-                if (idCategoriaSeleccionada > 0) {
-                    new JuegoDAO().GuardarPartida(idCategoriaSeleccionada, JuegoServicio.correctas, JuegoServicio.incorrectas);
-                }
-            } catch (Exception ex) {
-                Console.WriteLine("Error al guardar partida: " + ex.Message);
-            }
-
-            pantallaActual = "Puntaje";
-            CambiarMusica("tron_music.wav");
-        }
-
-        private void CargarPreguntaActual()
-        {
-            if (JuegoServicio.preguntaActual < JuegoServicio.totalPreguntas) {
-                Pregunta pregunta = JuegoServicio.obtenerPreguntaActual();
-                opcionesActuales = new JuegoDAO().ObtenerOpcionesPorPregunta(pregunta.IdPregunta);
-                
-                if (opcionesActuales == null || opcionesActuales.Count == 0) {
-                    if (JuegoServicio.siguientePregunta()) {
-                        CargarPreguntaActual();
-                    } else {
-                        FinalizarJuego();
-                    }
-                    return; 
-                }
-
-                tiempoRestante = 20;
-                AlterarFondo(); 
-            }
-        }
-
-        private void IniciarPartida(List<Pregunta> preguntas) 
-        {
-            if(preguntas == null || preguntas.Count == 0) {
-                MessageBox.Show("No se encontraron preguntas para este modo.");
-                return;
-            }
-            JuegoServicio.iniciaJuego(preguntas);
-            CambiarMusica("tron_music.wav"); 
-            CargarPreguntaActual();
-            pantallaActual = "Jugando";
-            timerCronometro.Start();
-        }
-
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            Graphics g = e.Graphics;
-            g.SmoothingMode = SmoothingMode.HighQuality;
-            g.TextRenderingHint = TextRenderingHint.AntiAlias;
-            g.Clear(azulFondo);
-
-            foreach (var c in listaCuadros) {
-                using (SolidBrush b = new SolidBrush(Color.FromArgb(c.Opacidad, c.ColorCuadro)))
-                    g.FillRectangle(b, c.X, c.Y, c.Tamaño, c.Tamaño);
-            }
-
-            if (pantallaActual == "Inicio") {
-                DibujarTextoContorno(g, "TRIVIA MÁXIMA", new Font("Times New Roman", 50, FontStyle.Bold), new Point(110, 150), Color.White, Color.Gold, 3);
-                DibujarBoton(g, new Rectangle(280, 300, 240, 70), "¡JUGAR!", Color.FromArgb(0, 30, 150), true);
-            }
-            else if (pantallaActual == "Categorias") {
-                DibujarTextoContorno(g, "Elige Categoría", new Font("Segoe UI", 30, FontStyle.Bold), new Point(220, 50), Color.White, Color.Gold, 2);
-                if (categoriasLista != null) {
-                    for (int i = 0; i < categoriasLista.Count; i++) {
-                        DibujarBoton(g, new Rectangle(200, 130 + (i * 70), 400, 50), categoriasLista[i].NombreCategoria, Color.FromArgb(50, 0, 150), false);
-                    }
-                    DibujarBoton(g, new Rectangle(200, 130 + (categoriasLista.Count * 70), 400, 50), "🎲 MODO ALEATORIO", Color.FromArgb(150, 0, 50), true);
-                }
-            }
-            else if (pantallaActual == "Jugando") {
-                DibujarPantallaJuego(g);
-            }
-            else if (pantallaActual == "Puntaje") {
-                DibujarPantallaPuntaje(g);
-            }
-        }
-
-        private void DibujarPantallaJuego(Graphics g)
-        {
-            if (JuegoServicio.preguntaActual >= JuegoServicio.totalPreguntas) return;
-
-            Pregunta p = JuegoServicio.obtenerPreguntaActual();
-            Color cReloj = tiempoRestante > 5 ? Color.Cyan : Color.Red;
-            DibujarTextoContorno(g, tiempoRestante.ToString(), new Font("Consolas", 35, FontStyle.Bold), new Point(710, 20), cReloj, Color.Black);
-    
-            Rectangle rectP = new Rectangle(50, 100, 700, 80);
-            StringFormat sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
-            g.DrawString(p.TextoPregunta, new Font("Segoe UI", 18, FontStyle.Bold), Brushes.White, rectP, sf);
-
-            if (opcionesActuales != null) {
-                bool esImagen = JuegoServicio.esTipo(p) == "imagen";
-        
-                int anchoB = 280;
-                int altoB = esImagen ? 120 : 60; 
-                int yBase = esImagen ? 200 : 250; 
-                int espaciadoV = esImagen ? 135 : 80;
-
-                for (int i = 0; i < opcionesActuales.Count; i++) {
-                    int x = (i % 2 == 0) ? 100 : 420;
-                    int y = (i < 2) ? yBase : yBase + espaciadoV;
-            
-                    Rectangle rB = new Rectangle(x, y, anchoB, altoB);
-                    Color cB = (indexOpcionSeleccionada == i) ? (respuestaCorrecta == true ? Color.Lime : Color.Crimson) : Color.FromArgb(30, 30, 80);
-
-                    if (esImagen && !string.IsNullOrEmpty(opcionesActuales[i].RutaImagen)) {
-                        DibujarBotonImagen(g, rB, opcionesActuales[i].RutaImagen, cB);
-                    } else {
-                        DibujarBoton(g, rB, opcionesActuales[i].TextoOpcion, cB, false);
-                    }
-                }
-            }
-        }
-
-        private void DibujarPantallaPuntaje(Graphics g)
-        {
-            DibujarTextoContorno(g, "RESULTADOS", new Font("Segoe UI", 45, FontStyle.Bold), new Point(200, 80), Color.Gold, Color.Black, 3);
-            string s = $"Correctas: {JuegoServicio.correctas}\n" +
-                       $"Incorrectas: {JuegoServicio.incorrectas}\n" +
-                       $"Efectividad: {JuegoServicio.calcularPorcentajeCorrecto()}%";
-            
-            Rectangle rS = new Rectangle(100, 200, 600, 200);
-            StringFormat sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
-            g.DrawString(s, new Font("Segoe UI", 25, FontStyle.Bold), Brushes.White, rS, sf);
-            
-            DibujarBoton(g, new Rectangle(280, 420, 240, 70), "REINICIAR", Color.FromArgb(0, 150, 50), true);
-        }
-
-        private void DibujarBoton(Graphics g, Rectangle r, string txt, Color bck, bool esD)
-        {
-            DibujarBaseBoton(g, r, bck);
-            float fS = (txt.Length > 30) ? 9 : (txt.Length > 20) ? 10 : 12;
-            StringFormat sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
-            g.DrawString(txt, new Font("Segoe UI", fS, FontStyle.Bold), new SolidBrush(esD ? Color.Gold : Color.White), r, sf);
-        }
-
-        private void DibujarBotonImagen(Graphics g, Rectangle r, string rutaImg, Color bck)
-        {
-            DibujarBaseBoton(g, r, bck);
-            try {
-                string fullPath = Path.Combine(Application.StartupPath, "..", "..", rutaImg);
-                if (!File.Exists(fullPath)) fullPath = fullPath.ToLower();
-
-                if (File.Exists(fullPath)) {
-                    using (Image img = Image.FromFile(fullPath)) {
-                        float escala = Math.Min((float)(r.Width - 20) / img.Width, (float)(r.Height - 10) / img.Height);
-                        int anchoFinal = (int)(img.Width * escala);
-                        int altoFinal = (int)(img.Height * escala);
-                        int posX = r.X + (r.Width - anchoFinal) / 2;
-                        int posY = r.Y + (r.Height - altoFinal) / 2;
-                
-                        g.DrawImage(img, new Rectangle(posX, posY, anchoFinal, altoFinal));
-                    }
-                }
-            } catch (Exception ex) {
-                Console.WriteLine("Error visual: " + ex.Message);
-            }
-        }
-
-        private void DibujarBaseBoton(Graphics g, Rectangle r, Color bck)
-        {
-            using (GraphicsPath p = new GraphicsPath()) {
-                int c = r.Height / 3;
-                p.AddPolygon(new Point[] { new Point(r.X+c, r.Y), new Point(r.Right-c, r.Y), new Point(r.Right, r.Y+c), new Point(r.Right, r.Bottom-c), new Point(r.Right-c, r.Bottom), new Point(r.X+c, r.Bottom), new Point(r.X, r.Bottom-c), new Point(r.X, r.Y+c) });
-                g.FillPath(new SolidBrush(bck), p);
-                g.DrawPath(new Pen(cyanBorde, 3), p);
-            }
-        }
-
-        private void DibujarTextoContorno(Graphics g, string t, Font f, Point p, Color cT, Color cC, int gr = 2)
-        {
-            using (Brush bC = new SolidBrush(cC)) {
-                for (int x = -gr; x <= gr; x += gr)
-                    for (int y = -gr; y <= gr; y += gr)
-                        g.DrawString(t, f, bC, new Point(p.X + x, p.Y + y));
-            }
-            g.DrawString(t, f, new SolidBrush(cT), p);
-        }
-
-        protected override void OnMouseClick(MouseEventArgs e)
-        {
-            if (pantallaActual == "Inicio" && new Rectangle(280, 300, 240, 70).Contains(e.Location)) {
-                categoriasLista = new JuegoDAO().ObtenerCategorias();
-                pantallaActual = "Categorias";
-            }
-            else if (pantallaActual == "Categorias" && categoriasLista != null) {
-                for (int i = 0; i < categoriasLista.Count; i++) {
-                    if (new Rectangle(200, 130 + (i * 70), 400, 50).Contains(e.Location)) {
-                        idCategoriaSeleccionada = categoriasLista[i].IdCategoria;
-                        IniciarPartida(new JuegoDAO().ObtenerPreguntasPorCategoria(idCategoriaSeleccionada));
-                        return;
-                    }
-                }
-                if (new Rectangle(200, 130 + (categoriasLista.Count * 70), 400, 50).Contains(e.Location)) {
-                    idCategoriaSeleccionada = 0; 
-                    IniciarPartida(new JuegoDAO().ObtenerTodasLasPreguntas());
-                }
-            }
-            else if (pantallaActual == "Jugando" && opcionesActuales != null && indexOpcionSeleccionada == null) {
-                Pregunta p = JuegoServicio.obtenerPreguntaActual();
-                bool esImagen = JuegoServicio.esTipo(p) == "imagen";
-                
-                int anchoB = 280;
-                int altoB = esImagen ? 120 : 60; 
-                int yBase = esImagen ? 200 : 250; 
-                int espaciadoV = esImagen ? 135 : 80;
-
-                for (int i = 0; i < opcionesActuales.Count; i++) {
-                    int x = (i % 2 == 0) ? 100 : 420;
-                    int y = (i < 2) ? yBase : yBase + espaciadoV;
-                    
-                    if (new Rectangle(x, y, anchoB, altoB).Contains(e.Location)) {
-                        timerCronometro.Stop();
-                        indexOpcionSeleccionada = i;
-                        respuestaCorrecta = opcionesActuales[i].EsCorrecta;
-                        JuegoServicio.validaRespuesta(opcionesActuales[i].IdOpcion, opcionesActuales);
-                        timerFeedback.Start();
-                    }
-                }
-            }
-            else if (pantallaActual == "Puntaje" && new Rectangle(280, 420, 240, 70).Contains(e.Location)) {
-                pantallaActual = "Inicio"; 
-                IniciarParticulas(); 
-            }
-            this.Invalidate();
-        }
-
-        // Aquí apagamos el proceso de paplay correctamente al cerrar el juego
-        protected override void OnFormClosed(FormClosedEventArgs e) 
-        { 
-            base.OnFormClosed(e); 
-            motorAnimacion?.Stop(); 
-            timerCronometro?.Stop(); 
-            if (procesoMusica != null && !procesoMusica.HasExited) procesoMusica.Kill(); 
+        } else {
+            _listaCuadros.ForEach(c => { 
+                c.X += c.VelX; 
+                c.Y += c.VelY; 
+                if (c.X > ancho) c.X = -20; if (c.X < -20) c.X = ancho; 
+                if (c.Y > alto) c.Y = -20; if (c.Y < -20) c.Y = alto; 
+            });
         }
     }
+
+    // FLUJO DEL JUEGO
+    private void TimerFeedback_Tick(object sender, EventArgs e) {
+        _timerFeedback.Stop(); 
+        _indexOpcionSeleccionada = null; 
+        _respuestaCorrecta = null;
+        
+        if (_vidasRestantes > 0 && JuegoServicio.siguientePregunta()) { 
+            CargarPreguntaActual(); 
+            _timerCronometro.Start(); 
+        } else {
+            FinalizarJuego();
+        }
+        Invalidate(); 
+    }
+
+    // PERDER VIDA POR TIEMPO
+    private void PerderVidaYContinuar() {
+        _vidasRestantes--;
+        _respuestaCorrecta = false;
+        JuegoServicio.incorrectas++;
+        
+        if (_vidasRestantes <= 0) {
+            FinalizarJuego();
+        } else {
+            _timerFeedback.Start();
+        }
+    }
+
+    // FINALIZAR JUEGO CON REDONDEO
+    private void FinalizarJuego() { 
+        _timerCronometro.Stop(); 
+        
+        JuegoServicio.correctas = (int)Math.Round(_puntosTemporales);
+
+        new JuegoDao().GuardarPartida(_idCategoriaSeleccionada, JuegoServicio.correctas, JuegoServicio.incorrectas); 
+        _pantallaActual = "Puntaje"; 
+        CambiarMusica("tron_music.wav"); 
+        
+        if (JuegoServicio.correctas >= 6) {
+            IniciarExplosion(); 
+        } else {
+            IniciarCenizas();
+        }
+        
+        BackColor = _colorFondo;
+    }
+
+    // CARGAR PREGUNTA
+    private void CargarPreguntaActual() {
+        var p = JuegoServicio.obtenerPreguntaActual();
+        if (p == null) return;
+        
+        _opcionesActuales = new JuegoDao().ObtenerOpcionesPorPregunta(p.IdPregunta);
+        
+        if (_opcionesActuales == null || _opcionesActuales.Count == 0) { 
+            JuegoServicio.siguientePregunta(); 
+            CargarPreguntaActual(); 
+            return; 
+        }
+        
+        _tiempoRestante = TiempoPorPregunta; 
+        
+        Color nc = Color.FromArgb(_rnd.Next(100, 255), _rnd.Next(100, 255), _rnd.Next(100, 255));
+        if (_pantallaActual != "Puntaje") {
+            _listaCuadros.ForEach(c => { c.ColorCuadro = nc; c.VelX = _rnd.Next(-5, 6); c.VelY = _rnd.Next(-5, 6); });
+        }
+    }
+
+    // INICIAR PARTIDA
+    private void IniciarPartida(List<Pregunta> l) { 
+        if (l == null || l.Count == 0) return; 
+        JuegoServicio.iniciaJuego(l);
+        _vidasRestantes = 3; 
+        _puntosTemporales = 0f;
+        
+        // --- LIMPIEZA DE VARIABLES DE LA PARTIDA ANTERIOR ---
+        _indexOpcionSeleccionada = null; 
+        _respuestaCorrecta = null;
+        
+        CargarPreguntaActual(); 
+        _pantallaActual = "Jugando"; 
+        _timerCronometro.Start(); 
+    }
+
+    // ZONA DE DIBUJO
+    protected override void OnPaint(PaintEventArgs e) {
+        Graphics g = e.Graphics; 
+        g.SmoothingMode = SmoothingMode.HighQuality; 
+        g.TextRenderingHint = TextRenderingHint.AntiAlias;
+
+        if (_pantallaActual == "Jugando" && _tiempoRestante <= 5 && DateTime.Now.Millisecond < 500) {
+            g.Clear(Color.FromArgb(50, 0, 0));
+        } else {
+            g.Clear(_colorFondo);
+        }
+
+        _listaCuadros.ForEach(c => { 
+            using (var b = new SolidBrush(Color.FromArgb(c.Opacidad, c.ColorCuadro))) 
+                g.FillRectangle(b, c.X, c.Y, c.Tamaño, c.Tamaño); 
+        });
+
+        float offsetX = (ClientSize.Width - 800) / 2f;
+        float offsetY = (ClientSize.Height - 600) / 2f;
+        g.TranslateTransform(offsetX, offsetY); 
+        
+        if (_pantallaActual == "Inicio") { 
+            DibujarTexto(g, "TRIVIA MÁXIMA", 50, 110, 150, Color.Gold); 
+            DibujarBoton(g, new Rectangle(280, 280, 240, 60), "¡JUGAR!", Color.FromArgb(0, 30, 150)); 
+            DibujarBoton(g, new Rectangle(280, 360, 240, 60), "HISTORIAL", Color.FromArgb(40, 40, 40)); 
+        } else if (_pantallaActual == "Categorias") {
+            DibujarTexto(g, "Elige Categoría", 30, 220, 50, Color.Gold);
+            
+            if (_categoriasLista != null) {
+                for (int i = 0; i < _categoriasLista.Count; i++) {
+                    DibujarBoton(g, new Rectangle(200, 130 + (i * 65), 400, 50), _categoriasLista[i].NombreCategoria, Color.FromArgb(50, 0, 150));
+                }
+                DibujarBoton(g, new Rectangle(200, 130 + (_categoriasLista.Count * 65), 400, 50), "MUESTRA ALEATORIA", Color.Maroon);
+                DibujarBoton(g, new Rectangle(200, 130 + ((_categoriasLista.Count + 1) * 65), 400, 50), "Regresar", Color.FromArgb(60, 60, 60));
+            }
+        } else if (_pantallaActual == "Historial") {
+            DibujarTexto(g, "ÚLTIMAS PARTIDAS", 35, 180, 50, Color.Gold); 
+            using (var b = new SolidBrush(Color.FromArgb(180, 10, 10, 40))) g.FillRectangle(b, 150, 120, 500, 350); 
+            using (var pen = new Pen(_colorBordes, 2)) g.DrawRectangle(pen, 150, 120, 500, 350);
+            
+            if (_listaHistorial != null) {
+                for (int i = 0; i < _listaHistorial.Count; i++) {
+                    g.DrawString(_listaHistorial[i], new Font("Consolas", 14, FontStyle.Bold), Brushes.White, 170, 140 + (i * 30));
+                }
+            }
+            
+            DibujarBoton(g, new Rectangle(280, 490, 240, 60), "VOLVER", Color.FromArgb(60, 60, 60));
+        } else if (_pantallaActual == "Jugando") {
+            DibujarPantallaJuego(g);
+        } else if (_pantallaActual == "Puntaje") { 
+            
+            string titulo = JuegoServicio.correctas >= 6 ? "RESULTADOS" : "¡BUEN INTENTO!";
+            Color colorTitulo = JuegoServicio.correctas >= 6 ? Color.Gold : Color.LightPink;
+            
+            DibujarTexto(g, titulo, 45, 150, 80, colorTitulo); 
+            
+            string resultadoTxt = $"Correctas: {JuegoServicio.correctas}\nIncorrectas: {JuegoServicio.incorrectas}\nEfectividad: {JuegoServicio.calcularPorcentajeCorrecto()}%";
+            g.DrawString(resultadoTxt, new Font("Segoe UI", 25, FontStyle.Bold), Brushes.White, new Rectangle(100, 180, 600, 200), new StringFormat { Alignment = StringAlignment.Center }); 
+            
+            string msjLindo = JuegoServicio.correctas >= 6 ? "¡Excelente trabajo!" : "No pasa nada, ¡seguro la próxima te va súper bien!";
+            g.DrawString(msjLindo, new Font("Segoe UI", 16, FontStyle.Italic), Brushes.LightGray, new Rectangle(100, 360, 600, 50), new StringFormat { Alignment = StringAlignment.Center });
+
+            DibujarBoton(g, new Rectangle(280, 440, 240, 70), "REINICIAR", Color.SeaGreen); 
+        }
+    }
+
+    // PANTALLA JUGANDO
+    private void DibujarPantallaJuego(Graphics g) {
+        var p = JuegoServicio.obtenerPreguntaActual(); 
+        if (p == null) return;
+        
+        DibujarTexto(g, _tiempoRestante.ToString(), 35, 710, 20, _tiempoRestante > 5 ? Color.Cyan : Color.Red);
+        DibujarTexto(g, $"Vidas: {_vidasRestantes}", 20, 50, 20, Color.Crimson);
+        
+        g.DrawString(p.TextoPregunta, new Font("Segoe UI", 18, FontStyle.Bold), Brushes.White, new Rectangle(50, 100, 700, 80), new StringFormat { Alignment = StringAlignment.Center });
+        
+        bool esImagen = JuegoServicio.esTipo(p) == "imagen";
+        
+        int shakeX = 0;
+        int shakeY = 0;
+        if (_tiempoRestante <= 5 && _indexOpcionSeleccionada == null) {
+            int intensidad = (6 - _tiempoRestante) * 2;
+            shakeX = _rnd.Next(-intensidad, intensidad + 1);
+            shakeY = _rnd.Next(-intensidad, intensidad + 1);
+        }
+        
+        if (_opcionesActuales != null) {
+            for (int i = 0; i < _opcionesActuales.Count; i++) {
+                int baseX = (i % 2 == 0) ? 100 : 420;
+                int baseY = esImagen ? 200 + (i / 2 * 135) : 250 + (i / 2 * 80);
+                
+                Rectangle r = new Rectangle(baseX + shakeX, baseY + shakeY, 280, esImagen ? 120 : 60);
+                Color c = (_indexOpcionSeleccionada == i) ? (_respuestaCorrecta == true ? Color.Lime : Color.Crimson) : Color.FromArgb(30, 30, 80);
+                
+                DibujarBoton(g, r, "", c);
+                
+                if (esImagen && !string.IsNullOrEmpty(_opcionesActuales[i].RutaImagen)) {
+                    try { 
+                        string fp = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", _opcionesActuales[i].RutaImagen)); 
+                        if (File.Exists(fp)) { 
+                            using (Image im = Image.FromFile(fp)) { 
+                                float s = Math.Min((float)(r.Width - 10) / im.Width, (float)(r.Height - 10) / im.Height); 
+                                g.DrawImage(im, r.X + (r.Width - im.Width * s) / 2, r.Y + (r.Height - im.Height * s) / 2, im.Width * s, im.Height * s); 
+                            } 
+                        } 
+                    } catch (Exception ex) { Console.WriteLine(@"Error Img: " + ex.Message); }
+                } else {
+                    g.DrawString(_opcionesActuales[i].TextoOpcion, new Font("Segoe UI", 11, FontStyle.Bold), Brushes.White, r, new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+                }
+            }
+        }
+    }
+
+    // UTILIDAD DIBUJAR TEXTO
+    private void DibujarTexto(Graphics g, string t, int s, int x, int y, Color c) { 
+        using (var f = new Font("Segoe UI", s, FontStyle.Bold)) { 
+            for (int i = -2; i <= 2; i += 2) for (int j = -2; j <= 2; j += 2) g.DrawString(t, f, Brushes.Black, x + i, y + j); 
+            g.DrawString(t, f, new SolidBrush(c), x, y); 
+        } 
+    }
+
+    // UTILIDAD DIBUJAR BOTON
+    private void DibujarBoton(Graphics g, Rectangle r, string t, Color b) {
+        using (var path = new GraphicsPath()) { 
+            int c = r.Height / 3; 
+            path.AddPolygon(new[] { 
+                new Point(r.X + c, r.Y), new Point(r.Right - c, r.Y), 
+                new Point(r.Right, r.Y + c), new Point(r.Right, r.Bottom - c), 
+                new Point(r.Right - c, r.Bottom), new Point(r.X + c, r.Bottom), 
+                new Point(r.X, r.Bottom - c), new Point(r.X, r.Y + c) 
+            }); 
+            g.FillPath(new SolidBrush(b), path); 
+            g.DrawPath(new Pen(_colorBordes, 3), path); 
+        }
+        if (!string.IsNullOrEmpty(t)) 
+            g.DrawString(t, new Font("Segoe UI", t.Length > 20 ? 9 : 11, FontStyle.Bold), Brushes.White, r, new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+    }
+
+    // CLICS DEL RATON
+    protected override void OnMouseClick(MouseEventArgs e) {
+        float offsetX = (ClientSize.Width - 800) / 2f;
+        float offsetY = (ClientSize.Height - 600) / 2f;
+        Point clickReal = new Point((int)(e.X - offsetX), (int)(e.Y - offsetY));
+
+        if (_pantallaActual == "Inicio") { 
+            if (new Rectangle(280, 280, 240, 60).Contains(clickReal)) { _categoriasLista = new JuegoDao().ObtenerCategorias(); _pantallaActual = "Categorias"; } 
+            else if (new Rectangle(280, 360, 240, 60).Contains(clickReal)) { _listaHistorial = new JuegoDao().ObtenerHistorial(); _pantallaActual = "Historial"; } 
+        } else if (_pantallaActual == "Categorias") {
+            if (_categoriasLista != null) {
+                for (int i = 0; i < _categoriasLista.Count; i++) {
+                    if (new Rectangle(200, 130 + (i * 65), 400, 50).Contains(clickReal)) { 
+                        _idCategoriaSeleccionada = _categoriasLista[i].IdCategoria; 
+                        IniciarPartida(new JuegoDao().ObtenerPreguntasPorCategoria(_idCategoriaSeleccionada)); 
+                        return; 
+                    }
+                }
+                if (new Rectangle(200, 130 + (_categoriasLista.Count * 65), 400, 50).Contains(clickReal)) { 
+                    _idCategoriaSeleccionada = 0; 
+                    IniciarPartida(new JuegoDao().ObtenerTodasLasPreguntas()); 
+                }
+                if (new Rectangle(200, 130 + ((_categoriasLista.Count + 1) * 65), 400, 50).Contains(clickReal))
+                {
+                    _pantallaActual = "Inicio";
+                }
+            }
+        } else if (_pantallaActual == "Historial" && new Rectangle(280, 490, 240, 60).Contains(clickReal)) {
+            _pantallaActual = "Inicio";
+        } else if (_pantallaActual == "Jugando" && _indexOpcionSeleccionada == null) {
+            var p = JuegoServicio.obtenerPreguntaActual(); 
+            if (p == null) return;
+            bool img = JuegoServicio.esTipo(p) == "imagen";
+            
+            int shakeX = 0;
+            int shakeY = 0;
+            if (_tiempoRestante <= 5) {
+                int intensidad = (6 - _tiempoRestante) * 2;
+                shakeX = _rnd.Next(-intensidad, intensidad + 1);
+                shakeY = _rnd.Next(-intensidad, intensidad + 1);
+            }
+
+            if (_opcionesActuales != null) {
+                for (int i = 0; i < _opcionesActuales.Count; i++) {
+                    int baseX = (i % 2 == 0) ? 100 : 420;
+                    int baseY = img ? 200 + (i / 2 * 135) : 250 + (i / 2 * 80);
+                    Rectangle r = new Rectangle(baseX + shakeX, baseY + shakeY, 280, img ? 120 : 60);
+                    
+                    if (r.Contains(clickReal)) { 
+                        _timerCronometro.Stop(); 
+                        _indexOpcionSeleccionada = i; 
+                        _respuestaCorrecta = _opcionesActuales[i].EsCorrecta; 
+                        
+                        if (_respuestaCorrecta == true) {
+                            if (_tiempoRestante > 5) {
+                                _puntosTemporales += 1f;
+                            } else {
+                                _puntosTemporales += 0.5f; 
+                            }
+                        } else {
+                            _vidasRestantes--;
+                        }
+
+                        JuegoServicio.validaRespuesta(_opcionesActuales[i].IdOpcion, _opcionesActuales); 
+                        
+                        if (_vidasRestantes <= 0) {
+                            FinalizarJuego();
+                        } else {
+                            _timerFeedback.Start(); 
+                        }
+                    }
+                }
+            }
+        } else if (_pantallaActual == "Puntaje" && new Rectangle(280, 440, 240, 70).Contains(clickReal)) { 
+            _pantallaActual = "Inicio"; 
+            
+            // --- LIMPIEZA ADICIONAL AL VOLVER AL INICIO ---
+            _indexOpcionSeleccionada = null;
+            _respuestaCorrecta = null;
+            
+            IniciarParticulas(); 
+        }
+        Invalidate(); 
+    }
+}
 }
