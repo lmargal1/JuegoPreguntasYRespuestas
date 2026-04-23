@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using JuegoPreguntasYRespuestas.Modelo;
 
 namespace JuegoPreguntasYRespuestas
 {
@@ -12,6 +13,7 @@ namespace JuegoPreguntasYRespuestas
         private static string tipoTexto = "texto";
         private static string tipoImagen = "imagen";
         private static List<Pregunta> preguntasJuego = new List<Pregunta>();
+        private static List<Respuesta> respuestas = new List<Respuesta>();
         public static int preguntaActual { get; set; }
         public static int correctas { get; set; }
         public static int incorrectas { get; set; }
@@ -24,6 +26,7 @@ namespace JuegoPreguntasYRespuestas
             correctas = 0;
             incorrectas = 0;
             totalPreguntas = preguntasJuego.Count;
+            respuestas = new List<Respuesta>();
         }
 
         public static Pregunta obtenerPreguntaActual()
@@ -37,12 +40,23 @@ namespace JuegoPreguntasYRespuestas
             return preguntaActual < preguntasJuego.Count;
         }
 
-        public static void registraRespuesta(bool esCorrecta)
+        public static void registraRespuesta(int idPregunta, bool esCorrecta)
         {
             if (esCorrecta == true)
                 correctas++;
             else
                 incorrectas++;
+
+            respuestas.Add(new Respuesta
+            {
+                IDPregunta = idPregunta,
+                EsCorrecta = esCorrecta
+            });
+        }
+
+        public static List<Respuesta> obtenerRespuestas()
+        {
+            return respuestas;
         }
 
         public static List<Pregunta> desordenarPreguntas(List<Pregunta> preguntas)
@@ -74,17 +88,19 @@ namespace JuegoPreguntasYRespuestas
         public static bool validaRespuesta(int idSeleccionada, List<Opcion> opciones)
         {
             bool esCorrecta = false;
+            int idPregunta = 0;
 
-            foreach(Opcion opcion in opciones)
+            foreach (Opcion opcion in opciones)
             {
                 if(opcion.IdOpcion == idSeleccionada)
                 {
                     esCorrecta = opcion.EsCorrecta;
+                    idPregunta = opcion.IdPregunta;
                     break;
                 }
             }
 
-            registraRespuesta(esCorrecta);
+            registraRespuesta(idPregunta, esCorrecta);
             return esCorrecta;
         }
 

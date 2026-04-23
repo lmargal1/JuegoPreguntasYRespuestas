@@ -94,24 +94,32 @@ namespace JuegoPreguntasYRespuestas.DAO
         {
             try 
             {
-                conexion.Open();
+                using(var conexion = _conexionBd.ObtenerConexion())
+                {
+                    conexion.Open();
 
-                string query = "INSERT INTO Partidas (idCategoria, correctas, incorrectas) VALUES (@idCategoria, @correctas, @incorrectas);
+                    string query = @"INSERT INTO Partidas (idCategoria, correctas, incorrectas) VALUES (@idCategoria, @correctas, @incorrectas);
                                 SELECT LAST_INSERT_ID();";
-                MySqlCommand cmd = new MySqlCommand(query, conexion);
-                cmd.Parameters.AddWithValue("@idCategoria", idCategoria);
-                cmd.Parameters.AddWithValue("@correctas", correctas);
-                cmd.Parameters.AddWithValue("@incorrectas", incorrectas);
+                    MySqlCommand cmd = new MySqlCommand(query, conexion);
+                    cmd.Parameters.AddWithValue("@idCategoria", idCategoria);
+                    cmd.Parameters.AddWithValue("@correctas", correctas);
+                    cmd.Parameters.AddWithValue("@incorrectas", incorrectas);
 
-                int idPartida = Convert.ToInt32(cmd.ExecuteScalar());
-                return idPartida;
+                    int idPartida = Convert.ToInt32(cmd.ExecuteScalar());
+                    return idPartida;
+                }
+            }
+            catch (Exception ex) 
+            {
+                Console.WriteLine("Error guardando partida: " + ex.Message);
+                return -1; // Indicamos error con un ID negativo
             }
         }
 
         //Guardar respuesta 
         public void GuardarRespuesta(int idPartida, int idPregunta, bool esCorrecta)
         {
-            using (MySqlConnection conexion = conexionBD.ObtenerConexion())
+            using (MySqlConnection conexion = _conexionBd.ObtenerConexion())
             {
                 conexion.Open();
                 string query = "INSERT INTO RespuestaJugador(idPartida, idPregunta, esCorrecta) VALUES (@idPartida, @idPregunta, @esCorrecta)";
