@@ -96,8 +96,7 @@ namespace JuegoPreguntasYRespuestas.DAO
             {
                 conexion.Open();
 
-                string query = "INSERT INTO Partidas (idCategoria, correctas, incorrectas) VALUES (@idCategoria, @correctas, @incorrectas);
-                                SELECT LAST_INSERT_ID();";
+                string query = "INSERT INTO Partidas (idCategoria, correctas, incorrectas) VALUES (@idCategoria, @correctas, @incorrectas); SELECT LAST_INSERT_ID();";
                 MySqlCommand cmd = new MySqlCommand(query, conexion);
                 cmd.Parameters.AddWithValue("@idCategoria", idCategoria);
                 cmd.Parameters.AddWithValue("@correctas", correctas);
