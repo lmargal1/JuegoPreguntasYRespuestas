@@ -89,26 +89,67 @@ namespace JuegoPreguntasYRespuestas.DAO
             return opciones;
         }
 
-        public void GuardarPartida(int idCat, int corr, int incorr)
+        // Guardar partida -> devuelve el idPartida generado
+        public int GuardarPartida(string nombreJugador, int? idCategoria, int correctas, int incorrectas)
         {
-            try 
+            try
             {
                 using (var conexion = _conexionBd.ObtenerConexion())
                 {
                     conexion.Open();
-                    
-                    const string query = "INSERT INTO Partidas (idCategoria, correctas, incorrectas) VALUES (@id, @c, @i)";
+
+                    const string query = @"
+                INSERT INTO Partidas (nombreJugador, idCategoria, correctas, incorrectas, fechaPartida)
+                VALUES (@nombreJugador, @idCategoria, @correctas, @incorrectas, NOW());
+                SELECT LAST_INSERT_ID();";
+
                     var cmd = new MySqlCommand(query, conexion);
-                    
-                    cmd.Parameters.AddWithValue("@id", idCat == 0 ? (object)DBNull.Value : idCat);
-                    cmd.Parameters.AddWithValue("@c", corr);
-                    cmd.Parameters.AddWithValue("@i", incorr);
+                    cmd.Parameters.AddWithValue("@nombreJugador", nombreJugador);
+                    cmd.Parameters.AddWithValue("@idCategoria", (object)idCategoria ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@correctas", correctas);
+                    cmd.Parameters.AddWithValue("@incorrectas", incorrectas);
+
+                    return Convert.ToInt32(cmd.ExecuteScalar());
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error guardando Partida: " + ex.Message);
+                return -1;
+            }
+        }
+
+        // Guardar respuesta individual de una partida.
+        // idOpcionElegida = null cuando el jugador no contestó
+        public void GuardarRespuesta(int idPartida, int idPregunta, int? idOpcionElegida, bool esCorrecta)
+        {
+            try
+            {
+                using (var conexion = _conexionBd.ObtenerConexion())
+                {
+                    conexion.Open();
+
+                    const string query = @"
+                INSERT INTO RespuestasPartida (idPartida, idPregunta, idOpcionElegida, esCorrecta)
+                VALUES (@idPartida, @idPregunta, @idOpcionElegida, @esCorrecta)";
+
+                    var cmd = new MySqlCommand(query, conexion);
+                    cmd.Parameters.AddWithValue("@idPartida", idPartida);
+                    cmd.Parameters.AddWithValue("@idPregunta", idPregunta);
+                    cmd.Parameters.AddWithValue("@idOpcionElegida", (object)idOpcionElegida ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@esCorrecta", esCorrecta);
+
                     cmd.ExecuteNonQuery();
                 }
             }
-            catch (Exception ex) { Console.WriteLine(@"Error DB al guardar: " + ex.Message); }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error guardando Respuesta: " + ex.Message);
+            }
         }
 
+
+        //Obtener preguntas de TODAS las categorías al azar
         public List<Pregunta> ObtenerTodasLasPreguntas()
         {
             var preguntas = new List<Pregunta>();
