@@ -5,7 +5,7 @@ namespace JuegoPreguntasYRespuestas.DAO
     public class ConexionBD
     {
 
-        private const string CadenaConexion = "Server = localhost; Database = juegoDB; User ID = root; Password = MV301!;";
+        private const string CadenaConexion = "Server = localhost; Database = juegoDB; User ID = root; Password = root;";
 
         public MySqlConnection ObtenerConexion()
         {

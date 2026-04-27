@@ -89,38 +89,65 @@ namespace JuegoPreguntasYRespuestas.DAO
             return opciones;
         }
 
-        //Guardar partida
-        public int GuardarPartida(int idCategoria, int correctas, int incorrectas)
+        // Guardar partida -> devuelve el idPartida generado
+        public int GuardarPartida(string nombreJugador, int? idCategoria, int correctas, int incorrectas)
         {
-            try 
+            try
             {
-                conexion.Open();
+                using (var conexion = _conexionBd.ObtenerConexion())
+                {
+                    conexion.Open();
 
-                string query = "INSERT INTO Partidas (idCategoria, correctas, incorrectas) VALUES (@idCategoria, @correctas, @incorrectas); SELECT LAST_INSERT_ID();";
-                MySqlCommand cmd = new MySqlCommand(query, conexion);
-                cmd.Parameters.AddWithValue("@idCategoria", idCategoria);
-                cmd.Parameters.AddWithValue("@correctas", correctas);
-                cmd.Parameters.AddWithValue("@incorrectas", incorrectas);
+                    const string query = @"
+                INSERT INTO Partidas (nombreJugador, idCategoria, correctas, incorrectas, fechaPartida)
+                VALUES (@nombreJugador, @idCategoria, @correctas, @incorrectas, NOW());
+                SELECT LAST_INSERT_ID();";
 
-                int idPartida = Convert.ToInt32(cmd.ExecuteScalar());
-                return idPartida;
+                    var cmd = new MySqlCommand(query, conexion);
+                    cmd.Parameters.AddWithValue("@nombreJugador", nombreJugador);
+                    cmd.Parameters.AddWithValue("@idCategoria", (object)idCategoria ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@correctas", correctas);
+                    cmd.Parameters.AddWithValue("@incorrectas", incorrectas);
+
+                    return Convert.ToInt32(cmd.ExecuteScalar());
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error guardando Partida: " + ex.Message);
+                return -1;
             }
         }
 
-        //Guardar respuesta 
-        public void GuardarRespuesta(int idPartida, int idPregunta, bool esCorrecta)
+        // Guardar respuesta individual de una partida.
+        // idOpcionElegida = null cuando el jugador no contestó
+        public void GuardarRespuesta(int idPartida, int idPregunta, int? idOpcionElegida, bool esCorrecta)
         {
-            using (MySqlConnection conexion = conexionBD.ObtenerConexion())
+            try
             {
-                conexion.Open();
-                string query = "INSERT INTO RespuestaJugador(idPartida, idPregunta, esCorrecta) VALUES (@idPartida, @idPregunta, @esCorrecta)";
-                MySqlCommand cmd = new MySqlCommand(query, conexion);
-                cmd.Parameters.AddWithValue("@idPartida", idPartida);
-                cmd.Parameters.AddWithValue("@idPregunta", idPregunta);
-                cmd.Parameters.AddWithValue("@esCorrecta", esCorrecta);
-                cmd.ExecuteNonQuery();
+                using (var conexion = _conexionBd.ObtenerConexion())
+                {
+                    conexion.Open();
+
+                    const string query = @"
+                INSERT INTO RespuestasPartida (idPartida, idPregunta, idOpcionElegida, esCorrecta)
+                VALUES (@idPartida, @idPregunta, @idOpcionElegida, @esCorrecta)";
+
+                    var cmd = new MySqlCommand(query, conexion);
+                    cmd.Parameters.AddWithValue("@idPartida", idPartida);
+                    cmd.Parameters.AddWithValue("@idPregunta", idPregunta);
+                    cmd.Parameters.AddWithValue("@idOpcionElegida", (object)idOpcionElegida ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@esCorrecta", esCorrecta);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error guardando Respuesta: " + ex.Message);
             }
         }
+
 
         //Obtener preguntas de TODAS las categorías al azar
         public List<Pregunta> ObtenerTodasLasPreguntas()
