@@ -105,6 +105,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="DAO\JuegoDAO.cs" />
+    <Compile Include="Servicio\Red.cs" />
     <Compile Include="Servicio\JuegoServicio.cs" />
     <Compile Include="Modelo\Opcion.cs" />
     <Compile Include="Modelo\Pregunta.cs" />
