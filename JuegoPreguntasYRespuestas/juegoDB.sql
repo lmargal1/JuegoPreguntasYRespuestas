@@ -3,10 +3,12 @@ CREATE DATABASE IF NOT EXISTS juegoDB;
 USE juegoDB;
 
 -- 2. Limpieza (Orden correcto por llaves foráneas)
+DROP TABLE IF EXISTS RespuestasPartida;
 DROP TABLE IF EXISTS Opciones;
 DROP TABLE IF EXISTS Partidas;
 DROP TABLE IF EXISTS Preguntas;
 DROP TABLE IF EXISTS Categorias;
+
 
 -- 3. Creación de Tablas
 CREATE TABLE Categorias
@@ -34,15 +36,31 @@ CREATE TABLE Opciones
     FOREIGN KEY (idPregunta) REFERENCES Preguntas(idPregunta)
 );
 
--- CORRECCIÓN: idCategoria ahora permite NULL para el Modo Aleatorio
+-- Partidas: idCategoria NULL para Modo Aleatorio
 CREATE TABLE Partidas
 (
-    idPartida INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    idCategoria INT NULL, 
-    correctas INT NOT NULL,
-    incorrectas INT NOT NULL,
+    idPartida     INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    idCategoria   INT NULL, 
+    nombreJugador VARCHAR(50) NOT NULL DEFAULT 'Anónimo',
+    fechaPartida  DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    correctas     INT NOT NULL,
+    incorrectas   INT NOT NULL,
     FOREIGN KEY (idCategoria) REFERENCES Categorias(idCategoria)
 );
+
+-- Detalle: cada respuesta del jugador en cada partida
+CREATE TABLE RespuestasPartida
+(
+    idRespuestaPartida INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    idPartida INT NOT NULL,
+    idPregunta INT NOT NULL,
+    idOpcionElegida INT NULL, -- NULL = no respondió o se acabó el tiempo
+    esCorrecta BOOLEAN NOT NULL,
+    FOREIGN KEY (idPartida) REFERENCES Partidas(idPartida) ON DELETE CASCADE,
+    FOREIGN KEY (idPregunta) REFERENCES Preguntas(idPregunta),
+    FOREIGN KEY (idOpcionElegida) REFERENCES Opciones(idOpcion)
+);
+
 
 -- 4. Inserción de Categorías
 INSERT INTO Categorias(nombreCategoria) VALUES

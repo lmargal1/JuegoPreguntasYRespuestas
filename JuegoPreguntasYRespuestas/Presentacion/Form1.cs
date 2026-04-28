@@ -14,7 +14,7 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
     
     // ZONA DE CONFIGURACION RAPIDA
     private const int TiempoPorPregunta = 15; 
-    private const int TotalParticulas = 75;                        
+    private const int TotalParticulas = 15;                        
     private readonly Color _colorFondo = Color.FromArgb(5, 5, 25);
     private readonly Color _colorBordes = Color.FromArgb(0, 200, 255);
 
@@ -225,7 +225,7 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
         
         JuegoServicio.correctas = (int)Math.Round(_puntosTemporales);
 
-        new JuegoDao().GuardarPartida(_idCategoriaSeleccionada, JuegoServicio.correctas, JuegoServicio.incorrectas); 
+        int idPartida = new JuegoDao().GuardarPartida("JugadorLocal", _idCategoriaSeleccionada, JuegoServicio.correctas, JuegoServicio.incorrectas);
         _pantallaActual = "Puntaje"; 
         CambiarMusica("tron_music.wav"); 
         
