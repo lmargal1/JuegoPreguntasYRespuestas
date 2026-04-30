@@ -7,9 +7,14 @@ using System.Drawing.Text;
 using System.IO;
 using System.Windows.Forms;
 using JuegoPreguntasYRespuestas.DAO;
+using JuegoPreguntasYRespuestas.Presentacion;  
+using JuegoPreguntasYRespuestas.Modelo; 
+using JuegoPreguntasYRespuestas.Servicio;
+using Newtonsoft.Json;
 
 namespace JuegoPreguntasYRespuestas.Presentacion {
     public class CuadroAnimado { public float X, Y, VelX, VelY; public int Tamaño, Opacidad; public Color ColorCuadro; }
+    
     public partial class Form1 : Form {
     
     // ZONA DE CONFIGURACION RAPIDA
@@ -21,7 +26,16 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
     private string _pantallaActual = "Inicio";
     private List<Categoria> _categoriasLista;
     private List<Opcion> _opcionesActuales;
-    private List<string> _listaHistorial;
+    
+    // VARIABLES DEL HISTORIAL DESPLEGABLE
+    private List<Tuple<string, List<string>>> _historialDesplegable;
+    private int _partidaExpandida = -1;
+    private int _scrollHistorial = 0;
+    
+    private bool _esPartidaMultijugador = false;
+    private string _rankingRedTexto = "Calculando resultados...";
+    
+    private List<Tuple<int, string, bool>> _registroRespuestas = new List<Tuple<int, string, bool>>();
     
     private int _idCategoriaSeleccionada;
     private int _tiempoRestante;
@@ -44,7 +58,12 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
         CambiarMusica("tron_music.wav"); 
         
         Timer motorAnimacion = new Timer { Interval = 16 };
-        motorAnimacion.Tick += (s, e) => { ActualizarParticulas(); Invalidate(); };
+        motorAnimacion.Tick += (s, e) => { 
+            if (this.Visible) {
+                ActualizarParticulas(); 
+                Invalidate(); 
+            }
+        };
         
         (_timerCronometro = new Timer { Interval = 1000 }).Tick += (s, e) => { 
             _tiempoRestante--;
@@ -56,11 +75,9 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
         };
         
         (_timerFeedback = new Timer { Interval = 1500 }).Tick += TimerFeedback_Tick;
-        
         motorAnimacion.Start();
     }
 
-    // CONFIGURACION DE VENTANA
     private void ConfigurarVentana() {
         Text = @"Trivia Máxima"; 
         DoubleBuffered = true; 
@@ -72,7 +89,6 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
         TransparencyKey = Color.Empty; 
     }
 
-    // CONTROL DE MUSICA
     private void CambiarMusica(string n) {
         try {
             if (_procesoMusica != null && !_procesoMusica.HasExited) _procesoMusica.Kill();
@@ -90,108 +106,75 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
         } catch (Exception ex) { Console.WriteLine(@"Error Audio: " + ex.Message); }
     }
 
-    // SISTEMA DE PARTICULAS NORMALES
     private void IniciarParticulas() {
         _listaCuadros.Clear();
         for (int i = 0; i < TotalParticulas; i++) 
             _listaCuadros.Add(new CuadroAnimado { 
                 X = _rnd.Next(2000), Y = _rnd.Next(2000),
-                Tamaño = _rnd.Next(5, 20), 
-                VelX = (float)(_rnd.NextDouble() * 3 + 1), 
-                VelY = 0,
-                Opacidad = _rnd.Next(40, 150), 
-                ColorCuadro = Color.FromArgb(0, 150, 255) 
+                Tamaño = _rnd.Next(5, 20), VelX = (float)(_rnd.NextDouble() * 3 + 1), VelY = 0,
+                Opacidad = _rnd.Next(40, 150), ColorCuadro = Color.FromArgb(0, 150, 255) 
             });
     }
 
-    // EXPLOSION FINAL VICTORIA
     private void IniciarExplosion() {
         _listaCuadros.Clear();
         Color[] coloresExplosion = { Color.Gold, Color.Lime, Color.Cyan, Color.White };
-        
-        int centroX = ClientSize.Width / 2;
-        int centroY = ClientSize.Height / 2;
+        int centroX = ClientSize.Width / 2; int centroY = ClientSize.Height / 2;
 
         for (int i = 0; i < 150; i++) { 
             double angulo = _rnd.NextDouble() * Math.PI * 2;
             double velocidad = _rnd.NextDouble() * 18 + 5; 
-            
             _listaCuadros.Add(new CuadroAnimado { 
-                X = centroX, 
-                Y = centroY, 
-                Tamaño = _rnd.Next(4, 12), 
-                VelX = (float)(Math.Cos(angulo) * velocidad), 
-                VelY = (float)(Math.Sin(angulo) * velocidad),
-                Opacidad = 255, 
-                ColorCuadro = coloresExplosion[_rnd.Next(coloresExplosion.Length)]
+                X = centroX, Y = centroY, Tamaño = _rnd.Next(4, 12), 
+                VelX = (float)(Math.Cos(angulo) * velocidad), VelY = (float)(Math.Sin(angulo) * velocidad),
+                Opacidad = 255, ColorCuadro = coloresExplosion[_rnd.Next(coloresExplosion.Length)]
             });
         }
     }
 
-    // CENIZAS FINAL DERROTA
     private void IniciarCenizas() {
         _listaCuadros.Clear();
         for (int i = 0; i < 100; i++) {
             _listaCuadros.Add(new CuadroAnimado {
-                X = _rnd.Next(0, ClientSize.Width),
-                Y = _rnd.Next(ClientSize.Height, ClientSize.Height + 200),
-                Tamaño = _rnd.Next(3, 8),
-                VelX = (float)(_rnd.NextDouble() * 2 - 1),
-                VelY = (float)(_rnd.NextDouble() * -2 - 1), 
-                Opacidad = _rnd.Next(100, 255),
-                ColorCuadro = Color.FromArgb(120, 120, 120) 
+                X = _rnd.Next(0, ClientSize.Width), Y = _rnd.Next(ClientSize.Height, ClientSize.Height + 200),
+                Tamaño = _rnd.Next(3, 8), VelX = (float)(_rnd.NextDouble() * 2 - 1), VelY = (float)(_rnd.NextDouble() * -2 - 1), 
+                Opacidad = _rnd.Next(100, 255), ColorCuadro = Color.FromArgb(120, 120, 120) 
             });
         }
     }
 
-    // ACTUALIZAR PARTICULAS
     private void ActualizarParticulas() {
         int ancho = ClientSize.Width + 20;
         int alto = ClientSize.Height + 20;
 
-        if (_pantallaActual == "Puntaje") {
+        if (_pantallaActual == "Puntaje" || _pantallaActual == "RankingRed") {
             if (JuegoServicio.correctas >= 6) {
                 _listaCuadros.ForEach(c => { 
-                    c.X += c.VelX; 
-                    c.Y += c.VelY;
-                    c.VelY += 0.15f; 
-                    c.VelX *= 0.96f; 
-                    c.VelY *= 0.96f; 
-                    
+                    c.X += c.VelX; c.Y += c.VelY; c.VelY += 0.15f; c.VelX *= 0.96f; c.VelY *= 0.96f; 
                     if (c.Opacidad > 4) c.Opacidad -= 4; 
                     else {
-                        c.X = _rnd.Next(0, ClientSize.Width); 
-                        c.Y = _rnd.Next(0, ClientSize.Height);
-                        double angulo = _rnd.NextDouble() * Math.PI * 2;
-                        double velocidad = _rnd.NextDouble() * 8 + 2;
-                        c.VelX = (float)(Math.Cos(angulo) * velocidad);
-                        c.VelY = (float)(Math.Sin(angulo) * velocidad);
-                        c.Opacidad = 255;
+                        c.X = _rnd.Next(0, ClientSize.Width); c.Y = _rnd.Next(0, ClientSize.Height);
+                        double angulo = _rnd.NextDouble() * Math.PI * 2; double velocidad = _rnd.NextDouble() * 8 + 2;
+                        c.VelX = (float)(Math.Cos(angulo) * velocidad); c.VelY = (float)(Math.Sin(angulo) * velocidad); c.Opacidad = 255;
                     }
                 });
             } else {
                 _listaCuadros.ForEach(c => {
-                    c.X += c.VelX;
-                    c.Y += c.VelY;
-                    c.Opacidad -= 2;
+                    c.X += c.VelX; c.Y += c.VelY; c.Opacidad -= 2;
                     if (c.Opacidad <= 0 || c.Y < -10) {
-                        c.Y = ClientSize.Height + 10;
-                        c.X = _rnd.Next(0, ClientSize.Width);
-                        c.Opacidad = _rnd.Next(100, 255);
+                        c.Y = ClientSize.Height + 10; c.X = _rnd.Next(0, ClientSize.Width); c.Opacidad = _rnd.Next(100, 255);
                     }
                 });
             }
         } else {
             _listaCuadros.ForEach(c => { 
-                c.X += c.VelX; 
-                c.Y += c.VelY; 
+                c.X += c.VelX; c.Y += c.VelY; 
                 if (c.X > ancho) c.X = -20; if (c.X < -20) c.X = ancho; 
                 if (c.Y > alto) c.Y = -20; if (c.Y < -20) c.Y = alto; 
             });
         }
     }
 
-    // FLUJO DEL JUEGO
     private void TimerFeedback_Tick(object sender, EventArgs e) {
         _timerFeedback.Stop(); 
         _indexOpcionSeleccionada = null; 
@@ -206,103 +189,106 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
         Invalidate(); 
     }
 
-    // PERDER VIDA POR TIEMPO
     private void PerderVidaYContinuar() {
         _vidasRestantes--;
         _respuestaCorrecta = false;
         JuegoServicio.incorrectas++;
         
-        if (_vidasRestantes <= 0) {
-            FinalizarJuego();
-        } else {
-            _timerFeedback.Start();
+        var p = JuegoServicio.obtenerPreguntaActual();
+        if (p != null) {
+            _registroRespuestas.Add(new Tuple<int, string, bool>(p.IdPregunta, p.TextoPregunta, false));
         }
+        
+        if (_vidasRestantes <= 0) FinalizarJuego();
+        else _timerFeedback.Start();
     }
 
-    // FINALIZAR JUEGO CON REDONDEO
     private void FinalizarJuego() { 
         _timerCronometro.Stop(); 
-        
         JuegoServicio.correctas = (int)Math.Round(_puntosTemporales);
+    
+        int idPartida = new JuegoDao().GuardarPartida(Red.NombreLocal, _idCategoriaSeleccionada, JuegoServicio.correctas, JuegoServicio.incorrectas);
 
-        int idPartida = new JuegoDao().GuardarPartida("JugadorLocal", _idCategoriaSeleccionada, JuegoServicio.correctas, JuegoServicio.incorrectas);
-        _pantallaActual = "Puntaje"; 
-        CambiarMusica("tron_music.wav"); 
-        
-        if (JuegoServicio.correctas >= 6) {
-            IniciarExplosion(); 
-        } else {
-            IniciarCenizas();
+        if (idPartida > 0) {
+            foreach(var reg in _registroRespuestas) {
+                new JuegoDao().GuardarRespuesta(idPartida, reg.Item1, null, reg.Item3);
+            }
         }
-        
-        BackColor = _colorFondo;
-    }
 
-    // CARGAR PREGUNTA
+        CambiarMusica("tron_music.wav"); 
+        if (JuegoServicio.correctas >= 6) IniciarExplosion(); else IniciarCenizas();
+        BackColor = _colorFondo; 
+
+        if (_esPartidaMultijugador) {
+            _pantallaActual = "RankingRed";
+            _rankingRedTexto = "Esperando a los demás jugadores...\nSi terminaste antes, siéntete superior.";
+        
+            Red.AlRecibirMensaje = (json) => {
+                if (json.Contains("TABLA_FINAL")) {
+                    var m = JsonConvert.DeserializeObject<MensajeRed>(json);
+                    _rankingRedTexto = m.Contenido;
+                    this.Invoke(new Action(() => Invalidate()));
+                }
+            };
+
+            var reporte = new MensajeRed { Tipo = "REPORTE_PUNTAJE", Contenido = $"{Red.NombreLocal}:{JuegoServicio.correctas * 100}" };
+            _ = Red.EnviarAlServidorAsync(JsonConvert.SerializeObject(reporte));
+        } else {
+            _pantallaActual = "Puntaje"; 
+        }
+        Invalidate();
+    }
+    
     private void CargarPreguntaActual() {
         var p = JuegoServicio.obtenerPreguntaActual();
         if (p == null) return;
         
         _opcionesActuales = new JuegoDao().ObtenerOpcionesPorPregunta(p.IdPregunta);
-        
         if (_opcionesActuales == null || _opcionesActuales.Count == 0) { 
-            JuegoServicio.siguientePregunta(); 
-            CargarPreguntaActual(); 
-            return; 
+            JuegoServicio.siguientePregunta(); CargarPreguntaActual(); return; 
         }
         
         _tiempoRestante = TiempoPorPregunta; 
-        
         Color nc = Color.FromArgb(_rnd.Next(100, 255), _rnd.Next(100, 255), _rnd.Next(100, 255));
-        if (_pantallaActual != "Puntaje") {
+        if (_pantallaActual != "Puntaje" && _pantallaActual != "RankingRed") {
             _listaCuadros.ForEach(c => { c.ColorCuadro = nc; c.VelX = _rnd.Next(-5, 6); c.VelY = _rnd.Next(-5, 6); });
         }
     }
 
-    // INICIAR PARTIDA
     private void IniciarPartida(List<Pregunta> l) { 
         if (l == null || l.Count == 0) return; 
         JuegoServicio.iniciaJuego(l);
         _vidasRestantes = 3; 
         _puntosTemporales = 0f;
         
-        // --- LIMPIEZA DE VARIABLES DE LA PARTIDA ANTERIOR ---
         _indexOpcionSeleccionada = null; 
         _respuestaCorrecta = null;
+        _registroRespuestas.Clear(); 
         
         CargarPreguntaActual(); 
         _pantallaActual = "Jugando"; 
         _timerCronometro.Start(); 
     }
 
-    // ZONA DE DIBUJO
     protected override void OnPaint(PaintEventArgs e) {
-        Graphics g = e.Graphics; 
-        g.SmoothingMode = SmoothingMode.HighQuality; 
-        g.TextRenderingHint = TextRenderingHint.AntiAlias;
+        Graphics g = e.Graphics; g.SmoothingMode = SmoothingMode.HighQuality; g.TextRenderingHint = TextRenderingHint.AntiAlias;
 
-        if (_pantallaActual == "Jugando" && _tiempoRestante <= 5 && DateTime.Now.Millisecond < 500) {
-            g.Clear(Color.FromArgb(50, 0, 0));
-        } else {
-            g.Clear(_colorFondo);
-        }
+        if (_pantallaActual == "Jugando" && _tiempoRestante <= 5 && DateTime.Now.Millisecond < 500) { g.Clear(Color.FromArgb(50, 0, 0)); } 
+        else { g.Clear(_colorFondo); }
 
-        _listaCuadros.ForEach(c => { 
-            using (var b = new SolidBrush(Color.FromArgb(c.Opacidad, c.ColorCuadro))) 
-                g.FillRectangle(b, c.X, c.Y, c.Tamaño, c.Tamaño); 
-        });
+        _listaCuadros.ForEach(c => { using (var b = new SolidBrush(Color.FromArgb(c.Opacidad, c.ColorCuadro))) g.FillRectangle(b, c.X, c.Y, c.Tamaño, c.Tamaño); });
 
-        float offsetX = (ClientSize.Width - 800) / 2f;
-        float offsetY = (ClientSize.Height - 600) / 2f;
+        float offsetX = (ClientSize.Width - 800) / 2f; float offsetY = (ClientSize.Height - 600) / 2f;
         g.TranslateTransform(offsetX, offsetY); 
         
         if (_pantallaActual == "Inicio") { 
             DibujarTexto(g, "TRIVIA MÁXIMA", 50, 110, 150, Color.Gold); 
-            DibujarBoton(g, new Rectangle(280, 280, 240, 60), "¡JUGAR!", Color.FromArgb(0, 30, 150)); 
-            DibujarBoton(g, new Rectangle(280, 360, 240, 60), "HISTORIAL", Color.FromArgb(40, 40, 40)); 
-        } else if (_pantallaActual == "Categorias") {
+            DibujarBoton(g, new Rectangle(280, 250, 240, 50), "¡JUGAR!", Color.FromArgb(0, 30, 150)); 
+            DibujarBoton(g, new Rectangle(280, 320, 240, 50), "MULTIJUGADOR", Color.DarkMagenta);
+            DibujarBoton(g, new Rectangle(280, 390, 240, 50), "HISTORIAL", Color.FromArgb(40, 40, 40)); 
+        } 
+        else if (_pantallaActual == "Categorias") {
             DibujarTexto(g, "Elige Categoría", 30, 220, 50, Color.Gold);
-            
             if (_categoriasLista != null) {
                 for (int i = 0; i < _categoriasLista.Count; i++) {
                     DibujarBoton(g, new Rectangle(200, 130 + (i * 65), 400, 50), _categoriasLista[i].NombreCategoria, Color.FromArgb(50, 0, 150));
@@ -310,25 +296,58 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
                 DibujarBoton(g, new Rectangle(200, 130 + (_categoriasLista.Count * 65), 400, 50), "MUESTRA ALEATORIA", Color.Maroon);
                 DibujarBoton(g, new Rectangle(200, 130 + ((_categoriasLista.Count + 1) * 65), 400, 50), "Regresar", Color.FromArgb(60, 60, 60));
             }
-        } else if (_pantallaActual == "Historial") {
-            DibujarTexto(g, "ÚLTIMAS PARTIDAS", 35, 180, 50, Color.Gold); 
-            using (var b = new SolidBrush(Color.FromArgb(180, 10, 10, 40))) g.FillRectangle(b, 150, 120, 500, 350); 
-            using (var pen = new Pen(_colorBordes, 2)) g.DrawRectangle(pen, 150, 120, 500, 350);
+        } 
+        else if (_pantallaActual == "Historial") {
+            DibujarTexto(g, "HISTORIAL DE PARTIDAS", 35, 150, 50, Color.Gold); 
             
-            if (_listaHistorial != null) {
-                for (int i = 0; i < _listaHistorial.Count; i++) {
-                    g.DrawString(_listaHistorial[i], new Font("Consolas", 14, FontStyle.Bold), Brushes.White, 170, 140 + (i * 30));
+            Rectangle rectFondo = new Rectangle(50, 120, 700, 350);
+            using (var b = new SolidBrush(Color.FromArgb(180, 10, 10, 40))) g.FillRectangle(b, rectFondo); 
+            using (var pen = new Pen(_colorBordes, 2)) g.DrawRectangle(pen, rectFondo);
+            
+            // Recortar la región de dibujo para que la lista no se desborde visualmente
+            Region oldClip = g.Clip;
+            g.SetClip(rectFondo);
+
+            if (_historialDesplegable != null) {
+                int startY = 130 + _scrollHistorial;
+                for (int i = 0; i < _historialDesplegable.Count; i++) {
+                    var partida = _historialDesplegable[i];
+                    Rectangle rectCabecera = new Rectangle(60, startY, 680, 35);
+                    
+                    // Fondo de la cabecera del acordeón
+                    Color colorCabecera = (_partidaExpandida == i) ? Color.FromArgb(80, 80, 150) : Color.FromArgb(40, 40, 80);
+                    using (var bCab = new SolidBrush(colorCabecera)) g.FillRectangle(bCab, rectCabecera);
+                    g.DrawRectangle(Pens.Cyan, rectCabecera.X, rectCabecera.Y, rectCabecera.Width, rectCabecera.Height);
+                    
+                    g.DrawString(partida.Item1, new Font("Segoe UI", 12, FontStyle.Bold), Brushes.White, 70, startY + 6);
+                    g.DrawString(_partidaExpandida == i ? "▲" : "▼", new Font("Segoe UI", 14), Brushes.Gold, 710, startY + 4);
+                    
+                    startY += 40;
+                    
+                    // Dibuja las respuestas si está desplegado
+                    if (_partidaExpandida == i) {
+                        foreach (var resp in partida.Item2) {
+                            g.DrawString(resp, new Font("Segoe UI", 11), Brushes.LightGray, 80, startY);
+                            startY += 25;
+                        }
+                        startY += 10;
+                    }
                 }
             }
-            
+            g.Clip = oldClip; // Restaurar la región normal
+
+            // Botones de Scroll Laterales
+            DibujarBoton(g, new Rectangle(760, 120, 40, 170), "▲", Color.FromArgb(50, 50, 50));
+            DibujarBoton(g, new Rectangle(760, 300, 40, 170), "▼", Color.FromArgb(50, 50, 50));
+
             DibujarBoton(g, new Rectangle(280, 490, 240, 60), "VOLVER", Color.FromArgb(60, 60, 60));
-        } else if (_pantallaActual == "Jugando") {
+        } 
+        else if (_pantallaActual == "Jugando") {
             DibujarPantallaJuego(g);
-        } else if (_pantallaActual == "Puntaje") { 
-            
+        } 
+        else if (_pantallaActual == "Puntaje") { 
             string titulo = JuegoServicio.correctas >= 6 ? "RESULTADOS" : "¡BUEN INTENTO!";
             Color colorTitulo = JuegoServicio.correctas >= 6 ? Color.Gold : Color.LightPink;
-            
             DibujarTexto(g, titulo, 45, 150, 80, colorTitulo); 
             
             string resultadoTxt = $"Correctas: {JuegoServicio.correctas}\nIncorrectas: {JuegoServicio.incorrectas}\nEfectividad: {JuegoServicio.calcularPorcentajeCorrecto()}%";
@@ -338,10 +357,14 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
             g.DrawString(msjLindo, new Font("Segoe UI", 16, FontStyle.Italic), Brushes.LightGray, new Rectangle(100, 360, 600, 50), new StringFormat { Alignment = StringAlignment.Center });
 
             DibujarBoton(g, new Rectangle(280, 440, 240, 70), "REINICIAR", Color.SeaGreen); 
+        } 
+        else if (_pantallaActual == "RankingRed") { 
+            DibujarTexto(g, "POSICIONES FINALES", 45, 150, 80, Color.Gold); 
+            g.DrawString(_rankingRedTexto, new Font("Consolas", 20, FontStyle.Bold), Brushes.White, new Rectangle(100, 180, 600, 300), new StringFormat { Alignment = StringAlignment.Center }); 
+            DibujarBoton(g, new Rectangle(280, 480, 240, 60), "SALIR", Color.DarkRed);
         }
     }
 
-    // PANTALLA JUGANDO
     private void DibujarPantallaJuego(Graphics g) {
         var p = JuegoServicio.obtenerPreguntaActual(); 
         if (p == null) return;
@@ -353,12 +376,10 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
         
         bool esImagen = JuegoServicio.esTipo(p) == "imagen";
         
-        int shakeX = 0;
-        int shakeY = 0;
+        int shakeX = 0, shakeY = 0;
         if (_tiempoRestante <= 5 && _indexOpcionSeleccionada == null) {
             int intensidad = (6 - _tiempoRestante) * 2;
-            shakeX = _rnd.Next(-intensidad, intensidad + 1);
-            shakeY = _rnd.Next(-intensidad, intensidad + 1);
+            shakeX = _rnd.Next(-intensidad, intensidad + 1); shakeY = _rnd.Next(-intensidad, intensidad + 1);
         }
         
         if (_opcionesActuales != null) {
@@ -380,7 +401,7 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
                                 g.DrawImage(im, r.X + (r.Width - im.Width * s) / 2, r.Y + (r.Height - im.Height * s) / 2, im.Width * s, im.Height * s); 
                             } 
                         } 
-                    } catch (Exception ex) { Console.WriteLine(@"Error Img: " + ex.Message); }
+                    } catch { }
                 } else {
                     g.DrawString(_opcionesActuales[i].TextoOpcion, new Font("Segoe UI", 11, FontStyle.Bold), Brushes.White, r, new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
                 }
@@ -388,7 +409,6 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
         }
     }
 
-    // UTILIDAD DIBUJAR TEXTO
     private void DibujarTexto(Graphics g, string t, int s, int x, int y, Color c) { 
         using (var f = new Font("Segoe UI", s, FontStyle.Bold)) { 
             for (int i = -2; i <= 2; i += 2) for (int j = -2; j <= 2; j += 2) g.DrawString(t, f, Brushes.Black, x + i, y + j); 
@@ -396,63 +416,96 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
         } 
     }
 
-    // UTILIDAD DIBUJAR BOTON
     private void DibujarBoton(Graphics g, Rectangle r, string t, Color b) {
         using (var path = new GraphicsPath()) { 
             int c = r.Height / 3; 
             path.AddPolygon(new[] { 
-                new Point(r.X + c, r.Y), new Point(r.Right - c, r.Y), 
-                new Point(r.Right, r.Y + c), new Point(r.Right, r.Bottom - c), 
-                new Point(r.Right - c, r.Bottom), new Point(r.X + c, r.Bottom), 
-                new Point(r.X, r.Bottom - c), new Point(r.X, r.Y + c) 
+                new Point(r.X + c, r.Y), new Point(r.Right - c, r.Y), new Point(r.Right, r.Y + c), new Point(r.Right, r.Bottom - c), 
+                new Point(r.Right - c, r.Bottom), new Point(r.X + c, r.Bottom), new Point(r.X, r.Bottom - c), new Point(r.X, r.Y + c) 
             }); 
-            g.FillPath(new SolidBrush(b), path); 
-            g.DrawPath(new Pen(_colorBordes, 3), path); 
+            g.FillPath(new SolidBrush(b), path); g.DrawPath(new Pen(_colorBordes, 3), path); 
         }
         if (!string.IsNullOrEmpty(t)) 
             g.DrawString(t, new Font("Segoe UI", t.Length > 20 ? 9 : 11, FontStyle.Bold), Brushes.White, r, new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
     }
 
-    // CLICS DEL RATON
     protected override void OnMouseClick(MouseEventArgs e) {
         float offsetX = (ClientSize.Width - 800) / 2f;
         float offsetY = (ClientSize.Height - 600) / 2f;
         Point clickReal = new Point((int)(e.X - offsetX), (int)(e.Y - offsetY));
 
         if (_pantallaActual == "Inicio") { 
-            if (new Rectangle(280, 280, 240, 60).Contains(clickReal)) { _categoriasLista = new JuegoDao().ObtenerCategorias(); _pantallaActual = "Categorias"; } 
-            else if (new Rectangle(280, 360, 240, 60).Contains(clickReal)) { _listaHistorial = new JuegoDao().ObtenerHistorial(); _pantallaActual = "Historial"; } 
+            if (new Rectangle(280, 250, 240, 50).Contains(clickReal)) { 
+                _categoriasLista = new JuegoDao().ObtenerCategorias(); _pantallaActual = "Categorias"; 
+            }
+            else if (new Rectangle(280, 320, 240, 50).Contains(clickReal)) { 
+                using (FormConexion fc = new FormConexion()) {
+                    this.Hide();
+                    if (fc.ShowDialog() == DialogResult.OK) {
+                        _idCategoriaSeleccionada = fc.IdCategoriaSeleccionada;
+                        _esPartidaMultijugador = true; 
+                        var preguntas = new JuegoDao().ObtenerPreguntasPorCategoria(_idCategoriaSeleccionada);
+                        IniciarPartida(preguntas);
+                    }
+                    this.Show();
+                }
+            }
+            else if (new Rectangle(280, 390, 240, 50).Contains(clickReal)) { 
+                // AQUÍ LLAMAMOS A LA NUEVA FUNCIÓN DESPLEGABLE
+                _historialDesplegable = new JuegoDao().ObtenerHistorialDesplegable(); 
+                _partidaExpandida = -1;
+                _scrollHistorial = 0;
+                _pantallaActual = "Historial"; 
+            } 
         } else if (_pantallaActual == "Categorias") {
             if (_categoriasLista != null) {
                 for (int i = 0; i < _categoriasLista.Count; i++) {
                     if (new Rectangle(200, 130 + (i * 65), 400, 50).Contains(clickReal)) { 
                         _idCategoriaSeleccionada = _categoriasLista[i].IdCategoria; 
-                        IniciarPartida(new JuegoDao().ObtenerPreguntasPorCategoria(_idCategoriaSeleccionada)); 
-                        return; 
+                        IniciarPartida(new JuegoDao().ObtenerPreguntasPorCategoria(_idCategoriaSeleccionada)); return; 
                     }
                 }
                 if (new Rectangle(200, 130 + (_categoriasLista.Count * 65), 400, 50).Contains(clickReal)) { 
-                    _idCategoriaSeleccionada = 0; 
-                    IniciarPartida(new JuegoDao().ObtenerTodasLasPreguntas()); 
+                    _idCategoriaSeleccionada = 0; IniciarPartida(new JuegoDao().ObtenerTodasLasPreguntas()); 
                 }
-                if (new Rectangle(200, 130 + ((_categoriasLista.Count + 1) * 65), 400, 50).Contains(clickReal))
-                {
-                    _pantallaActual = "Inicio";
+                if (new Rectangle(200, 130 + ((_categoriasLista.Count + 1) * 65), 400, 50).Contains(clickReal)) { _pantallaActual = "Inicio"; }
+            }
+        } else if (_pantallaActual == "Historial") {
+            // Lógica de Clics para el historial desplegable
+            if (new Rectangle(280, 490, 240, 60).Contains(clickReal)) { _pantallaActual = "Inicio"; }
+            else if (new Rectangle(760, 120, 40, 170).Contains(clickReal)) { // Botón Arriba
+                _scrollHistorial += 50; if (_scrollHistorial > 0) _scrollHistorial = 0;
+            }
+            else if (new Rectangle(760, 300, 40, 170).Contains(clickReal)) { // Botón Abajo
+                _scrollHistorial -= 50; 
+            }
+            else {
+                if (_historialDesplegable != null) {
+                    int startY = 130 + _scrollHistorial;
+                    for (int i = 0; i < _historialDesplegable.Count; i++) {
+                        Rectangle rectCabecera = new Rectangle(60, startY, 680, 35);
+                        
+                        // Si hace clic en la barra, se expande o se colapsa
+                        if (rectCabecera.Contains(clickReal)) {
+                            _partidaExpandida = (_partidaExpandida == i) ? -1 : i;
+                            break;
+                        }
+                        startY += 40;
+                        if (_partidaExpandida == i) {
+                            startY += (_historialDesplegable[i].Item2.Count * 25) + 10;
+                        }
+                    }
                 }
             }
-        } else if (_pantallaActual == "Historial" && new Rectangle(280, 490, 240, 60).Contains(clickReal)) {
-            _pantallaActual = "Inicio";
         } else if (_pantallaActual == "Jugando" && _indexOpcionSeleccionada == null) {
             var p = JuegoServicio.obtenerPreguntaActual(); 
             if (p == null) return;
             bool img = JuegoServicio.esTipo(p) == "imagen";
             
-            int shakeX = 0;
-            int shakeY = 0;
+            int shakeX = 0, shakeY = 0;
             if (_tiempoRestante <= 5) {
                 int intensidad = (6 - _tiempoRestante) * 2;
-                shakeX = _rnd.Next(-intensidad, intensidad + 1);
-                shakeY = _rnd.Next(-intensidad, intensidad + 1);
+                shakeX = _rnd.Next(-intensidad, intensidad + 1); shakeY = _rnd.Next(-intensidad, intensidad + 1);
             }
 
             if (_opcionesActuales != null) {
@@ -465,35 +518,22 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
                         _timerCronometro.Stop(); 
                         _indexOpcionSeleccionada = i; 
                         _respuestaCorrecta = _opcionesActuales[i].EsCorrecta; 
+
+                        _registroRespuestas.Add(new Tuple<int, string, bool>(p.IdPregunta, p.TextoPregunta, _respuestaCorrecta == true));
                         
                         if (_respuestaCorrecta == true) {
-                            if (_tiempoRestante > 5) {
-                                _puntosTemporales += 1f;
-                            } else {
-                                _puntosTemporales += 0.5f; 
-                            }
-                        } else {
-                            _vidasRestantes--;
-                        }
+                            if (_tiempoRestante > 5) { _puntosTemporales += 1f; } else { _puntosTemporales += 0.5f; }
+                        } else { _vidasRestantes--; }
 
                         JuegoServicio.validaRespuesta(_opcionesActuales[i].IdOpcion, _opcionesActuales); 
-                        
-                        if (_vidasRestantes <= 0) {
-                            FinalizarJuego();
-                        } else {
-                            _timerFeedback.Start(); 
-                        }
+                        if (_vidasRestantes <= 0) { FinalizarJuego(); } else { _timerFeedback.Start(); }
                     }
                 }
             }
         } else if (_pantallaActual == "Puntaje" && new Rectangle(280, 440, 240, 70).Contains(clickReal)) { 
-            _pantallaActual = "Inicio"; 
-            
-            // --- LIMPIEZA ADICIONAL AL VOLVER AL INICIO ---
-            _indexOpcionSeleccionada = null;
-            _respuestaCorrecta = null;
-            
-            IniciarParticulas(); 
+            _pantallaActual = "Inicio"; _indexOpcionSeleccionada = null; _respuestaCorrecta = null; IniciarParticulas(); 
+        } else if (_pantallaActual == "RankingRed" && new Rectangle(280, 480, 240, 60).Contains(clickReal)) { 
+            _pantallaActual = "Inicio"; _esPartidaMultijugador = false; IniciarParticulas(); 
         }
         Invalidate(); 
     }

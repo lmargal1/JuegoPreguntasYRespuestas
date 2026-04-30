@@ -180,31 +180,47 @@ namespace JuegoPreguntasYRespuestas.DAO
             return preguntas;
         }
 
-        public List<string> ObtenerHistorial()
-        {
-            var historial = new List<string>();
-            try
-            {
-                using (var conexion = _conexionBd.ObtenerConexion())
-                {
-                    conexion.Open();
+public List<Tuple<string, List<string>>> ObtenerHistorialDesplegable() {
+    var historial = new List<Tuple<string, List<string>>>();
+    var partidasInfo = new List<Tuple<int, string>>();
 
-                    const string query = @"SELECT IFNULL(c.nombreCategoria, 'Aleatorio') as Cat, p.correctas, p.incorrectas 
-                                     FROM Partidas p LEFT JOIN Categorias c ON p.idCategoria = c.idCategoria 
-                                     ORDER BY p.idPartida DESC LIMIT 10";
-                    var cmd = new MySqlCommand(query, conexion);
+    try {
+        using (var conexion = _conexionBd.ObtenerConexion()) {
+            conexion.Open();
+            
+            string q1 = "SELECT idPartida, nombreJugador, correctas, incorrectas FROM Partidas ORDER BY idPartida DESC LIMIT 10";
+            using (var cmd = new MySql.Data.MySqlClient.MySqlCommand(q1, conexion))
+            using (var reader = cmd.ExecuteReader()) {
+                while (reader.Read()) {
+                    int id = reader.GetInt32("idPartida");
+                    string nombre = reader.GetString("nombreJugador");
+                    int corr = reader.GetInt32("correctas");
+                    int incorr = reader.GetInt32("incorrectas");
+                    string titulo = $"Partida #{id} | Jugador: {nombre} | Aciertos: {corr}/{corr+incorr}";
+                    partidasInfo.Add(new Tuple<int, string>(id, titulo));
+                }
+            }
 
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            historial.Add($"{reader["Cat"].ToString().PadRight(12)} | ✅{reader["correctas"]} | ❌{reader["incorrectas"]}");
+            foreach (var p in partidasInfo) {
+                var respuestas = new List<string>();
+                string q2 = "SELECT pr.textoPregunta, rp.esCorrecta FROM RespuestasPartida rp JOIN Preguntas pr ON rp.idPregunta = pr.idPregunta WHERE rp.idPartida = @id";
+                using (var cmd2 = new MySql.Data.MySqlClient.MySqlCommand(q2, conexion)) {
+                    cmd2.Parameters.AddWithValue("@id", p.Item1);
+                    using (var r2 = cmd2.ExecuteReader()) {
+                        while (r2.Read()) {
+                            string preg = r2.GetString("textoPregunta");
+                            if (preg.Length > 55) preg = preg.Substring(0, 52) + "..."; 
+                            bool corr = r2.GetBoolean("esCorrecta");
+                            respuestas.Add($"{(corr ? "✅" : "❌")} {preg}");
                         }
                     }
                 }
+                historial.Add(new Tuple<string, List<string>>(p.Item2, respuestas));
             }
-            catch (Exception ex) { Console.WriteLine(@"Error leyendo Historial: " + ex.Message); }
-            return historial;
         }
+    } catch (Exception ex) { Console.WriteLine("Error BD Historial: " + ex.Message); }
+    
+    return historial;
+}
     }
 }

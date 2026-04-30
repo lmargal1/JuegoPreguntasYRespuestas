@@ -109,6 +109,7 @@
   <ItemGroup>
     <Compile Include="Modelo\Categoria.cs" />
     <Compile Include="DAO\ConexionBD.cs" />
+    <Compile Include="Modelo\MensajeRed.cs" />
     <Compile Include="Modelo\Respuesta.cs" />
     <Compile Include="Presentacion\Form1.cs">
       <SubType>Form</SubType>
@@ -117,6 +118,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="DAO\JuegoDAO.cs" />
+    <Compile Include="Presentacion\FormConexion.cs" />
     <Compile Include="Servicio\Red.cs" />
     <Compile Include="Servicio\JuegoServicio.cs" />
     <Compile Include="Modelo\Opcion.cs" />
@@ -124,6 +126,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Servicio\Serializador.cs" />
+    <Compile Include="Servicio\ServidorMain.cs" />
     <EmbeddedResource Include="Presentacion\Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
