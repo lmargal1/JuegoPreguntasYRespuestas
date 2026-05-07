@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using JuegoServidor.Modelo;
 using MySql.Data.MySqlClient;
 
-
-namespace JuegoPreguntasYRespuestas.DAO
+namespace JuegoServidor.DAO
 {
     public class JuegoDao
     {

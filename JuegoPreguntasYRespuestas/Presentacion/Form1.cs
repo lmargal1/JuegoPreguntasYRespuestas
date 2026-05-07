@@ -5,8 +5,9 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using JuegoPreguntasYRespuestas.DAO;
+using System.Linq;
 using JuegoPreguntasYRespuestas.Presentacion;  
 using JuegoPreguntasYRespuestas.Modelo; 
 using JuegoPreguntasYRespuestas.Servicio;
@@ -17,7 +18,6 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
     
     public partial class Form1 : Form {
     
-    // ZONA DE CONFIGURACION RAPIDA
     private const int TiempoPorPregunta = 15; 
     private const int TotalParticulas = 15;                        
     private readonly Color _colorFondo = Color.FromArgb(5, 5, 25);
@@ -27,7 +27,6 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
     private List<Categoria> _categoriasLista;
     private List<Opcion> _opcionesActuales;
     
-    // VARIABLES DEL HISTORIAL DESPLEGABLE
     private List<Tuple<string, List<string>>> _historialDesplegable;
     private int _partidaExpandida = -1;
     private int _scrollHistorial = 0;
@@ -50,12 +49,12 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
     private readonly List<CuadroAnimado> _listaCuadros = new List<CuadroAnimado>();
     private readonly Random _rnd = new Random();
 
-    // INICIALIZACION
     public Form1() {
         InitializeComponent();
         ConfigurarVentana();
         IniciarParticulas();
         CambiarMusica("tron_music.wav"); 
+        ConfigurarEscuchaRed();
         
         Timer motorAnimacion = new Timer { Interval = 16 };
         motorAnimacion.Tick += (s, e) => { 
@@ -87,6 +86,76 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
         FormBorderStyle = FormBorderStyle.Sizable; 
         BackColor = _colorFondo;
         TransparencyKey = Color.Empty; 
+    }
+
+private void ConfigurarEscuchaRed() {
+    RedCliente.AlRecibirMensaje = (json) => {
+        // Bloqueo de seguridad para evitar que Mono intente dibujar en una ventana muerta
+        if (this.IsDisposed || !this.IsHandleCreated) return;
+
+        try {
+            // Verificamos si necesitamos saltar al hilo principal
+            if (this.InvokeRequired) {
+                this.BeginInvoke(new Action(() => ProcesarMensajeSeguro(json)));
+            } else {
+                ProcesarMensajeSeguro(json);
+            }
+        } catch (ObjectDisposedException) {
+            // Ignorar si la ventana se cerró justo en el mensaje
+        }
+    };
+}
+
+// Separamos la lógica para que sea más limpia
+private void ProcesarMensajeSeguro(string json) {
+    if (this.IsDisposed) return;
+    
+    try {
+        var m = JsonConvert.DeserializeObject<MensajeRed>(json);
+        if (m == null) return;
+
+        if (m.Tipo == "RECIBIR_CATEGORIAS") {
+            _categoriasLista = JsonConvert.DeserializeObject<List<Categoria>>(m.Contenido);
+            _pantallaActual = "Categorias";
+        }
+        else if (m.Tipo == "RECIBIR_PREGUNTAS") {
+            var preguntas = JsonConvert.DeserializeObject<List<Pregunta>>(m.Contenido);
+            IniciarPartida(preguntas);
+        }
+        else if (m.Tipo == "RECIBIR_OPCIONES") {
+            _opcionesActuales = JsonConvert.DeserializeObject<List<Opcion>>(m.Contenido);
+            if (_opcionesActuales != null && _opcionesActuales.Count > 0) {
+                _tiempoRestante = TiempoPorPregunta;
+                _timerCronometro.Start();
+            }
+        }
+        else if (m.Tipo == "RECIBIR_HISTORIAL") {
+            _historialDesplegable = JsonConvert.DeserializeObject<List<Tuple<string, List<string>>>>(m.Contenido);
+            _partidaExpandida = -1;
+            _scrollHistorial = 0;
+            _pantallaActual = "Historial";
+        }
+        else if (m.Tipo == "TABLA_FINAL" && _esPartidaMultijugador) {
+            _rankingRedTexto = m.Contenido;
+        }
+
+        this.Invalidate();
+    } catch (Exception ex) {
+        Console.WriteLine("Error al procesar JSON: " + ex.Message);
+    }
+}
+
+    private async Task<bool> AsegurarConexion() {
+        if (RedCliente.ConexionAlServidor != null && RedCliente.ConexionAlServidor.Connected) return true;
+        try {
+            await RedCliente.ConectarComoClienteAsync("127.0.0.1", 11000);
+            RedCliente.NombreLocal = "Jugador_" + new Random().Next(100, 9999);
+            ConfigurarEscuchaRed();
+            return true;
+        } catch {
+            MessageBox.Show("Servidor no encontrado. Inicia el servidor de consola primero.");
+            return false;
+        }
     }
 
     private void CambiarMusica(string n) {
@@ -182,7 +251,6 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
         
         if (_vidasRestantes > 0 && JuegoServicio.siguientePregunta()) { 
             CargarPreguntaActual(); 
-            _timerCronometro.Start(); 
         } else {
             FinalizarJuego();
         }
@@ -207,13 +275,15 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
         _timerCronometro.Stop(); 
         JuegoServicio.correctas = (int)Math.Round(_puntosTemporales);
     
-        int idPartida = new JuegoDao().GuardarPartida(Red.NombreLocal, _idCategoriaSeleccionada, JuegoServicio.correctas, JuegoServicio.incorrectas);
-
-        if (idPartida > 0) {
-            foreach(var reg in _registroRespuestas) {
-                new JuegoDao().GuardarRespuesta(idPartida, reg.Item1, null, reg.Item3);
-            }
-        }
+        var datosGuardar = new {
+            Jugador = RedCliente.NombreLocal ?? "JugadorLocal",
+            IdCategoria = _idCategoriaSeleccionada,
+            Correctas = JuegoServicio.correctas,
+            Incorrectas = JuegoServicio.incorrectas,
+            Respuestas = _registroRespuestas
+        };
+        var msgGuardar = new MensajeRed { Tipo = "GUARDAR_PARTIDA", Contenido = JsonConvert.SerializeObject(datosGuardar) };
+        _ = RedCliente.EnviarAlServidorAsync(JsonConvert.SerializeObject(msgGuardar));
 
         CambiarMusica("tron_music.wav"); 
         if (JuegoServicio.correctas >= 6) IniciarExplosion(); else IniciarCenizas();
@@ -222,17 +292,8 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
         if (_esPartidaMultijugador) {
             _pantallaActual = "RankingRed";
             _rankingRedTexto = "Esperando a los demás jugadores...\nSi terminaste antes, siéntete superior.";
-        
-            Red.AlRecibirMensaje = (json) => {
-                if (json.Contains("TABLA_FINAL")) {
-                    var m = JsonConvert.DeserializeObject<MensajeRed>(json);
-                    _rankingRedTexto = m.Contenido;
-                    this.Invoke(new Action(() => Invalidate()));
-                }
-            };
-
-            var reporte = new MensajeRed { Tipo = "REPORTE_PUNTAJE", Contenido = $"{Red.NombreLocal}:{JuegoServicio.correctas * 100}" };
-            _ = Red.EnviarAlServidorAsync(JsonConvert.SerializeObject(reporte));
+            var reporte = new MensajeRed { Tipo = "REPORTE_PUNTAJE", Contenido = $"{RedCliente.NombreLocal}:{JuegoServicio.correctas * 100}" };
+            _ = RedCliente.EnviarAlServidorAsync(JsonConvert.SerializeObject(reporte));
         } else {
             _pantallaActual = "Puntaje"; 
         }
@@ -243,16 +304,9 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
         var p = JuegoServicio.obtenerPreguntaActual();
         if (p == null) return;
         
-        _opcionesActuales = new JuegoDao().ObtenerOpcionesPorPregunta(p.IdPregunta);
-        if (_opcionesActuales == null || _opcionesActuales.Count == 0) { 
-            JuegoServicio.siguientePregunta(); CargarPreguntaActual(); return; 
-        }
-        
-        _tiempoRestante = TiempoPorPregunta; 
-        Color nc = Color.FromArgb(_rnd.Next(100, 255), _rnd.Next(100, 255), _rnd.Next(100, 255));
-        if (_pantallaActual != "Puntaje" && _pantallaActual != "RankingRed") {
-            _listaCuadros.ForEach(c => { c.ColorCuadro = nc; c.VelX = _rnd.Next(-5, 6); c.VelY = _rnd.Next(-5, 6); });
-        }
+        _opcionesActuales = null;
+        var m = new MensajeRed { Tipo = "PEDIR_OPCIONES", Contenido = p.IdPregunta.ToString() };
+        _ = RedCliente.EnviarAlServidorAsync(JsonConvert.SerializeObject(m));
     }
 
     private void IniciarPartida(List<Pregunta> l) { 
@@ -267,7 +321,6 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
         
         CargarPreguntaActual(); 
         _pantallaActual = "Jugando"; 
-        _timerCronometro.Start(); 
     }
 
     protected override void OnPaint(PaintEventArgs e) {
@@ -304,7 +357,6 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
             using (var b = new SolidBrush(Color.FromArgb(180, 10, 10, 40))) g.FillRectangle(b, rectFondo); 
             using (var pen = new Pen(_colorBordes, 2)) g.DrawRectangle(pen, rectFondo);
             
-            // Recortar la región de dibujo para que la lista no se desborde visualmente
             Region oldClip = g.Clip;
             g.SetClip(rectFondo);
 
@@ -314,7 +366,6 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
                     var partida = _historialDesplegable[i];
                     Rectangle rectCabecera = new Rectangle(60, startY, 680, 35);
                     
-                    // Fondo de la cabecera del acordeón
                     Color colorCabecera = (_partidaExpandida == i) ? Color.FromArgb(80, 80, 150) : Color.FromArgb(40, 40, 80);
                     using (var bCab = new SolidBrush(colorCabecera)) g.FillRectangle(bCab, rectCabecera);
                     g.DrawRectangle(Pens.Cyan, rectCabecera.X, rectCabecera.Y, rectCabecera.Width, rectCabecera.Height);
@@ -324,7 +375,6 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
                     
                     startY += 40;
                     
-                    // Dibuja las respuestas si está desplegado
                     if (_partidaExpandida == i) {
                         foreach (var resp in partida.Item2) {
                             g.DrawString(resp, new Font("Segoe UI", 11), Brushes.LightGray, 80, startY);
@@ -334,12 +384,10 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
                     }
                 }
             }
-            g.Clip = oldClip; // Restaurar la región normal
+            g.Clip = oldClip; 
 
-            // Botones de Scroll Laterales
             DibujarBoton(g, new Rectangle(760, 120, 40, 170), "▲", Color.FromArgb(50, 50, 50));
             DibujarBoton(g, new Rectangle(760, 300, 40, 170), "▼", Color.FromArgb(50, 50, 50));
-
             DibujarBoton(g, new Rectangle(280, 490, 240, 60), "VOLVER", Color.FromArgb(60, 60, 60));
         } 
         else if (_pantallaActual == "Jugando") {
@@ -429,14 +477,17 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
             g.DrawString(t, new Font("Segoe UI", t.Length > 20 ? 9 : 11, FontStyle.Bold), Brushes.White, r, new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
     }
 
-    protected override void OnMouseClick(MouseEventArgs e) {
+    protected override async void OnMouseClick(MouseEventArgs e) {
         float offsetX = (ClientSize.Width - 800) / 2f;
         float offsetY = (ClientSize.Height - 600) / 2f;
         Point clickReal = new Point((int)(e.X - offsetX), (int)(e.Y - offsetY));
 
         if (_pantallaActual == "Inicio") { 
             if (new Rectangle(280, 250, 240, 50).Contains(clickReal)) { 
-                _categoriasLista = new JuegoDao().ObtenerCategorias(); _pantallaActual = "Categorias"; 
+                if (await AsegurarConexion()) {
+                    var m = new MensajeRed { Tipo = "PEDIR_CATEGORIAS", Contenido = "" };
+                    await RedCliente.EnviarAlServidorAsync(JsonConvert.SerializeObject(m));
+                }
             }
             else if (new Rectangle(280, 320, 240, 50).Contains(clickReal)) { 
                 using (FormConexion fc = new FormConexion()) {
@@ -444,39 +495,44 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
                     if (fc.ShowDialog() == DialogResult.OK) {
                         _idCategoriaSeleccionada = fc.IdCategoriaSeleccionada;
                         _esPartidaMultijugador = true; 
-                        var preguntas = new JuegoDao().ObtenerPreguntasPorCategoria(_idCategoriaSeleccionada);
-                        IniciarPartida(preguntas);
+                        ConfigurarEscuchaRed(); 
+                        var m = new MensajeRed { Tipo = "PEDIR_PREGUNTAS_CAT", Contenido = _idCategoriaSeleccionada.ToString() };
+                        await RedCliente.EnviarAlServidorAsync(JsonConvert.SerializeObject(m));
+                    } else {
+                        ConfigurarEscuchaRed(); 
                     }
                     this.Show();
                 }
             }
             else if (new Rectangle(280, 390, 240, 50).Contains(clickReal)) { 
-                // AQUÍ LLAMAMOS A LA NUEVA FUNCIÓN DESPLEGABLE
-                _historialDesplegable = new JuegoDao().ObtenerHistorialDesplegable(); 
-                _partidaExpandida = -1;
-                _scrollHistorial = 0;
-                _pantallaActual = "Historial"; 
+                if (await AsegurarConexion()) {
+                    var m = new MensajeRed { Tipo = "PEDIR_HISTORIAL", Contenido = "" };
+                    await RedCliente.EnviarAlServidorAsync(JsonConvert.SerializeObject(m));
+                }
             } 
         } else if (_pantallaActual == "Categorias") {
             if (_categoriasLista != null) {
                 for (int i = 0; i < _categoriasLista.Count; i++) {
                     if (new Rectangle(200, 130 + (i * 65), 400, 50).Contains(clickReal)) { 
                         _idCategoriaSeleccionada = _categoriasLista[i].IdCategoria; 
-                        IniciarPartida(new JuegoDao().ObtenerPreguntasPorCategoria(_idCategoriaSeleccionada)); return; 
+                        var m = new MensajeRed { Tipo = "PEDIR_PREGUNTAS_CAT", Contenido = _idCategoriaSeleccionada.ToString() };
+                        await RedCliente.EnviarAlServidorAsync(JsonConvert.SerializeObject(m));
+                        return; 
                     }
                 }
                 if (new Rectangle(200, 130 + (_categoriasLista.Count * 65), 400, 50).Contains(clickReal)) { 
-                    _idCategoriaSeleccionada = 0; IniciarPartida(new JuegoDao().ObtenerTodasLasPreguntas()); 
+                    _idCategoriaSeleccionada = 0; 
+                    var m = new MensajeRed { Tipo = "PEDIR_PREGUNTAS_TODAS", Contenido = "" };
+                    await RedCliente.EnviarAlServidorAsync(JsonConvert.SerializeObject(m)); 
                 }
                 if (new Rectangle(200, 130 + ((_categoriasLista.Count + 1) * 65), 400, 50).Contains(clickReal)) { _pantallaActual = "Inicio"; }
             }
         } else if (_pantallaActual == "Historial") {
-            // Lógica de Clics para el historial desplegable
             if (new Rectangle(280, 490, 240, 60).Contains(clickReal)) { _pantallaActual = "Inicio"; }
-            else if (new Rectangle(760, 120, 40, 170).Contains(clickReal)) { // Botón Arriba
+            else if (new Rectangle(760, 120, 40, 170).Contains(clickReal)) { 
                 _scrollHistorial += 50; if (_scrollHistorial > 0) _scrollHistorial = 0;
             }
-            else if (new Rectangle(760, 300, 40, 170).Contains(clickReal)) { // Botón Abajo
+            else if (new Rectangle(760, 300, 40, 170).Contains(clickReal)) { 
                 _scrollHistorial -= 50; 
             }
             else {
@@ -485,7 +541,6 @@ namespace JuegoPreguntasYRespuestas.Presentacion {
                     for (int i = 0; i < _historialDesplegable.Count; i++) {
                         Rectangle rectCabecera = new Rectangle(60, startY, 680, 35);
                         
-                        // Si hace clic en la barra, se expande o se colapsa
                         if (rectCabecera.Contains(clickReal)) {
                             _partidaExpandida = (_partidaExpandida == i) ? -1 : i;
                             break;

@@ -1,6 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 
-namespace JuegoPreguntasYRespuestas.DAO 
+namespace JuegoServidor.DAO 
 {
     public class ConexionBD
     {

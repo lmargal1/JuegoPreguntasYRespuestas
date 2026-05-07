@@ -108,7 +108,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Modelo\Categoria.cs" />
-    <Compile Include="DAO\ConexionBD.cs" />
     <Compile Include="Modelo\MensajeRed.cs" />
     <Compile Include="Modelo\Respuesta.cs" />
     <Compile Include="Presentacion\Form1.cs">
@@ -117,9 +116,8 @@
     <Compile Include="Presentacion\Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="DAO\JuegoDAO.cs" />
     <Compile Include="Presentacion\FormConexion.cs" />
-    <Compile Include="Servicio\Red.cs" />
+    <Compile Include="Servicio\RedCliente.cs" />
     <Compile Include="Servicio\JuegoServicio.cs" />
     <Compile Include="Modelo\Opcion.cs" />
     <Compile Include="Modelo\Pregunta.cs" />

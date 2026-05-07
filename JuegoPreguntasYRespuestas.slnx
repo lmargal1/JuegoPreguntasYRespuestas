@@ -3,4 +3,5 @@
     <File Path="README.md" />
   </Folder>
   <Project Path="JuegoPreguntasYRespuestas/JuegoPreguntasYRespuestas.csproj" Id="4ddbccdc-b8de-4428-97c9-5184e8d5e311" />
+  <Project Path="JuegoServidor/JuegoServidor.csproj" />
 </Solution>
